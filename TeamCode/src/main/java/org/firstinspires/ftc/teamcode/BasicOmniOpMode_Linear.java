@@ -6,10 +6,11 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -34,12 +35,14 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
 
     // This chunk controls our vertical
     private DcMotor vertical = null;
-    private static final double VERTICAL_POWER_DEFAULT = 0.6;
+    private static final double VERTICAL_POWER_MAX = 0.6;
     double verticalPower = 0;
     private static final int VERTICAL_MAX = 700;
     private static final int VERTICAL_MIN = 30;
-    private static final int VERTICAL_DEFAULT = 0;
-    int verticalPosition = VERTICAL_DEFAULT;
+    private static final int VERTICAL_POSITION_DEFAULT = 0;
+    int verticalPosition = VERTICAL_POSITION_DEFAULT;
+    int verticalTargetPosition = VERTICAL_POSITION_DEFAULT;
+    double verticalVelocity = 0;
 
     // This chunk controls our viper slide
     private DcMotor viperSlide = null;
@@ -82,9 +85,9 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
 
         vertical = hardwareMap.get(DcMotor.class, "vertical");
         vertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        vertical.setTargetPosition(0);
-        vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        verticalVelocity = 0;
 
         viperSlide = hardwareMap.get(DcMotor.class, "viper_slide");
         viperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -137,28 +140,19 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             rightBackDrive.setPower(rightBackPower);
 
             // Control the vertical
-            verticalPosition = vertical.getCurrentPosition();
             if (gamepad1.dpad_up) {
-                vertical.setTargetPosition(VERTICAL_MAX);
-                ((DcMotorEx) vertical).setVelocity(750);
-                vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-            else if (gamepad1.dpad_right && verticalPosition < VERTICAL_MAX) {
-                vertical.setTargetPosition(VERTICAL_MAX);
-                ((DcMotorEx) vertical).setVelocity(750);
-                vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-            else if (gamepad1.dpad_left && verticalPosition > VERTICAL_MIN) {
-                vertical.setTargetPosition(VERTICAL_MIN);
-                ((DcMotorEx) vertical).setVelocity(750);
-                vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                verticalTargetPosition = VERTICAL_MAX;
             }
             else if (gamepad1.dpad_down) {
-                vertical.setTargetPosition(VERTICAL_MIN);
-                ((DcMotorEx) vertical).setVelocity(750);
-                vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                sleep(1000);
+                verticalTargetPosition = VERTICAL_MIN;
             }
+            else if (gamepad1.dpad_right && verticalTargetPosition < VERTICAL_MAX) {
+                verticalTargetPosition += 10;
+            }
+            else if (gamepad1.dpad_left  && verticalTargetPosition > VERTICAL_MIN) {
+                verticalTargetPosition -= 10;
+            }
+            verticalToPosition();
 
             // Control the viper slide
             viperSlidePosition = -viperSlide.getCurrentPosition();
@@ -187,6 +181,37 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         }
     }
 
+    private void verticalToPosition() {
+        verticalPosition = vertical.getCurrentPosition();
+        double distanceToTarget = Math.abs(verticalTargetPosition - verticalPosition);
+        vertical.setTargetPosition(verticalTargetPosition);
+
+        double currentVelocity = verticalVelocity;
+        double velocityNotTooFast = Math.min(distanceToTarget, currentVelocity+10);
+        double velocityNotBiggerThanMax = Math.min(velocityNotTooFast, 1000);
+        velocityNotBiggerThanMax
+        verticalVelocity = velocityNotBiggerThanMax;
+        ((DcMotorEx) vertical).setVelocity(verticalVelocity);
+        vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RobotLog.vv("RockinRobots", "Current: %.2f, NotFast: %.2f, NotBigger: %.2f, Position: %d, Target: %d", currentVelocity, velocityNotTooFast, velocityNotBiggerThanMax, verticalPosition, verticalTargetPosition);
+
+        /*
+        verticalPosition = vertical.getCurrentPosition();
+        double verticalPowerAbs = Math.abs(vertical.getPower());
+        double currentVerticalPower = verticalPowerAbs;
+        double distanceToTarget = Math.abs(verticalTargetPosition - verticalPosition);
+
+        verticalPowerAbs = Math.min(distanceToTarget*.001, verticalPowerAbs+0.02);
+        verticalPowerAbs = Math.min(verticalPowerAbs, VERTICAL_POWER_MAX);
+
+        RobotLog.vv("RockinRobots", "isBusy: %b", vertical.isBusy());
+        if(Math.abs(verticalPowerAbs - currentVerticalPower) > 0.01 && !vertical.isBusy()) {
+            verticalPower = Math.signum(verticalTargetPosition - verticalPosition)*verticalPowerAbs;
+            RobotLog.vv("RockinRobots", "Power: %.2f, Position: %d, Target: %d", verticalPower, verticalPosition, verticalTargetPosition);
+            vertical.setPower(verticalPower);
+        }*/
+    }
+
     // Log all (relevant) info about the robot on the hub.
     private void logScreenData() {
         telemetry.addData("Status", "Run Time: " + runtime);
@@ -199,7 +224,9 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         telemetry.addData("Claw position", "%4.2f", claw_position);
         telemetry.addData("Viper Slide Power", "%4.2f", viperSlidePower);
         telemetry.addData("Viper Slide Position", "%d", viperSlidePosition);
-        telemetry.addData("Vertical Power", "%.0f", verticalPower);
+        telemetry.addData("Vertical Power target", "%.2f", verticalPower);
+        telemetry.addData("Vertical Power", "%.2f", vertical.getPower());
+        telemetry.addData("Vertical Position target", "%d", verticalTargetPosition);
         telemetry.addData("Vertical Position", "%d", vertical.getCurrentPosition());
 
         telemetry.update();
