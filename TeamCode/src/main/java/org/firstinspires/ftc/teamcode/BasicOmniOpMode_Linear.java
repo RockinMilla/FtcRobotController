@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -40,6 +41,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
     private static final int VERTICAL_MIN = 30; // Milla: You calculated this should be 136 so we don't damage the claw
     private static final int VERTICAL_DEFAULT = 0;
     int verticalPosition = VERTICAL_DEFAULT;
+    int verticalTarget = VERTICAL_DEFAULT;
 
     // This chunk controls our viper slide
     private DcMotor viperSlide = null;
@@ -138,27 +140,19 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
 
             // Control the vertical - the rotation level of the arm
             verticalPosition = vertical.getCurrentPosition();
-            if (gamepad1.dpad_up) {                                                     // If the up button is pressed
-                vertical.setTargetPosition(VERTICAL_MAX);                               // Set the target position to as far up as it can go
-                ((DcMotorEx) vertical).setVelocity(750);                                // Set the speed
-                vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);                      // It will move until it achieves the desired position
+            if (gamepad1.dpad_up) {
+                verticalTarget = VERTICAL_MAX;
             }
-            else if (gamepad1.dpad_right && verticalPosition < VERTICAL_MAX) {          // If the right button is pressed AND it can safely rotate further
-                vertical.setTargetPosition(verticalPosition + 10);                      // Set the target position to as far up as it can go // Milla: you wanted this to be faster
-                ((DcMotorEx) vertical).setVelocity(650);                                // Set the speed
-                vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);                      // It will move until it achieves the desired position
+            else if (gamepad1.dpad_right && verticalPosition < VERTICAL_MAX) {
+                verticalTarget = verticalPosition+50;
             }
-            else if (gamepad1.dpad_left && verticalPosition > VERTICAL_MIN) {           // If the left button is pressed AND it can safely rotate further
-                vertical.setTargetPosition(verticalPosition - 10);                      // Set the target position to as far down as it can go
-                ((DcMotorEx) vertical).setVelocity(650);                                // Set the speed
-                vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);                      // It will move until it achieves the desired position
+            else if (gamepad1.dpad_left && verticalPosition > VERTICAL_MIN) {
+                verticalTarget = verticalPosition-50;
             }
-            else if (gamepad1.dpad_down) {                                              // If the down button is pressed
-                vertical.setTargetPosition(VERTICAL_MIN);                               // Set the target position to as far down as it can go
-                ((DcMotorEx) vertical).setVelocity(750);                                // Set the speed
-                vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);                      // It will move until it achieves the desired position
-                sleep(1000);                                                 // Stop for one second
+            else if (gamepad1.dpad_down) {
+                verticalTarget = VERTICAL_MIN;
             }
+            GoToVertical();
 
             // Control the viper slide - how much it extends
             viperSlidePosition = -viperSlide.getCurrentPosition();                      // Sets the position of the viper slide
@@ -185,6 +179,17 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             logScreenData();
         }
+    }
+
+    private void GoToVertical() {
+        double velocity = Math.abs(verticalTarget - verticalPosition)*2.0;
+        velocity = Math.max(velocity, 300);
+        velocity = Math.min(velocity, 1500);
+        vertical.setTargetPosition(verticalTarget);
+        ((DcMotorEx) vertical).setVelocity(velocity);
+        vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        RobotLog.vv("GoToVertical", "Target: %d, Current: %d, Velocity: %.0f, Time: %.0f", verticalTarget, verticalPosition, velocity, runtime.milliseconds());
     }
 
     // Log all (relevant) info about the robot on the hub.
