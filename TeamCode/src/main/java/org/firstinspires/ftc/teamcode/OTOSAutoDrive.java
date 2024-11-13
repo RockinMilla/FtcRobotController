@@ -88,42 +88,19 @@ public class OTOSAutoDrive extends LinearOpMode {
         waitForStart();
 
         // Code here
-        setVertical(VERTICAL_MAX);                        // Raising Arm
-        sleep(300);
-        setViper(VIPER_MAX);                              // Extending Viper
-        driveToLoc(3, 14, 20);     // Go to basket
-        sleep(600);
-        setClaw(CLAW_MAX);                               // Drop the block
-        driveToLoc(36, 0, 0);
-        setViper(1800);
-        setVertical(100, 1000);
-        sleep(1500);
-        setClaw(CLAW_MIN);                              // Grab second block
-        sleep(100);
-        setVertical(VERTICAL_MAX);
-        setViper(VIPER_MAX);
-        driveToLoc(12, 11, 45);  // Go to basket
-        sleep(600);
-        setClaw(CLAW_MAX);                              // Drop second block
-        driveToLoc(36, -4, 0);
-        setViper(1200);
-        sleep(500);
-        setVertical(40, 1500);
-        sleep(1500);
-        setClaw(CLAW_MIN);                               // Grab third block
-        sleep(100);
-        setVertical(VERTICAL_MAX);
-        setViper(VIPER_MAX);
-        driveToLoc(12, 11, 45);   // Go to basket
-        sleep(600);
-        setClaw(CLAW_MAX);                               // Drop third block
-        driveToLoc(25, 10, 45, 4);
-        setViper(VIPER_MIN);
-        sleep(500);
-        setVertical(VERTICAL_MIN);
-        driveToLoc(53, -15, 180); // Change X-value to 48 later
-        claw.close();                                    // Release tension on the claw
-        sleep(5000);
+        leftFrontDrive.setPower(0.5);
+        rightFrontDrive.setPower(-0.5);
+        leftBackDrive.setPower(0.5);
+        rightBackDrive.setPower(-0.5);
+
+        for(int i = 0; i <= 100; i++)
+        {
+            getPosition();
+            RobotLog.vv("Milla", "xLoc: " + xLoc + "yLoc: " + yLoc + "hLoc: " + hLoc);
+            sleep(10);
+        }
+
+        stopMoving();
 
         // End of autonomous program
         telemetry.addData("Autonomous", "Complete");
@@ -165,7 +142,7 @@ public class OTOSAutoDrive extends LinearOpMode {
 
         myOtos.setLinearUnit(DistanceUnit.INCH);
         myOtos.setAngularUnit(AngleUnit.DEGREES);
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.5, 0.5, 90);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.5, 1.1, 90);        // Tested on 11/13. Very accurate.
         myOtos.setOffset(offset);
         myOtos.setLinearScalar(1.0);
         myOtos.setAngularScalar(1.0);
@@ -176,12 +153,6 @@ public class OTOSAutoDrive extends LinearOpMode {
         SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
         SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
         myOtos.getVersionInfo(hwVersion, fwVersion);
-
-        telemetry.addLine("OTOS configured! Press start to get position data!");
-        telemetry.addLine();
-        telemetry.addLine(String.format("OTOS Hardware Version: v%d.%d", hwVersion.major, hwVersion.minor));
-        telemetry.addLine(String.format("OTOS Firmware Version: v%d.%d", fwVersion.major, fwVersion.minor));
-        telemetry.update();
     }
     private void getPosition() {
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
@@ -197,6 +168,9 @@ public class OTOSAutoDrive extends LinearOpMode {
         double xDistance = xTarget - xLoc;
         double yDistance = yTarget - yLoc;
         double hDistance = hTarget - hLoc;
+        double angleRadians = Math.toRadians(hLoc);
+        double xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
+        double yRotatedDistance = xDistance * Math.sin(angleRadians) - yDistance * Math.cos(angleRadians);
 
         RobotLog.vv("Rockin' Robots", "xDistance: %.2f, yDistance: %.2f, hDistance: %.2f, " +
                         "leftFrontPower: %.2f, rightFrontPower: %.2f, leftBackPower: %.2f, rightBackPower: %.2f",
@@ -207,12 +181,10 @@ public class OTOSAutoDrive extends LinearOpMode {
                 || Math.abs(yDistance) > accuracy
                 || Math.abs(hDistance) > accuracy)) {
 
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power.
-            leftFrontPower = (yDistance + xDistance - hDistance) / 8;
-            rightFrontPower = (yDistance - xDistance + hDistance) / 8;
-            leftBackPower = (yDistance - xDistance - hDistance) / 8;
-            rightBackPower = (yDistance + xDistance + hDistance) / 8;
+            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance) / 8;
+            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance) / 8;
+            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance) / 8;
+            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance) / 8;
 
             // Normalize the values so no wheel power exceeds 100%
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -241,6 +213,9 @@ public class OTOSAutoDrive extends LinearOpMode {
             xDistance = xTarget - xLoc;
             yDistance = yTarget - yLoc;
             hDistance = hTarget - hLoc;
+            angleRadians = Math.toRadians(hLoc);
+            xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
+            yRotatedDistance = xDistance * Math.sin(angleRadians) - yDistance * Math.cos(angleRadians);
         }
         stopMoving();
         RobotLog.vv("Rockin' Robots", "Done Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
