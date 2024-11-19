@@ -99,23 +99,89 @@ public class OTOSAutoDrive extends LinearOpMode {
         telemetry.update();
 
         configureOtos();
+        setClaw(CLAW_MIN);
+        setAscentStick(ASCENT_MIN);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        driveToLoc(0, 0, 180, 5);
-        driveToLoc(0, 20, 180, 5);
+        setVertical(VERTICAL_MAX);
+        sleep(500);
+        setViper(VIPER_MAX);
+        sleep(1000);
+        driveToLoc(7, 15, 45, 1, .7);
+        setClaw(CLAW_MAX);
+
+
+        // SECOND SAMPLE
+        driveToLoc(34, 0, 0, .5, .7);
+        setViper(2200);
+        setVertical(300);
+        sleep(1500);
+        setVertical(180);
+        sleep(500);
+        setClaw(CLAW_MIN);
+        setVertical(VERTICAL_MAX, 1000);
+        sleep(500);
+        setViper(VIPER_MAX);
+        driveToLoc(8, 16, 45, 1, .7); //10, 14 drops out the front
+        sleep(800);
+        setClaw(CLAW_MAX);
+
+        // THIRD SAMPLE
+        driveToLoc(34, -2, 0, .5, .7);
+        setViper(1200);
+        sleep(300);
+        setVertical(200);
+        sleep(1500);
+        setVertical(30);
+        sleep(200);
+        setClaw(CLAW_MIN);
+        setVertical(VERTICAL_MAX, 1000);
+        sleep(500);
+        setViper(VIPER_MAX);
+        driveToLoc(7, 16, 45, 1, .7);
+        sleep(800);
+        setClaw(CLAW_MAX);
+
+        // FOURTH SAMPLE
+        setClaw(CLAW_MAX);
+        driveToLoc(34, 6, 0);
+        setViper(2000);
+        setVertical(300);
+        sleep(1500);
+        driveToLoc(34, 9, 0);
+        setVertical(80);
+        sleep(200);
+        setClaw(CLAW_MIN);
+        driveToLoc(34, 5, 0);
+        setVertical(VERTICAL_MAX, 1300);
+        sleep(600);
+        setViper(VIPER_MAX);
+        driveToLoc(7, 16, 45, 1, .7);
+        sleep(800);
+        setClaw(CLAW_MAX);
+
+        // PARK
+        driveToLoc(25, 5, 0);
+        setViper(VIPER_MIN);
+        setVertical(VERTICAL_MIN);
+        sleep(3000);
+        setAscentStick(ASCENT_MAX);
+        driveToLoc(54, 5, 180);
+        driveToLoc(54, -13, 180, 2, .3);
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
-    private void driveToLoc(double xTarget, double yTarget, double hTarget, double accuracy) {
+    private void driveToLoc(double xTarget, double yTarget, double hTarget, double accuracy, double maxSpeed) {
         RobotLog.vv("Rockin' Robots", "Moving to: xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, accuracy: %.2f",
                 xTarget, yTarget, hTarget, accuracy);
         getPosition();
         getDistance(xTarget, yTarget, hTarget);
 
         while (opModeIsActive() && (Math.abs(xRotatedDistance) > accuracy || Math.abs(yRotatedDistance) > accuracy || Math.abs(hDistance) > accuracy)) {
-            getPower();
+            getPower(maxSpeed);
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
             leftBackDrive.setPower(leftBackPower);
@@ -143,22 +209,14 @@ public class OTOSAutoDrive extends LinearOpMode {
 
         double angleRadians = Math.toRadians(hLoc);
         xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
-        yRotatedDistance = xDistance * Math.sin(angleRadians) - yDistance * Math.cos(angleRadians);
+        yRotatedDistance = -xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
     }
-        // with ++ and rotated 90/-90 degrees, the x gets worse and the y gets better, when rotated 0 or 180 degrees it works,
-        // with -+ and rotated 90 degrees, the x is good and the y is bad, when rotated 0 or 180 degrees it works
-        // with -- when rotated 90/-90/0/180 degrees it goes backwards
-        // with +- when rotated -90 degrees, the x gets more negative, when rotated 90 degrees, the x gets more positive
-        // with -+/+- when rotated -90, the x gets more negative, when  90 degrees, the x gets more positive
-        //RobotLog.vv("Rockin' Robots", "angles: %.2f, radians: %.2f, cos: %.2f, sin: %.2f", hLoc, angleRadians, Math.cos(angleRadians), Math.sin(angleRadians));
 
-
-    public void getPower() {
-        leftFrontPower = (-yRotatedDistance + xRotatedDistance - hDistance) / 8;
+    public void getPower(double maxSpeed) {
+        leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance) / 8;
         rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance) / 8;
         leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance) / 8;
-        rightBackPower = (-yRotatedDistance + xRotatedDistance + hDistance) / 8;
-        //
+        rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance) / 8;
 
         // Normalize the values so no wheel power exceeds 100%
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -170,10 +228,10 @@ public class OTOSAutoDrive extends LinearOpMode {
             leftBackPower /= max;
             rightBackPower /= max;
         }
-        leftFrontPower *= 0.5;
-        rightFrontPower *= 0.5;
-        leftBackPower *= 0.5;
-        rightBackPower *= 0.5;
+        leftFrontPower *= maxSpeed;
+        rightFrontPower *= maxSpeed;
+        leftBackPower *= maxSpeed;
+        rightBackPower *= maxSpeed;
 
     }
 
@@ -259,7 +317,6 @@ public class OTOSAutoDrive extends LinearOpMode {
         hLoc = pos.h;
     }
     private void driveToLoc(double xTarget, double yTarget, double hTarget) {
-        driveToLoc(xTarget, yTarget, hTarget, 2);
+        driveToLoc(xTarget, yTarget, hTarget, 2, .7);
     }
-
 }
