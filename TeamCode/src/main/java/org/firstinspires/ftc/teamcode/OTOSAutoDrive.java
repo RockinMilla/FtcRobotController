@@ -20,6 +20,13 @@ public class OTOSAutoDrive extends LinearOpMode {
     double xLoc = 0;
     double yLoc = 0;
     double hLoc = 0;
+    double xDistance = 0;
+    double yDistance = 0;
+    double hDistance = 0;
+    double xRotatedDistance = 0;
+    double yRotatedDistance = 0;
+
+
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor leftBackDrive = null;
@@ -95,57 +102,79 @@ public class OTOSAutoDrive extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        driveToLoc(0, 0, 180, 5);
+        driveToLoc(0, 20, 180, 5);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
 
-        // First Sample ///////////////////////////////////////////////////////////////
-        setVertical(VERTICAL_MAX);                        // Raising Arm
-        sleep(300);
-        setViper(VIPER_MAX);                              // Extending Viper
-        driveToLoc(2, 13, 20);     // Go to basket
-        sleep(600);
-        setClaw(CLAW_MAX);                                // Drop the block
+    private void driveToLoc(double xTarget, double yTarget, double hTarget, double accuracy) {
+        RobotLog.vv("Rockin' Robots", "Moving to: xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, accuracy: %.2f",
+                xTarget, yTarget, hTarget, accuracy);
+        getPosition();
+        getDistance(xTarget, yTarget, hTarget);
 
-        // Second Sample ///////////////////////////////////////////////////////////////
-        driveToLoc(34, 2, 0, 1);
-        setViper(1900);
-        setVertical(100, 1000);
-        sleep(1500);
-        setClaw(CLAW_MIN);                              // Grab second block
-        sleep(100);
-        setVertical(VERTICAL_MAX);
-        setViper(VIPER_MAX);
-        driveToLoc(8, 15, 45, 1.5);  // Go to basket
-        sleep(600);
-        setClaw(CLAW_MAX);                              // Drop second block
+        while (opModeIsActive() && (Math.abs(xRotatedDistance) > accuracy || Math.abs(yRotatedDistance) > accuracy || Math.abs(hDistance) > accuracy)) {
+            getPower();
+            leftFrontDrive.setPower(leftFrontPower);
+            rightFrontDrive.setPower(rightFrontPower);
+            leftBackDrive.setPower(leftBackPower);
+            rightBackDrive.setPower(rightBackPower);
+            RobotLog.vv("Rockin' Robots", "xDist: %.2f, yDist: %.2f, hDist: %.2f, xRotatedDist: %.2f, yRotatedDist: %.2f" +
+                            "leftFrontPower: %.2f, rightFrontPower: %.2f, leftBackPower: %.2f, rightBackPower: %.2f",
+                            xDistance, yDistance, hDistance, xRotatedDistance, yRotatedDistance,
+                            leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
 
-        // Third Sample ///////////////////////////////////////////////////////////////
-        driveToLoc(36, -2, 0, 1);
-        setViper(1100);
-        sleep(700);
-        setVertical(0, 1500);
-        sleep(1700);
-        setClaw(CLAW_MIN);                               // Grab third block
-        sleep(100);
-        setVertical(VERTICAL_MAX);
-        setViper(VIPER_MAX);
-        driveToLoc(8, 15, 45, 1.5);   // Go to basket
-        sleep(600);
-        setClaw(CLAW_MAX);                               // Drop third block
+            getPosition();
+            getDistance(xTarget, yTarget, hTarget);
+        }
+        stopMoving();
+        RobotLog.vv("Rockin' Robots", "Done Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
+                xDistance, yDistance, hDistance);
+    }
 
-        // Park ///////////////////////////////////////////////////////////////
-        driveToLoc(25, 5, 0, 3);
-        setViper(VIPER_MIN);
-        sleep(700);
-        setVertical(VERTICAL_MIN);
-        driveToLoc(55, 5, 0);
-        RobotLog.vv("Rockin'", "Set to max");
-        setAscentStick(ASCENT_MAX);
-        turnRight(0.5, 170);
-        moveForward(0.5, 1000);
-        RobotLog.vv("Rockin'", "End program");
-        claw.close();                                    // Release tension on the claw
-        // End of autonomous program
-        telemetry.addData("Autonomous", "Complete");
-        telemetry.update();
+    public void getDistance(double xTarget, double yTarget, double hTarget) {
+        xDistance = xTarget - xLoc;
+        yDistance = yTarget - yLoc;
+        hDistance = hTarget - hLoc;
+
+        if (hDistance > 180) hDistance -= 360;
+        if (hDistance < -180) hDistance += 360;
+
+        double angleRadians = Math.toRadians(hLoc);
+        xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
+        yRotatedDistance = xDistance * Math.sin(angleRadians) - yDistance * Math.cos(angleRadians);
+    }
+        // with ++ and rotated 90/-90 degrees, the x gets worse and the y gets better, when rotated 0 or 180 degrees it works,
+        // with -+ and rotated 90 degrees, the x is good and the y is bad, when rotated 0 or 180 degrees it works
+        // with -- when rotated 90/-90/0/180 degrees it goes backwards
+        // with +- when rotated -90 degrees, the x gets more negative, when rotated 90 degrees, the x gets more positive
+        // with -+/+- when rotated -90, the x gets more negative, when  90 degrees, the x gets more positive
+        //RobotLog.vv("Rockin' Robots", "angles: %.2f, radians: %.2f, cos: %.2f, sin: %.2f", hLoc, angleRadians, Math.cos(angleRadians), Math.sin(angleRadians));
+
+
+    public void getPower() {
+        leftFrontPower = (-yRotatedDistance + xRotatedDistance - hDistance) / 8;
+        rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance) / 8;
+        leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance) / 8;
+        rightBackPower = (-yRotatedDistance + xRotatedDistance + hDistance) / 8;
+        //
+
+        // Normalize the values so no wheel power exceeds 100%
+        max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+        leftFrontPower *= 0.5;
+        rightFrontPower *= 0.5;
+        leftBackPower *= 0.5;
+        rightBackPower *= 0.5;
+
     }
 
     public void setAscentStick(double target) {
@@ -232,67 +261,5 @@ public class OTOSAutoDrive extends LinearOpMode {
     private void driveToLoc(double xTarget, double yTarget, double hTarget) {
         driveToLoc(xTarget, yTarget, hTarget, 2);
     }
-    private void driveToLoc(double xTarget, double yTarget, double hTarget, double accuracy) {
-        getPosition();
-        double xDistance = xTarget - xLoc;
-        double yDistance = yTarget - yLoc;
-        double hDistance = hTarget - hLoc;
-        if(hDistance > 180) hDistance -= 360;
-        if(hDistance < -180) hDistance += 360;
 
-        RobotLog.vv("Rockin' Robots", "driveToLoc: xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, accuracy: %.2f", xTarget, yTarget, hTarget, accuracy);
-        RobotLog.vv("Rockin' Robots", "xDistance: %.2f, yDistance: %.2f, hDistance: %.2f, " +
-                        "leftFrontPower: %.2f, rightFrontPower: %.2f, leftBackPower: %.2f, rightBackPower: %.2f",
-                xDistance, yDistance, hDistance, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
-
-        while (opModeIsActive()
-                && (Math.abs(xDistance) > accuracy
-                || Math.abs(yDistance) > accuracy
-                || Math.abs(hDistance) > accuracy)) {
-
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power.
-            leftFrontPower = (yDistance + xDistance - hDistance) / 8;
-            rightFrontPower = (yDistance - xDistance + hDistance) / 8;
-            leftBackPower = (yDistance - xDistance - hDistance) / 8;
-            rightBackPower = (yDistance + xDistance + hDistance) / 8;
-
-            // Normalize the values so no wheel power exceeds 100%
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
-            if (max > 1.0) {
-                leftFrontPower /= max;
-                rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
-            }
-            leftFrontPower *= 0.6;
-            rightFrontPower *= 0.6;
-            leftBackPower *= 0.6;
-            rightBackPower *= 0.6;
-
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
-            RobotLog.vv("Rockin' Robots", "xDist: %.2f, yDist: %.2f, hDist: %.2f, " +
-                    "leftFrontPower: %.2f, rightFrontPower: %.2f, leftBackPower: %.2f, rightBackPower: %.2f",
-                    xDistance, yDistance, hDistance, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
-
-            getPosition();
-            xDistance = xTarget - xLoc;
-            yDistance = yTarget - yLoc;
-            hDistance = hTarget - hLoc;
-            if(hDistance > 180) {
-                hDistance -= 360;
-            }
-            else if(hDistance < -180) {
-                hDistance += 360;
-            }
-        }
-        stopMoving();
-        RobotLog.vv("Rockin' Robots", "Done Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
-                xDistance, yDistance, hDistance);
-    }
 }
