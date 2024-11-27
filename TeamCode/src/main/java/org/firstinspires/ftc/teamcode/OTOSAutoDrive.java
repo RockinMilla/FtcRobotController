@@ -20,6 +20,10 @@ public class OTOSAutoDrive extends LinearOpMode {
     double xLoc = 0;
     double yLoc = 0;
     double hLoc = 0;
+    double xRotatedDistance = 0;
+    double yRotatedDistance = 0;
+    double hDistance = 0;
+
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor leftBackDrive = null;
@@ -44,11 +48,11 @@ public class OTOSAutoDrive extends LinearOpMode {
     // This chunk controls our claw
     //Callie
     Servo claw = null;
-    final double CLAW_MIN = 0.00;           // Claw is closed
-    final double CLAW_MAX = 0.21;           // Claw is open
+    final double CLAW_MIN = 0.2;           // Claw is closed
+    final double CLAW_MAX = 0.8;           // Claw is open
 
     Servo ascentStick = null;
-    final double ASCENT_MIN = 0.2;          // Stick is down
+    final double ASCENT_MIN = 0.15;          // Stick is down
     final double ASCENT_MAX = 0.49;         // Stick is up
 
     @Override
@@ -57,70 +61,29 @@ public class OTOSAutoDrive extends LinearOpMode {
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Autonomous Ready", "You can press start");
-        telemetry.addData("This code was last updated", "11/25/2024, 2:51pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "11/25/2024, 7:09pm"); // Todo: Update this date when the code is updated
         telemetry.update();
 
+        // Wait for the game to start (driver pressesa PLAY)
+        waitForStart();
         configureOtos();
 
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-
-        // First Sample ///////////////////////////////////////////////////////////////
-        setVertical(VERTICAL_MAX);                                  // Raising Arm
-        sleep(800);
-        setViper(VIPER_MAX);                                        // Extending Viper
-        sleep(1000);
-        driveToLoc(6, 12, 45, 1); // Go to basket
-        sleep(600);
-        setClaw(CLAW_MAX);                                          // Drop the block
-        //sleep(600);
-
-        // Second Sample ///////////////////////////////////////////////////////////////
-        driveToLoc(30, 0, -20, 1);  // Todo: fix numbers
-        setViper(1500);
-        setVertical(0);
-        sleep(2200);
-        moveForward(0.3, 700);
-        //sleep(300);
-        setClaw(CLAW_MIN);                                          // Grab second block
-        setVertical(VERTICAL_MAX, 1000);
-        sleep(700);
+        setClaw(CLAW_MIN);
+        setVertical(VERTICAL_MAX);
         setViper(VIPER_MAX);
-        driveToLoc(7, 10, 45, 1);  // Go to basket
-        sleep(700);
-        setClaw(CLAW_MAX);                                          // Drop second block
-        //sleep(600);
-
-        // Third Sample ///////////////////////////////////////////////////////////////
-        driveToLoc(33.5, 10, -1, 1);   // Todo: fix numbers
-        setViper(1500);
-        sleep(700);
-        setVertical(0);
-        sleep(2000);
-        moveForward(0.3, 700);
-        //sleep(300);
-        setClaw(CLAW_MIN);                                          // Grab third block
-        setVertical(VERTICAL_MAX, 1000);
-        sleep(700);
-        setViper(VIPER_MAX);
-        driveToLoc(5, 9, 45, 1);  // Go to basket
-        sleep(600);
-        setClaw(CLAW_MAX);                                          // Drop third block
-        //sleep(600);
-
-        // Park ///////////////////////////////////////////////////////////////
-        driveToLoc(25, 5, 0, 3);
-        setViper(VIPER_MIN);
-        sleep(700);
+        sleep(1200);
+        driveToLoc(12, 12, 45, 1);
+        sleep(500);
+        setClaw(CLAW_MAX);
+        driveToLoc(26, -10, -20, 1);
+        setViper(1000);
+        while(viperSlide.getCurrentPosition() > 1500) sleep(10);
         setVertical(VERTICAL_MIN);
-        driveToLoc(55, 5, 0);
-        RobotLog.vv("Rockin'", "Set to max");
-        setAscentStick(ASCENT_MAX);
-        driveToLoc(55, -12, 180);
-        sleep(300);
+        sleep(2000);
+        setViper(VIPER_MIN);
+        while(viperSlide.getCurrentPosition() > 100) sleep(10);
+
         RobotLog.vv("Rockin'", "End program");
-        claw.close();                                               // Release tension on the claw
-        // End of autonomous program
         telemetry.addData("Autonomous", "Complete");
         telemetry.update();
     }
@@ -209,6 +172,20 @@ public class OTOSAutoDrive extends LinearOpMode {
         xLoc = pos.x;
         yLoc = pos.y;
         hLoc = pos.h;
+        RobotLog.vv("Rockin'", "getPosition(): xLoc: %4.2f, yLoc: %4.2f, hLoc: %4.2f", xLoc, yLoc, hLoc);
+    }
+
+    private void getRotatedDistance(double xTarget, double yTarget, double hTarget) {
+        getPosition();
+        double xDistance = xTarget - xLoc;
+        double yDistance = yTarget - yLoc;
+        hDistance = hTarget - hLoc;
+        if(hDistance > 180) hDistance -= 360;
+        if(hDistance < -180) hDistance += 360;
+        double angleRadians = Math.toRadians(hLoc);
+        xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
+        yRotatedDistance = - xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
+        RobotLog.vv("Rockin' Robots", "getRotatedDistance() xDistance: %.2f, yDistance: %.2f, hDistance: %.2f", xDistance, yDistance, hDistance);
     }
 
     private void driveToLoc(double xTarget, double yTarget, double hTarget) {
@@ -216,28 +193,20 @@ public class OTOSAutoDrive extends LinearOpMode {
     }
 
     private void driveToLoc(double xTarget, double yTarget, double hTarget, double accuracy) {
-        getPosition();
-        double xDistance = xTarget - xLoc;
-        double yDistance = yTarget - yLoc;
-        double hDistance = hTarget - hLoc;
-        if(hDistance > 180) hDistance -= 360;
-        if(hDistance < -180) hDistance += 360;
-        double angleRadians = Math.toRadians(hLoc);
-        double xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
-        double yRotatedDistance = - xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
-
         RobotLog.vv("Rockin' Robots", "driveToLoc() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, accuracy: %.2f",
                 xTarget, yTarget, hTarget, accuracy);
 
+        getRotatedDistance(xTarget, yTarget, hTarget);
+
         while (opModeIsActive()
-                && (Math.abs(xDistance) > accuracy
-                || Math.abs(yDistance) > accuracy
+                && (Math.abs(xRotatedDistance) > accuracy
+                || Math.abs(yRotatedDistance) > accuracy
                 || Math.abs(hDistance) > accuracy)) {
 
-            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance) / 8;
-            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance) / 8;
-            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance) / 8;
-            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance) / 8;
+            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
+            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance);
+            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
+            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance);
 
             // Normalize the values so no wheel power exceeds 100%
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -249,10 +218,14 @@ public class OTOSAutoDrive extends LinearOpMode {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            leftFrontPower *= 0.6;
-            rightFrontPower *= 0.6;
-            leftBackPower *= 0.6;
-            rightBackPower *= 0.6;
+            double scalingValue = (Math.abs(xRotatedDistance)+Math.abs(yRotatedDistance)+Math.abs(hDistance))/50.0;
+            scalingValue = Math.max(scalingValue, 0.3);
+            //scalingValue = Math.min(scalingValue, 1.0);
+            RobotLog.vv("Rockin'", "Scaling value: %4.2f", scalingValue);
+            leftFrontPower *= scalingValue;
+            rightFrontPower *= scalingValue;
+            leftBackPower *= scalingValue;
+            rightBackPower *= scalingValue;
 
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
@@ -262,20 +235,19 @@ public class OTOSAutoDrive extends LinearOpMode {
             //        "leftFrontPower: %.2f, rightFrontPower: %.2f, leftBackPower: %.2f, rightBackPower: %.2f",
             //        xDistance, yDistance, hDistance, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
 
-            getPosition();
-            xDistance = xTarget - xLoc;
-            yDistance = yTarget - yLoc;
-            hDistance = hTarget - hLoc;
-            if(hDistance > 180) hDistance -= 360;
-            if(hDistance < -180) hDistance += 360;
-
-            angleRadians = Math.toRadians(hLoc);
-            xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
-            yRotatedDistance = - xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
+            getRotatedDistance(xTarget, yTarget, hTarget);
         }
         stopMoving();
+
+        // Make sure we hit our target
+        sleep(200);
+        getRotatedDistance(xTarget, yTarget, hTarget);
+        if (Math.abs(xRotatedDistance) > accuracy || Math.abs(yRotatedDistance) > accuracy || Math.abs(hDistance) > accuracy) {
+            RobotLog.vv("Rockin' Robots", "Missed the target, trying again");
+            driveToLoc(xTarget, yTarget, hTarget, accuracy);
+        }
         RobotLog.vv("Rockin' Robots", "Done Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
-                xDistance, yDistance, hDistance);
+                xRotatedDistance, yRotatedDistance, hDistance);
     }
 
     public void defineHardware() {
@@ -290,6 +262,10 @@ public class OTOSAutoDrive extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         vertical = hardwareMap.get(DcMotor.class, "vertical");
         vertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
