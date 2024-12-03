@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,7 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-
+@Config
 @TeleOp(name="Remote Control", group="Linear OpMode")
 public class RemoteControl extends LinearOpMode {
     // Initialize all variables for the program below:
@@ -65,7 +68,7 @@ public class RemoteControl extends LinearOpMode {
     @Override
     //Op mode runs when the robot runs. It runs the whole time.
     public void runOpMode() {
-
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         initializeHardwareVariables();
 
         // Wait for the game to start (driver presses PLAY)
