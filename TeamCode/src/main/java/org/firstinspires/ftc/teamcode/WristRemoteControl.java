@@ -72,7 +72,6 @@ public class WristRemoteControl extends LinearOpMode {
     @Override
     //Op mode runs when the robot runs. It runs the whole time.
     public void runOpMode() {
-
         initializeHardwareVariables();
 
         // Wait for the game to start (driver presses PLAY)
