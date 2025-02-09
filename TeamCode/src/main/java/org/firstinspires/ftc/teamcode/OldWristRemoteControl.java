@@ -16,11 +16,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class OldWristRemoteControl extends LinearOpMode {
     // Initialize all variables for the program below:
     // This chunk controls our wheels
+
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    double leftFrontPower = 0;
+    double leftFrontPower = 0.01;
     double rightFrontPower = 0;
     double leftBackPower = 0;
     double rightBackPower = 0;
