@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @TeleOp(name="Remote Control", group="Linear OpMode")
 @Disabled
-public class RemoteControl extends LinearOpMode {
+public class OldRemoteControl extends LinearOpMode {
     // Initialize all variables for the program below:
     // This chunk controls our wheels
     private DcMotor leftFrontDrive = null;

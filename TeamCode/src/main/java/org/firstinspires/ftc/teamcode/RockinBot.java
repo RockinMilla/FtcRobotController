@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -11,11 +14,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class RockinBot {
 
-    private DcMotor leftFrontDrive = null;
+    DcMotor leftFrontDrive = null;
     DcMotor leftBackDrive = null;
     DcMotor rightFrontDrive = null;
     DcMotor rightBackDrive = null;
-    private double leftFrontPower = 0;
+    double leftFrontPower = 0;
     double rightFrontPower = 0;
     double leftBackPower = 0;
     double rightBackPower = 0;
@@ -35,27 +38,27 @@ public class RockinBot {
     final int VERTICAL_CLIMB_POSITION = 2300;
     final int VERTICAL_DRIVE_POSITION = 400;
     final int VERTICAL_DEFAULT_SPEED = 2000;
-    int verticalAdjustedMin = vertAdjMin;
-    int verticalPosition = vertPos;
+    int verticalAdjustedMin = 0;
+    int verticalPosition = VERTICAL_MIN;
 
     // This chunk controls our viper slide
     DcMotor viperSlide = null;
     final int VIPER_MAX_WIDE = 1800;
     final int VIPER_MAX_TALL = 2637;
     final int VIPER_MIN = 0;
-    int viperSlidePosition = vipPos;
+    int viperSlidePosition = VIPER_MIN;
 
     // This chunk controls our claw
     Servo claw = null;
     final double CLAW_MIN = 0.2;        // Claw is closed
     final double CLAW_MAX = 0.36;       // Claw is open - Og non-wrist value was 0.8
-    double claw_position = clawPos;
+    double claw_position = CLAW_MIN;
 
     // This chunk controls our wrist
     Servo wrist = null;
     final double WRIST_PICKUP = 0.23;       // Wrist is in intake position (picking up)
     final double WRIST_DROPOFF = 0.89;      // Wrist is in outtake position (dropping in basket)
-    double wrist_position = wristPos;
+    double wrist_position = WRIST_PICKUP;
 
     // This chunk controls our nose picker (ascent stick)
     Servo ascentStick = null;
@@ -63,20 +66,13 @@ public class RockinBot {
     final double ASCENT_MAX = 0.49;         // Stick is up
 
 
-    RockinBot(int vertAdjMin, int vertPos, int vipPos, double clawPos, double wristPos) {
-
-        final ElapsedTime runtime = new ElapsedTime();
-
+    RockinBot() {
         telemetry.addData("This code was last updated", "1/17/2024, 11:47 am"); // Todo: Update this date when the code is updated
         telemetry.update();
         initializeHardwareVariables();
     }
 
-    setAscentStick(ASCENT_MIN);
-    //claw.setPosition(CLAW_MAX);
-    runtime.reset();
-
-    private void initializeHardwareVariables() {
+    public void initializeHardwareVariables() {
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
@@ -128,10 +124,6 @@ public class RockinBot {
         }
     }
 
-    private double getWheelPower() {
-        return "leftFront " + leftFrontPower + " rightFront " + rightFrontPower + " leftBack " + leftBackPower + " rightBack " + rightBackPower;
-    }
-
     public void setAscentStick(double target) {
         RobotLog.vv("Rockin' Robots", "Set Ascent Stick to: %4.2f, Current: %4.2f", target, ascentStick.getPosition());
         ascentStick.setPosition(target);
@@ -175,7 +167,7 @@ public class RockinBot {
     }
 
     public double getVertical() {
-        return vertical.getPosition();
+        return vertical.getCurrentPosition();
     }
 
     public void setViper(int length, int speed){
@@ -190,8 +182,7 @@ public class RockinBot {
     }
 
     // Log all (relevant) info about the robot on the hub.
-    private void printDataOnScreen() {
-        telemetry.addData("Run Time", "%.1f", runtime.seconds());
+    public void printDataOnScreen() {
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         //RobotLog.vv("RockinRobots", "%4.2f, %4.2f, %4.2f, %4.2f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
