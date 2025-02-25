@@ -7,63 +7,55 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.tel
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class RockinBot {
 
-    DcMotor leftFrontDrive = null;
-    DcMotor leftBackDrive = null;
-    DcMotor rightFrontDrive = null;
-    DcMotor rightBackDrive = null;
-    double leftFrontPower = 0;
-    double rightFrontPower = 0;
-    double leftBackPower = 0;
-    double rightBackPower = 0;
-    double max = 0;
-    boolean wheelClimb = false;
-
-    // Collect joystick position data
-    double axial = 0;
-    double lateral = 0;
-    double yaw = 0;
+    private DcMotor leftFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor rightBackDrive = null;
+    private double leftFrontPower = 0;
+    private double rightFrontPower = 0;
+    private double leftBackPower = 0;
+    private double rightBackPower = 0;
+    private double max = 0;
+    public boolean wheelClimb = false;
 
     // This chunk controls our vertical
-    DcMotor vertical = null;
-    final int VERTICAL_MIN = 0;
-    final int VERTICAL_MAX = 2155;
-    final int VERTICAL_MAX_VIPER = 1200;
-    final int VERTICAL_CLIMB_POSITION = 2300;
-    final int VERTICAL_DRIVE_POSITION = 400;
-    final int VERTICAL_DEFAULT_SPEED = 2000;
-    int verticalAdjustedMin = 0;
-    int verticalPosition = VERTICAL_MIN;
+    private DcMotor vertical = null;
+    public final int VERTICAL_MIN = 0;
+    public final int VERTICAL_MAX = 2155;
+    public final int VERTICAL_MAX_VIPER = 1200;
+    public final int VERTICAL_CLIMB_POSITION = 2300;
+    public final int VERTICAL_DRIVE_POSITION = 400;
+    public final int VERTICAL_DEFAULT_SPEED = 2000;
+    public int verticalAdjustedMin = 0;
+    private int verticalPosition = VERTICAL_MIN;
 
     // This chunk controls our viper slide
-    DcMotor viperSlide = null;
-    final int VIPER_MAX_WIDE = 1800;
-    final int VIPER_MAX_TALL = 2637;
-    final int VIPER_MIN = 0;
-    int viperSlidePosition = VIPER_MIN;
+    private DcMotor viperSlide = null;
+    public final int VIPER_MAX_WIDE = 1800;
+    public final int VIPER_MAX_TALL = 2637;
+    public final int VIPER_MIN = 0;
+    private int viperSlidePosition = VIPER_MIN;
 
     // This chunk controls our claw
-    Servo claw = null;
-    final double CLAW_MIN = 0.2;        // Claw is closed
-    final double CLAW_MAX = 0.36;       // Claw is open - Og non-wrist value was 0.8
-    double claw_position = CLAW_MIN;
+    private Servo claw = null;
+    public final double CLAW_MIN = 0.2;        // Claw is closed
+    public final double CLAW_MAX = 0.36;       // Claw is open - Og non-wrist value was 0.8
 
     // This chunk controls our wrist
-    Servo wrist = null;
-    final double WRIST_PICKUP = 0.23;       // Wrist is in intake position (picking up)
-    final double WRIST_DROPOFF = 0.89;      // Wrist is in outtake position (dropping in basket)
-    double wrist_position = WRIST_PICKUP;
+    private Servo wrist = null;
+    public final double WRIST_PICKUP = 0.23;       // Wrist is in intake position (picking up)
+    public final double WRIST_DROPOFF = 0.89;      // Wrist is in outtake position (dropping in basket)
 
     // This chunk controls our nose picker (ascent stick)
-    Servo ascentStick = null;
-    final double ASCENT_MIN = 0.2;          // Stick is down
-    final double ASCENT_MAX = 0.49;         // Stick is up
+    private Servo ascentStick = null;
+    public final double ASCENT_MIN = 0.2;          // Stick is down
+    public final double ASCENT_MAX = 0.49;         // Stick is up
 
 
     RockinBot() {
@@ -107,11 +99,11 @@ public class RockinBot {
         ascentStick.setDirection(Servo.Direction.REVERSE);
     }
 
-    public void setWheelPower(){
-        leftFrontPower = (axial + lateral + yaw) * 0.75;
-        rightFrontPower = (axial - lateral - yaw) * 0.75;
-        leftBackPower = (axial - lateral + yaw) * 0.75;
-        rightBackPower = (axial + lateral - yaw) * 0.75;
+    public void setWheelPower(double left_y, double left_x, double right_x){
+        leftFrontPower = (left_y + left_x + right_x) * 0.75;
+        rightFrontPower = (left_y - left_x - right_x) * 0.75;
+        leftBackPower = (left_y - left_x + right_x) * 0.75;
+        rightBackPower = (left_y + left_x - right_x) * 0.75;
 
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
@@ -121,6 +113,30 @@ public class RockinBot {
             rightFrontPower /= max;
             leftBackPower /= max;
             rightBackPower /= max;
+        }
+
+        if(!wheelClimb) {
+            // Send calculated power to wheels
+            leftFrontDrive.setPower(leftFrontPower);
+            rightFrontDrive.setPower(rightFrontPower);
+            leftBackDrive.setPower(leftBackPower);
+            rightBackDrive.setPower(rightBackPower);
+        }
+    }
+
+    public void activeClimb() {
+        if (getVertical() > 100) {
+            wheelClimb = true;
+            vertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            vertical.setPower(-0.8);
+            leftBackDrive.setPower(0.5);
+            rightBackDrive.setPower(0.5);
+        }
+        else {
+            leftBackDrive.setPower(0);
+            rightBackDrive.setPower(0);
+            wheelClimb = false;
+            setVertical(VERTICAL_MIN, 1000);
         }
     }
 
@@ -139,6 +155,10 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "Set Claw to: %4.2f, Current: %4.2f", target, claw.getPosition());
         claw.setPosition(target);
         RobotLog.vv("Rockin' Robots", "Target: %4.2f, Current: %4.2f", target, claw.getPosition());
+    }
+
+    public void disableClaw() {
+        claw.close();
     }
 
     public double getClaw() {
@@ -167,7 +187,11 @@ public class RockinBot {
     }
 
     public double getVertical() {
-        return vertical.getCurrentPosition();
+        return verticalPosition;
+    }
+
+    public void updateVertical() {
+        verticalPosition = vertical.getCurrentPosition();
     }
 
     public void setViper(int length, int speed){
@@ -178,18 +202,17 @@ public class RockinBot {
     }
 
     public double getViper() {
-        return viperSlide.getCurrentPosition();
+        return viperSlidePosition;
+    }
+
+    public void updateViper() {
+        viperSlidePosition = viperSlide.getCurrentPosition();
     }
 
     // Log all (relevant) info about the robot on the hub.
     public void printDataOnScreen() {
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        //RobotLog.vv("RockinRobots", "%4.2f, %4.2f, %4.2f, %4.2f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
-        telemetry.addData("Joystick Axial", "%4.2f", axial);
-        telemetry.addData("Joystick Lateral", "%4.2f", lateral);
-        telemetry.addData("Joystick Yaw", "%4.2f", yaw);
-        telemetry.addData("Target claw position", "%4.2f", claw_position);
         telemetry.addData("Claw position", "%4.2f", claw.getPosition());
         telemetry.addData("Viper Slide Velocity", "%4.2f", ((DcMotorEx) viperSlide).getVelocity());
         telemetry.addData("Viper power consumption", "%.1f", ((DcMotorEx) viperSlide).getCurrent(CurrentUnit.AMPS));
@@ -199,8 +222,6 @@ public class RockinBot {
         telemetry.addData("Vertical Position", "%d", vertical.getCurrentPosition());
         telemetry.addData("Vertical Adjusted Min", "%d", verticalAdjustedMin);
         telemetry.addData("wrist position", "%4.2f", wrist.getPosition());
-        //RobotLog.vv("Rockin", "Vert Velocity: %.1f, Vert Power: %.1f, Vert Power Consumption: %.1f, Vert Position: %d",
-        //        ((DcMotorEx) vertical).getVelocity(),  vertical.getPower(), ((DcMotorEx)vertical).getCurrent(CurrentUnit.AMPS), vertical.getCurrentPosition());
 
         telemetry.update();
     }
