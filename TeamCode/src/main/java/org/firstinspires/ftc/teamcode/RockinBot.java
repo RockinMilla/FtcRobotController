@@ -140,6 +140,70 @@ public class RockinBot {
         }
     }
 
+    public void tScoringPosition() {
+        RobotLog.vv("Rockin' Robots", "Get in scoring position");
+        while (getVertical() < 1000 && getViper() > 500) {
+            setViper(VIPER_MIN, 4000);
+        }
+        while (getVertical() < 1700) {
+            setVertical(VERTICAL_MAX, 3000);
+        }
+        setViper(VIPER_MAX_TALL, 4000);
+        setWrist(WRIST_DROPOFF);
+    }
+
+    public void oPickupPosition() {
+        RobotLog.vv("Rockin' Robots", "Get in pickup position");
+        while (getViper() > 500) {
+            setViper(VIPER_MIN, 4000);
+        }
+        setVertical(170, 3000);
+        while (getVertical() > 500) {
+            setVertical(200, 3000);
+        }
+        setViper(VIPER_MAX_WIDE, 4000);
+        setWrist(WRIST_PICKUP);
+        setClaw(CLAW_MAX);
+    }
+
+    public void sDrivingPosition() {
+        RobotLog.vv("Rockin' Robots", "sDrivingPosition()");
+        setWrist(WRIST_DROPOFF);
+        if (getVertical() < 500)
+        {
+            RobotLog.vv("Rockin' Robots", "sDrivingPosition(): Starting from low position");
+            setVertical(VERTICAL_DRIVE_POSITION, 3000);
+            setViper(VIPER_MIN, 4000);
+            while (getViper() > 500) {
+                RobotLog.vv("Rockin' Robots", "sDrivingPosition(): while waiting for viper from low position");
+                setViper(VIPER_MIN, 4000);
+            }
+        }
+        else {
+            RobotLog.vv("Rockin' Robots", "sDrivingPosition(): Starting from high position");
+            setViper(VIPER_MIN, 4000);
+            while (getViper() > 500) {
+                RobotLog.vv("Rockin' Robots", "sDrivingPosition(): while waiting for viper from high position");
+                setViper(VIPER_MIN, 4000);
+            }
+            setVertical(VERTICAL_DRIVE_POSITION, 3000);
+        }
+    }
+
+    public void xClosedPosition() {
+        RobotLog.vv("Rockin' Robots", "Get in closed position");
+        setWrist(WRIST_DROPOFF);
+        setViper(VIPER_MIN, 4000);
+        while (getViper() > 900) {
+            setViper(VIPER_MIN, 4000);
+        }
+        setVertical(VERTICAL_MIN, 3000);
+        while (getVertical() > 500) {
+            setVertical(VERTICAL_MIN, 3000);
+        }
+        setClaw(CLAW_MIN);
+    }
+
     public void setAscentStick(double target) {
         RobotLog.vv("Rockin' Robots", "Set Ascent Stick to: %4.2f, Current: %4.2f", target, ascentStick.getPosition());
         ascentStick.setPosition(target);

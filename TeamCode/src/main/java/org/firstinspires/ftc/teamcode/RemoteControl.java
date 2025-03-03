@@ -81,27 +81,30 @@ public class RemoteControl extends LinearOpMode {
 
             // Y/Triangle: High basket scoring position.
             if (gamepad1.y) {
-                r.setVertical(r.VERTICAL_MAX, 3000);
-                r.setViper(r.VIPER_MAX_TALL, 2000);
+                // Create a new thread for the scoring position
+                Thread bgThreadTScore = new Thread(r::tScoringPosition);
+                bgThreadTScore.start();
             }
 
             // A/X button: Complete Retraction- Viper and vertical completely retracted and down
             if (gamepad1.a) {
-                r.setViper(r.VIPER_MIN, 4000);
-                r.setVertical(r.VERTICAL_MIN, 700);
+                // Create a new thread for the closed position
+                Thread bgThreadXClosed = new Thread(r::xClosedPosition);
+                bgThreadXClosed.start();
             }
 
             // X/Square: The viper slide is completely retracted but the vertical is in submersible position.
             if (gamepad1.x) {
-                r.setVertical(355, 3000);
-                r.setViper(0, 1500);
-                r.wheelClimb = false;
+                // Create a new thread for the driving position
+                Thread bgThreadSDrive = new Thread(r::sDrivingPosition);
+                bgThreadSDrive.start();
             }
 
             // B/Circle: The vertical is in submersible position and the viper slide is all the way out.
             if (gamepad1.b) {
-                r.setVertical(380, 1800);
-                r.setViper(1900, 2000);
+                // Create a new thread for the driving position
+                Thread bgThreadOPickup = new Thread(r::oPickupPosition);
+                bgThreadOPickup.start();
             }
 
             // Show the elapsed game time and wheel power.
