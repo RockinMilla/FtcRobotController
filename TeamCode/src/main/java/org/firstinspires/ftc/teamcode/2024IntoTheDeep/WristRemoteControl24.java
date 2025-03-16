@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,16 +13,16 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
-@TeleOp(name="Remote Control", group="Linear OpMode")
-public class OldWristRemoteControl extends LinearOpMode {
+@TeleOp(name="Remote Control 24", group="Linear OpMode")
+@Disabled
+public class WristRemoteControl24 extends LinearOpMode {
     // Initialize all variables for the program below:
     // This chunk controls our wheels
-
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    double leftFrontPower = 0.01;
+    double leftFrontPower = 0;
     double rightFrontPower = 0;
     double leftBackPower = 0;
     double rightBackPower = 0;
@@ -77,7 +78,7 @@ public class OldWristRemoteControl extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
-        telemetry.addData("This code was last updated", "3/17/2024, 11:47 am"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "1/17/2024, 11:47 am"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
         setAscentStick(ASCENT_MIN);

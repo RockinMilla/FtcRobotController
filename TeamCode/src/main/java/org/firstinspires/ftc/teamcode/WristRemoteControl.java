@@ -16,11 +16,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class WristRemoteControl extends LinearOpMode {
     // Initialize all variables for the program below:
     // This chunk controls our wheels
+
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    double leftFrontPower = 0;
+    double leftFrontPower = 0.01;
     double rightFrontPower = 0;
     double leftBackPower = 0;
     double rightBackPower = 0;
@@ -60,7 +61,6 @@ public class WristRemoteControl extends LinearOpMode {
     Servo wrist = null;
     final double WRIST_PICKUP = 0.23;       // Wrist is in intake position (picking up)
     final double WRIST_DROPOFF = 0.89;      // Wrist is in outtake position (dropping in basket)
-    double wrist_position = WRIST_DROPOFF;
 
     // This chunk controls our nose picker (ascent stick)
     Servo ascentStick = null;
@@ -76,7 +76,7 @@ public class WristRemoteControl extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
-        telemetry.addData("This code was last updated", "1/17/2024, 11:47 am"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "3/15/2025, 11:47 am"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
         setAscentStick(ASCENT_MIN);
@@ -85,9 +85,6 @@ public class WristRemoteControl extends LinearOpMode {
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            double max;
-
             // Get input from the joysticks
             axial = -gamepad1.left_stick_y;
             lateral = gamepad1.left_stick_x;
@@ -176,36 +173,28 @@ public class WristRemoteControl extends LinearOpMode {
             // Y/Triangle: High basket scoring position.
             if (gamepad1.y) {
                 // Create a new thread for the scoring position
-                Thread bgThreadTScore = new Thread(() -> {
-                    tScoringPosition();
-                });
+                Thread bgThreadTScore = new Thread(this::tScoringPosition);
                 bgThreadTScore.start();
             }
 
             // A/X button: Complete Retraction- Viper and vertical completely retracted and down
             if (gamepad1.a) {
                 // Create a new thread for the closed position
-                Thread bgThreadXClosed = new Thread(() -> {
-                    xClosedPosition();
-                });
+                Thread bgThreadXClosed = new Thread(this::xClosedPosition);
                 bgThreadXClosed.start();
             }
 
             // X/Square: The viper slide is completely retracted but the vertical is in submersible position.
             if (gamepad1.x) {
                 // Create a new thread for the driving position
-                Thread bgThreadSDrive = new Thread(() -> {
-                    sDrivingPosition();
-                });
+                Thread bgThreadSDrive = new Thread(this::sDrivingPosition);
                 bgThreadSDrive.start();
             }
 
             // B/Circle: The vertical is in submersible position and the viper slide is all the way out.
             if (gamepad1.b) {
                 // Create a new thread for the driving position
-                Thread bgThreadOPickup = new Thread(() -> {
-                    oPickupPosition();
-                });
+                Thread bgThreadOPickup = new Thread(this::oPickupPosition);
                 bgThreadOPickup.start();
             }
 
@@ -383,6 +372,7 @@ public class WristRemoteControl extends LinearOpMode {
         telemetry.addData("Joystick Yaw", "%4.2f", yaw);
         telemetry.addData("Target claw position", "%4.2f", claw_position);
         telemetry.addData("Claw position", "%4.2f", claw.getPosition());
+        telemetry.addData("Ascent position", "%4.2f", ascentStick.getPosition());
         telemetry.addData("Viper Slide Velocity", "%4.2f", ((DcMotorEx) viperSlide).getVelocity());
         telemetry.addData("Viper power consumption", "%.1f", ((DcMotorEx) viperSlide).getCurrent(CurrentUnit.AMPS));
         telemetry.addData("Viper Slide Position", "%d", viperSlidePosition);
@@ -391,8 +381,6 @@ public class WristRemoteControl extends LinearOpMode {
         telemetry.addData("Vertical Position", "%d", vertical.getCurrentPosition());
         telemetry.addData("Vertical Adjusted Min", "%d", verticalAdjustedMin);
         telemetry.addData("wrist position", "%4.2f", wrist.getPosition());
-        //RobotLog.vv("Rockin", "Vert Velocity: %.1f, Vert Power: %.1f, Vert Power Consumption: %.1f, Vert Position: %d",
-        //        ((DcMotorEx) vertical).getVelocity(),  vertical.getPower(), ((DcMotorEx)vertical).getCurrent(CurrentUnit.AMPS), vertical.getCurrentPosition());
 
         telemetry.update();
     }
