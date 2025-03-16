@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Remote Control", group="Linear OpMode")
 @Disabled
-public class RemoteControl extends LinearOpMode {
+public class NewRemoteControl extends LinearOpMode {
     @Override
 
     //Op mode runs when the robot runs. It runs the whole time.
