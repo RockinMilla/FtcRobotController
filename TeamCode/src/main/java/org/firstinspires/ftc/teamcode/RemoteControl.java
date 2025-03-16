@@ -16,7 +16,7 @@ public class RemoteControl extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
-        telemetry.addData("This code was last updated", "1/6/2024, 4:30 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "3/16/2024, 4:30 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
         r.setAscentStick(r.ASCENT_MIN);
