@@ -14,7 +14,6 @@ public class NewRemoteControl extends LinearOpMode {
     public void runOpMode() {
 
         RockinBot r = new RockinBot();
-        r.initializeHardwareVariables();
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");

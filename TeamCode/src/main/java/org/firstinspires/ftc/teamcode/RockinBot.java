@@ -4,15 +4,23 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 public class RockinBot {
-
+    SparkFunOTOS myOtos;
+    private double xLoc = 0;
+    private double yLoc = 0;
+    private double hLoc = 0;
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
@@ -39,6 +47,7 @@ public class RockinBot {
     private DcMotor viperSlide = null;
     public final int VIPER_MAX_WIDE = 1800;
     public final int VIPER_MAX_TALL = 2637;
+    private static final int VIPER_DEFAULT_SPEED = 3000;
     public final int VIPER_MIN = 0;
     private int viperSlidePosition = VIPER_MIN;
 
@@ -97,6 +106,26 @@ public class RockinBot {
 
         ascentStick = hardwareMap.get(Servo.class, "ascentStick");
         ascentStick.setDirection(Servo.Direction.REVERSE);
+
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+    }
+
+    public void configureOtos() {
+        myOtos.setLinearUnit(DistanceUnit.INCH);
+        myOtos.setAngularUnit(AngleUnit.DEGREES);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.5, 1.1, 90);
+        myOtos.setOffset(offset);
+        myOtos.setLinearScalar(1.0);
+        myOtos.setAngularScalar(1.0);
+        myOtos.calibrateImu();
+        myOtos.resetTracking();
+        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+        myOtos.setPosition(currentPosition);
+        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
+        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
+        myOtos.getVersionInfo(hwVersion, fwVersion);
     }
 
     public void setWheelPower(double left_y, double left_x, double right_x){
@@ -124,6 +153,14 @@ public class RockinBot {
         }
     }
 
+    public void stopMoving() {
+        RobotLog.vv("Rockin' Robots", "stopMoving()");
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
     public void activeClimb() {
         if (getVertical() > 100) {
             wheelClimb = true;
@@ -138,6 +175,13 @@ public class RockinBot {
             wheelClimb = false;
             setVertical(VERTICAL_MIN, 1000);
         }
+    }
+
+    public void getOtosPosition() {
+        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
+        xLoc = pos.x;
+        yLoc = pos.y;
+        hLoc = pos.h;
     }
 
     public void tScoringPosition() {
@@ -258,6 +302,8 @@ public class RockinBot {
         verticalPosition = vertical.getCurrentPosition();
     }
 
+    public void setViper(int length){ setViper(length, VIPER_DEFAULT_SPEED); }
+
     public void setViper(int length, int speed){
         viperSlide.setTargetPosition(length);
         ((DcMotorEx) viperSlide).setVelocity(speed);
@@ -271,6 +317,78 @@ public class RockinBot {
 
     public void updateViper() {
         viperSlidePosition = viperSlide.getCurrentPosition();
+    }
+
+    private void driveToLoc(double xTarget, double yTarget, double hTarget) {
+        driveToLoc(xTarget, yTarget, hTarget, 2);
+    }
+
+    public void driveToLoc(double xTarget, double yTarget, double hTarget, double accuracy) {
+        getOtosPosition();
+        double xDistance = xTarget - xLoc;
+        double yDistance = yTarget - yLoc;
+        double hDistance = hTarget - hLoc;
+        if (hDistance > 180) hDistance -= 360;
+        if (hDistance < -180) hDistance += 360;
+        double angleRadians = Math.toRadians(hLoc);
+        double xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
+        double yRotatedDistance = -xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
+
+        RobotLog.vv("Rockin' Robots", "driveToLoc() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, accuracy: %.2f",
+                xTarget, yTarget, hTarget, accuracy);
+
+        while (Math.abs(xDistance) > accuracy
+                || Math.abs(yDistance) > accuracy
+                || Math.abs(hDistance) > accuracy) {
+
+            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance) / 8;
+            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance) / 8;
+            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance) / 8;
+            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance) / 8;
+
+            // Normalize the values so no wheel power exceeds 100%
+            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+            max = Math.max(max, Math.abs(leftBackPower));
+            max = Math.max(max, Math.abs(rightBackPower));
+            if (max > 1.0) {
+                leftFrontPower /= max;
+                rightFrontPower /= max;
+                leftBackPower /= max;
+                rightBackPower /= max;
+            }
+            leftFrontPower *= 0.6;
+            rightFrontPower *= 0.6;
+            leftBackPower *= 0.6;
+            rightBackPower *= 0.6;
+            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+            max = Math.max(max, Math.abs(leftBackPower));
+            max = Math.max(max, Math.abs(rightBackPower));
+            if (max < 0.2) {
+                leftFrontPower *= 1.5;
+                rightFrontPower *= 1.5;
+                leftBackPower *= 1.5;
+                rightBackPower *= 1.5;
+            }
+
+            leftFrontDrive.setPower(leftFrontPower);
+            rightFrontDrive.setPower(rightFrontPower);
+            leftBackDrive.setPower(leftBackPower);
+            rightBackDrive.setPower(rightBackPower);
+
+            getOtosPosition();
+            xDistance = xTarget - xLoc;
+            yDistance = yTarget - yLoc;
+            hDistance = hTarget - hLoc;
+            if (hDistance > 180) hDistance -= 360;
+            if (hDistance < -180) hDistance += 360;
+
+            angleRadians = Math.toRadians(hLoc);
+            xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
+            yRotatedDistance = -xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
+        }
+        stopMoving();
+        RobotLog.vv("Rockin' Robots", "Done Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
+                xDistance, yDistance, hDistance);
     }
 
     // Log all (relevant) info about the robot on the hub.
