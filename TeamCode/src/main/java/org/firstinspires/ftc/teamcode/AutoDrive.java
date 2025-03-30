@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 @Autonomous(name="Auto Drive", group="Robot")
-public class NewWristOTOSAutoDrive extends LinearOpMode {
+public class AutoDrive extends LinearOpMode {
 
     RockinBot r = new RockinBot();
 
