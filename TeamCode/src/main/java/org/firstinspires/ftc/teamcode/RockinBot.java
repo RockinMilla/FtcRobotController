@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -67,9 +68,9 @@ public class RockinBot {
     public final double ASCENT_MAX = 0.49;         // Stick is up
 
 
-    RockinBot() {
-        telemetry.addData("This code was last updated", "1/17/2024, 11:47 am"); // Todo: Update this date when the code is updated
-        telemetry.update();
+    public RockinBot() {
+        //telemetry.addData("This code was last updated", "1/17/2024, 11:47 am"); // Todo: Update this date when the code is updated
+        //telemetry.update();
         initializeHardwareVariables();
     }
 
