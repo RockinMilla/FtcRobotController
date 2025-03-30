@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 @Autonomous(name="Auto Drive", group="Robot")
 public class AutoDrive extends LinearOpMode {
 
+    // Create a LinearOpMode variable so you can pass it to the RockinBot constructor
     RockinBot r = new RockinBot();
 
     // Initialize all variables for the program

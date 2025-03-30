@@ -11,7 +11,7 @@ public class RemoteControl extends LinearOpMode {
 
     //Op mode runs when the robot runs. It runs the whole time.
     public void runOpMode() {
-
+        // Create a LinearOpModeVariable and pass it to the RockinBot constructor
         RockinBot r = new RockinBot();
 
         // Wait for the game to start (driver presses PLAY)
