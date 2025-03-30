@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
+// These are BlockCode libraries. They were imported accidentally.
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 public class RockinBot {
+    // TODO: Create a LinearOpMode variable so you can initialize it in the constructor
     SparkFunOTOS myOtos;
     private double xLoc = 0;
     private double yLoc = 0;
@@ -69,8 +71,9 @@ public class RockinBot {
 
 
     public RockinBot() {
-        //telemetry.addData("This code was last updated", "1/17/2024, 11:47 am"); // Todo: Update this date when the code is updated
-        //telemetry.update();
+        // The constructor should accept an object of type LinearOpMode
+        telemetry.addData("This code was last updated", "1/17/2024, 11:47 am"); // Todo: Update this date when the code is updated
+        telemetry.update();
         initializeHardwareVariables();
     }
 
