@@ -1,26 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
-// These are BlockCode libraries. They were imported accidentally.
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 public class RockinBot {
-    // TODO: Create a LinearOpMode variable so you can initialize it in the constructor
-    SparkFunOTOS myOtos;
+    LinearOpMode o;
+    private SparkFunOTOS myOtos;
     private double xLoc = 0;
     private double yLoc = 0;
     private double hLoc = 0;
@@ -48,9 +44,10 @@ public class RockinBot {
 
     // This chunk controls our viper slide
     private DcMotor viperSlide = null;
+    public final int VIPER_MAX = 2540;
     public final int VIPER_MAX_WIDE = 1800;
     public final int VIPER_MAX_TALL = 2637;
-    private static final int VIPER_DEFAULT_SPEED = 3000;
+    public static final int VIPER_DEFAULT_SPEED = 3000;
     public final int VIPER_MIN = 0;
     private int viperSlidePosition = VIPER_MIN;
 
@@ -63,6 +60,7 @@ public class RockinBot {
     private Servo wrist = null;
     public final double WRIST_PICKUP = 0.23;       // Wrist is in intake position (picking up)
     public final double WRIST_DROPOFF = 0.89;      // Wrist is in outtake position (dropping in basket)
+    public final double WRIST_MID = 0.4;           // Wrist is in the middle position
 
     // This chunk controls our nose picker (ascent stick)
     private Servo ascentStick = null;
@@ -70,18 +68,19 @@ public class RockinBot {
     public final double ASCENT_MAX = 0.49;         // Stick is up
 
 
-    public RockinBot() {
-        // The constructor should accept an object of type LinearOpMode
-        telemetry.addData("This code was last updated", "1/17/2024, 11:47 am"); // Todo: Update this date when the code is updated
-        telemetry.update();
+    public RockinBot(LinearOpMode opMode) {
+        o = opMode;
+        o.telemetry.addData("This code was last updated", "3/31/2025, 7:51 pm"); // Todo: Update this date when the code is updated
+        o.telemetry.update();
         initializeHardwareVariables();
     }
 
     public void initializeHardwareVariables() {
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        myOtos = o.hardwareMap.get(SparkFunOTOS.class, "OTOS");
+        leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
+        rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
+        rightBackDrive = o.hardwareMap.get(DcMotor.class, "right_back_drive");
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -91,24 +90,23 @@ public class RockinBot {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        vertical = hardwareMap.get(DcMotor.class, "vertical");
+        vertical = o.hardwareMap.get(DcMotor.class, "vertical");
         vertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        viperSlide = hardwareMap.get(DcMotor.class, "viper_slide");
+        viperSlide = o.hardwareMap.get(DcMotor.class, "viper_slide");
         viperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         viperSlide.setDirection(DcMotor.Direction.REVERSE);
         viperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        claw = hardwareMap.get(Servo.class, "claw");
+        claw = o.hardwareMap.get(Servo.class, "claw");
         claw.setPosition(CLAW_MAX);
 
-        // todo: check this
-        wrist = hardwareMap.get(Servo.class, "wrist");
+        wrist = o.hardwareMap.get(Servo.class, "wrist");
         wrist.setDirection(Servo.Direction.REVERSE);
         setWrist(WRIST_DROPOFF);
 
-        ascentStick = hardwareMap.get(Servo.class, "ascentStick");
+        ascentStick = o.hardwareMap.get(Servo.class, "ascentStick");
         ascentStick.setDirection(Servo.Direction.REVERSE);
 
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
@@ -277,7 +275,7 @@ public class RockinBot {
         return claw.getPosition();
     }
 
-    public void setWrist(double target) { // todo: check this method
+    public void setWrist(double target) {
         RobotLog.vv("Rockin' Robots", "Set Wrist to: %4.2f, Current: %4.2f", target, wrist.getPosition());
         wrist.setPosition(target);
         //sleep(1000);
@@ -397,18 +395,18 @@ public class RockinBot {
 
     // Log all (relevant) info about the robot on the hub.
     public void printDataOnScreen() {
-        telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        telemetry.addData("Claw position", "%4.2f", claw.getPosition());
-        telemetry.addData("Viper Slide Velocity", "%4.2f", ((DcMotorEx) viperSlide).getVelocity());
-        telemetry.addData("Viper power consumption", "%.1f", ((DcMotorEx) viperSlide).getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("Viper Slide Position", "%d", viperSlidePosition);
-        telemetry.addData("Vertical Power", "%.1f", ((DcMotorEx) vertical).getVelocity());
-        telemetry.addData("Vertical power consumption", "%.1f", ((DcMotorEx) vertical).getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("Vertical Position", "%d", vertical.getCurrentPosition());
-        telemetry.addData("Vertical Adjusted Min", "%d", verticalAdjustedMin);
-        telemetry.addData("wrist position", "%4.2f", wrist.getPosition());
+        o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+        o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+        o.telemetry.addData("Claw position", "%4.2f", claw.getPosition());
+        o.telemetry.addData("Viper Slide Velocity", "%4.2f", ((DcMotorEx) viperSlide).getVelocity());
+        o.telemetry.addData("Viper power consumption", "%.1f", ((DcMotorEx) viperSlide).getCurrent(CurrentUnit.AMPS));
+        o.telemetry.addData("Viper Slide Position", "%d", viperSlidePosition);
+        o.telemetry.addData("Vertical Power", "%.1f", ((DcMotorEx) vertical).getVelocity());
+        o.telemetry.addData("Vertical power consumption", "%.1f", ((DcMotorEx) vertical).getCurrent(CurrentUnit.AMPS));
+        o.telemetry.addData("Vertical Position", "%d", vertical.getCurrentPosition());
+        o.telemetry.addData("Vertical Adjusted Min", "%d", verticalAdjustedMin);
+        o.telemetry.addData("Wrist position", "%4.2f", wrist.getPosition());
 
-        telemetry.update();
+        o.telemetry.update();
     }
 }
