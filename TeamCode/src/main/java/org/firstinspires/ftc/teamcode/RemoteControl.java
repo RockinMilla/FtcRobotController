@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,7 +11,8 @@ public class RemoteControl extends LinearOpMode {
     //Op mode runs when the robot runs. It runs the whole time.
     public void runOpMode() {
         // Create a LinearOpModeVariable and pass it to the RockinBot constructor
-        RockinBot r = new RockinBot();
+        LinearOpMode o = this;
+        RockinBot r = new RockinBot(o);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
