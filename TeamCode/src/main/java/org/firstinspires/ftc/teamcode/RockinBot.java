@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 public class RockinBot {
-    LinearOpMode o;
+    LinearOpMode o; // TODO: is this public or private?
     private SparkFunOTOS myOtos;
     private double xLoc = 0;
     private double yLoc = 0;
@@ -39,7 +39,7 @@ public class RockinBot {
     public final int VERTICAL_CLIMB_POSITION = 2300;
     public final int VERTICAL_DRIVE_POSITION = 400;
     public final int VERTICAL_DEFAULT_SPEED = 2000;
-    public int verticalAdjustedMin = 0;
+    public int verticalAdjustedMin = 0; // TODO: your final variables are public, but what about this? Are there any other public variables in this file that should be private?
     private int verticalPosition = VERTICAL_MIN;
 
     // This chunk controls our viper slide
@@ -76,7 +76,7 @@ public class RockinBot {
     }
 
     public void initializeHardwareVariables() {
-        myOtos = o.hardwareMap.get(SparkFunOTOS.class, "OTOS");
+        myOtos = o.hardwareMap.get(SparkFunOTOS.class, "OTOS"); // TODO: New line after this so it is separate from the wheels
         leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
@@ -94,7 +94,7 @@ public class RockinBot {
         vertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        viperSlide = o.hardwareMap.get(DcMotor.class, "viper_slide");
+        viperSlide = o.hardwareMap.get(DcMotor.class, "viper_slide"); // TODO: this name is too long. Please shorten it here and on the driver hub
         viperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         viperSlide.setDirection(DcMotor.Direction.REVERSE);
         viperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -251,6 +251,7 @@ public class RockinBot {
     }
 
     public void setAscentStick(double target) {
+        // TODO: Your RobotLog messages in this function are beautiful. Can you make all of the other functions have similar statements?
         RobotLog.vv("Rockin' Robots", "Set Ascent Stick to: %4.2f, Current: %4.2f", target, ascentStick.getPosition());
         ascentStick.setPosition(target);
         //sleep(1000);
@@ -321,6 +322,7 @@ public class RockinBot {
         viperSlidePosition = viperSlide.getCurrentPosition();
     }
 
+    // TODO: Why is this private?
     private void driveToLoc(double xTarget, double yTarget, double hTarget) {
         driveToLoc(xTarget, yTarget, hTarget, 2);
     }
