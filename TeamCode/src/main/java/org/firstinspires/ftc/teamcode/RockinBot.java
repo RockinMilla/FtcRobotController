@@ -180,7 +180,7 @@ public class RockinBot {
         }
     }
 
-    public void getOtosPosition() {
+    public void getOtosPosition() { // don't call this because we don't have Otos
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
         xLoc = pos.x;
         yLoc = pos.y;
@@ -330,7 +330,7 @@ public class RockinBot {
     }
 
     public void driveToLoc(double xTarget, double yTarget, double hTarget, double accuracy) {
-        getOtosPosition();
+        getOtosPosition(); // Todo: we don't have an OTOS. change this to deadwheels
         double xDistance = xTarget - xLoc;
         double yDistance = yTarget - yLoc;
         double hDistance = hTarget - hLoc;
@@ -381,7 +381,7 @@ public class RockinBot {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-            getOtosPosition();
+            getOtosPosition(); // Todo: we don't have an OTOS. change this to deadwheels
             xDistance = xTarget - xLoc;
             yDistance = yTarget - yLoc;
             hDistance = hTarget - hLoc;

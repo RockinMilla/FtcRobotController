@@ -20,18 +20,19 @@ public class AutoDrive extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        r.configureOtos();
+        r.configureOtos(); // Todo: we don't have an OTOS. change this to deadwheels
 
         RobotLog.vv("Rockin' Robots", "Quick Test Code");
         for(int i = 0; i < 3; i++) {
-            r.setClaw(r.CLAW_MAX);
-            r.setAscentStick(r.ASCENT_MAX);
-            r.setWrist(r.WRIST_DROPOFF);
-            sleep(2000);
-            r.setClaw(r.CLAW_MIN);
-            r.setAscentStick(r.ASCENT_MIN);
-            r.setWrist(r.WRIST_PICKUP);
-            sleep(2000);
+            r.driveToLoc(5, 0, 0);
+            sleep(1000);
+            r.driveToLoc(0, 5, 0);
+            sleep(1000);
+            r.driveToLoc(-5, 0, 0);
+            sleep(1000);
+            r.driveToLoc(0, -5, 0);
+            sleep(1000);
+            r.driveToLoc(0,0,0);
         }
 
         RobotLog.vv("Rockin' Robots", "Test Done");
