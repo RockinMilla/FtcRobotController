@@ -115,7 +115,7 @@ public class RockinBot {
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
-    public void configureOtos() {
+    public void configureOtos() { // // don't call this because we don't have Otos
         myOtos.setLinearUnit(DistanceUnit.INCH);
         myOtos.setAngularUnit(AngleUnit.DEGREES);
         SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.5, 1.1, 90);
@@ -403,6 +403,7 @@ public class RockinBot {
         o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         o.telemetry.addData("Claw position", "%4.2f", claw.getPosition());
         o.telemetry.addData("Viper Slide Velocity", "%4.2f", ((DcMotorEx) viperSlide).getVelocity());
+
         o.telemetry.addData("Viper power consumption", "%.1f", ((DcMotorEx) viperSlide).getCurrent(CurrentUnit.AMPS));
         o.telemetry.addData("Viper Slide Position", "%d", viperSlidePosition);
         o.telemetry.addData("Vertical Power", "%.1f", ((DcMotorEx) vertical).getVelocity());
