@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class RockinBot {
     private LinearOpMode o;
     private SparkFunOTOS myOtos;
+    private Pose2d myPose;
     private double xLoc = 0;
     private double yLoc = 0;
     private double hLoc = 0;
@@ -76,7 +78,8 @@ public class RockinBot {
     }
 
     public void initializeHardwareVariables() {
-        myOtos = o.hardwareMap.get(SparkFunOTOS.class, "OTOS");
+        //myOtos = o.hardwareMap.get(SparkFunOTOS.class, "OTOS");
+        myPose = new Pose2d(0, 0, 0);
 
         leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -185,6 +188,11 @@ public class RockinBot {
         xLoc = pos.x;
         yLoc = pos.y;
         hLoc = pos.h;
+    }
+
+    public void getDeadWheelPosition() {
+        RobotLog.vv("Rockin' Robots", "Get Dead Wheel Position");
+        //getPose(); todo: figure this out
     }
 
     public void tScoringPosition() {
