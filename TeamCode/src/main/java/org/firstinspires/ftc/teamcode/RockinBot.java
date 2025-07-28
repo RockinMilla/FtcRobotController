@@ -32,6 +32,7 @@ public class RockinBot {
     private double rightBackPower = 0;
     private double max = 0;
     public boolean wheelClimb = false;
+    public GoBildaPinpointDriver pinpoint = null;
 
     // This chunk controls our vertical
     private DcMotor vertical = null;
@@ -69,7 +70,6 @@ public class RockinBot {
     public final double ASCENT_MIN = 0.2;          // Stick is down
     public final double ASCENT_MAX = 0.49;         // Stick is up
 
-
     public RockinBot(LinearOpMode opMode) {
         o = opMode;
         o.telemetry.addData("This code was last updated", "3/31/2025, 7:51 pm"); // Todo: Update this date when the code is updated
@@ -94,6 +94,11 @@ public class RockinBot {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        pinpoint = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        //rightDeadWheel = o.hardwareMap.get(GoBildaPinpointDriver.GoBildaOdometryPods.class, "right_dead_wheel");
+        //frontDeadWheel = o.hardwareMap.get(GoBildaPinpointDriver.GoBildaOdometryPods.class, "front_dead_wheel");
+
+        /*
         vertical = o.hardwareMap.get(DcMotor.class, "vertical");
         vertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -112,13 +117,14 @@ public class RockinBot {
 
         ascentStick = o.hardwareMap.get(Servo.class, "ascentStick");
         ascentStick.setDirection(Servo.Direction.REVERSE);
+         */
 
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
-    public void configureOtos() { // // don't call this because we don't have Otos
+    /*public void configureOtos() { // // don't call this because we don't have Otos
         myOtos.setLinearUnit(DistanceUnit.INCH);
         myOtos.setAngularUnit(AngleUnit.DEGREES);
         SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.5, 1.1, 90);
@@ -132,7 +138,7 @@ public class RockinBot {
         SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
         SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
         myOtos.getVersionInfo(hwVersion, fwVersion);
-    }
+    }*/
 
     public void setWheelPower(double left_y, double left_x, double right_x){
         leftFrontPower = (left_y + left_x + right_x) * 0.75;
@@ -182,14 +188,15 @@ public class RockinBot {
             setVertical(VERTICAL_MIN, 1000);
         }
     }
-
+/*
     public void getOtosPosition() { // don't call this because we don't have Otos
+
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
         xLoc = pos.x;
         yLoc = pos.y;
         hLoc = pos.h;
     }
-
+ */
     public void getDeadWheelPosition() {
         RobotLog.vv("Rockin' Robots", "Get Dead Wheel Position");
         //getPose(); todo: figure this out
@@ -338,7 +345,7 @@ public class RockinBot {
     }
 
     public void driveToLoc(double xTarget, double yTarget, double hTarget, double accuracy) {
-        getOtosPosition(); // Todo: we don't have an OTOS. change this to deadwheels
+        getDeadWheelPosition(); // Todo: we don't have an OTOS. change this to deadwheels
         double xDistance = xTarget - xLoc;
         double yDistance = yTarget - yLoc;
         double hDistance = hTarget - hLoc;
@@ -389,7 +396,7 @@ public class RockinBot {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-            getOtosPosition(); // Todo: we don't have an OTOS. change this to deadwheels
+            //getOtosPosition(); // Todo: we don't have an OTOS. change this to deadwheels
             xDistance = xTarget - xLoc;
             yDistance = yTarget - yLoc;
             hDistance = hTarget - hLoc;
