@@ -43,23 +43,23 @@ public class AutoDrive extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+        while(opModeIsActive()) {
+            odo.update();
+            PinpointLocalizer odometry = null;
+            Pose2D pos = odo.getPosition();
+            // The following is commented out because it causes errors that we don't want to deal with at the moment
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
+            RobotLog.vv("Rockin' Robots", "Position: " + data);
+            RobotLog.vv("Rockin' Robots", "Callie move it");
+            sleep(10 * 1000);
+            data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
+            RobotLog.vv("Rockin' Robots", "Position after Callie moved it: " + data);
+            RobotLog.vv("Rockin' Robots", "Quick Test Code");
+            // r.driveToLoc(0, 3, 0);
+            sleep(1000);
 
-
-        PinpointLocalizer odometry = null;
-        Pose2D pos = odo.getPosition();
-        // The following is commented out because it causes errors that we don't want to deal with at the moment
-        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
-        RobotLog.vv("Rockin' Robots", "Position: " + data);
-        RobotLog.vv("Rockin' Robots", "Callie move it");
-        sleep(10*1000);
-        Pose2D pos2 = odo.getPosition();
-        data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos2.getX(DistanceUnit.MM), pos2.getY(DistanceUnit.MM), pos2.getHeading(AngleUnit.DEGREES));
-        RobotLog.vv("Rockin' Robots", "Position after Callie moved it: " + data);
-        RobotLog.vv("Rockin' Robots", "Quick Test Code");
-        // r.driveToLoc(0, 3, 0);
-        sleep(1000);
-
-        RobotLog.vv("Rockin' Robots", "Test Done");
-        telemetry.addData("Autonomous lasted", runtime.toString());
+            RobotLog.vv("Rockin' Robots", "Test Done");
+            telemetry.addData("Autonomous lasted", runtime.toString());
+        }
     }
 }
