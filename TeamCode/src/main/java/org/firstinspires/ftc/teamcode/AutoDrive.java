@@ -37,6 +37,7 @@ public class AutoDrive extends LinearOpMode {
             RobotLog.vv("Rockin' Robots", "Callie move it");
             sleep(10 * 1000);
             r.getPinpointPosition();
+            r.driveToPos(0, 1000, 0);
             RobotLog.vv("Rockin' Robots", "Test Done");
             telemetry.addData("Autonomous lasted", runtime.toString());
             sleep(20 * 1000);

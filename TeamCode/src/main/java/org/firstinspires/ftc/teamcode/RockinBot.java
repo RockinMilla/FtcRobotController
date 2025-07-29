@@ -354,15 +354,12 @@ public class RockinBot {
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget) {
-        driveToPos(xTarget, yTarget, hTarget, 4000); //todo
+        driveToPos(xTarget, yTarget, hTarget, 100); //todo
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget, double accuracy) {
         // Get initial position
-        Pose2D currentPose = odo.getPosition(); // Get the Pose2D object
-        xLoc = currentPose.getX(DistanceUnit.MM);    // Update xLoc with MM
-        yLoc = currentPose.getY(DistanceUnit.MM);    // Update yLoc with MM
-        hLoc = currentPose.getHeading(AngleUnit.DEGREES); // Update hLoc with Degrees
+        getPinpointPosition();
 
         double xDistance = xTarget - xLoc;
         double yDistance = yTarget - yLoc;
@@ -414,12 +411,7 @@ public class RockinBot {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-            currentPose = odo.getPosition();
-            xLoc = currentPose.getX(DistanceUnit.MM);
-            yLoc = currentPose.getY(DistanceUnit.MM);
-            hLoc = currentPose.getHeading(AngleUnit.DEGREES);
-            String data = String.format("{X: %.3f, Y: %.3f, H: %.3f}", xLoc, yLoc, hLoc);
-            RobotLog.vv("Rockin' Robots", "Position: " + data);
+           getPinpointPosition();
             xDistance = xTarget - xLoc;
             yDistance = yTarget - yLoc;
             hDistance = hTarget - hLoc;
