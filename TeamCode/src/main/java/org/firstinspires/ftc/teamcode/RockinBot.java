@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -13,6 +15,9 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
+import java.util.Locale;
 
 
 public class RockinBot {
@@ -196,12 +201,22 @@ public class RockinBot {
         yLoc = pos.y;
         hLoc = pos.h;
     }
- */
-    public void getDeadWheelPosition() {
-        RobotLog.vv("Rockin' Robots", "Get Dead Wheel Position");
-        //getPose(); todo: figure this out
-    }
 
+    public void getDeadWheelPosition() {
+        GoBildaPinpointDriver odo;
+        odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint"); // todo
+        odo.setOffsets(-84.0, -168.0); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+        odo.resetPosAndIMU();
+
+        Pose2D pos = odo.getPosition();
+        pos.getX(DistanceUnit.MM);
+        pos.getY(DistanceUnit.MM);
+        pos.getHeading(AngleUnit.DEGREES);
+    }
+*/
     public void tScoringPosition() {
         RobotLog.vv("Rockin' Robots", "Get in scoring position");
         while (getVertical() < 1000 && getViper() > 500) {
@@ -340,12 +355,17 @@ public class RockinBot {
         viperSlidePosition = viperSlide.getCurrentPosition();
     }
 
-    public void driveToLoc(double xTarget, double yTarget, double hTarget) {
-        driveToLoc(xTarget, yTarget, hTarget, 2);
+    public void driveToPos(double xTarget, double yTarget, double hTarget) {
+        driveToPos(xTarget, yTarget, hTarget, 4000); //todo
     }
 
-    public void driveToLoc(double xTarget, double yTarget, double hTarget, double accuracy) {
-        getDeadWheelPosition(); // Todo: we don't have an OTOS. change this to deadwheels
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double accuracy) {
+        // Get initial position
+        Pose2D currentPose = pinpoint.getPosition(); // Get the Pose2D object
+        xLoc = currentPose.getX(DistanceUnit.MM);    // Update xLoc with MM
+        yLoc = currentPose.getY(DistanceUnit.MM);    // Update yLoc with MM
+        hLoc = currentPose.getHeading(AngleUnit.DEGREES); // Update hLoc with Degrees
+
         double xDistance = xTarget - xLoc;
         double yDistance = yTarget - yLoc;
         double hDistance = hTarget - hLoc;
@@ -355,10 +375,10 @@ public class RockinBot {
         double xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
         double yRotatedDistance = -xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
 
-        RobotLog.vv("Rockin' Robots", "driveToLoc() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, accuracy: %.2f",
+        RobotLog.vv("Rockin' Robots", "driveToPos() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, accuracy: %.2f",
                 xTarget, yTarget, hTarget, accuracy);
 
-        while (Math.abs(xDistance) > accuracy
+        while (o.opModeIsActive() && Math.abs(xDistance) > accuracy
                 || Math.abs(yDistance) > accuracy
                 || Math.abs(hDistance) > accuracy) {
 
@@ -396,7 +416,12 @@ public class RockinBot {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-            //getOtosPosition(); // Todo: we don't have an OTOS. change this to deadwheels
+            currentPose = pinpoint.getPosition();
+            xLoc = currentPose.getX(DistanceUnit.MM);
+            yLoc = currentPose.getY(DistanceUnit.MM);
+            hLoc = currentPose.getHeading(AngleUnit.DEGREES);
+            String data = String.format("{X: %.3f, Y: %.3f, H: %.3f}", xLoc, yLoc, hLoc);
+            RobotLog.vv("Rockin' Robots", "Position: " + data);
             xDistance = xTarget - xLoc;
             yDistance = yTarget - yLoc;
             hDistance = hTarget - hLoc;
@@ -406,6 +431,8 @@ public class RockinBot {
             angleRadians = Math.toRadians(hLoc);
             xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
             yRotatedDistance = -xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
+            RobotLog.vv("Rockin' Robots", "Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
+                    xDistance, yDistance, hDistance);
         }
         stopMoving();
         RobotLog.vv("Rockin' Robots", "Done Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
