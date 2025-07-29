@@ -372,7 +372,7 @@ public class GoBildaPinpointDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSi
      * When you start your code, send a Pose2D that describes the starting position on the field of your robot. <br>
      * Say you're on the red alliance, your robot is against the wall and closer to the audience side,
      * and the front of your robot is pointing towards the center of the field.
-     * You can send a setPosition with something like -600mm x, -1200mm Y, and 90 degrees. The pinpoint would then always
+     * You can send a setPosition with something like -600mm x, -1200mm Y, and 90 degrees. The odo would then always
      * keep track of how far away from the center of the field you are. <br><br>
      * <strong>Using this feature to update your position with additional sensors: </strong><br>
      * Some robots have a secondary way to locate their robot on the field. This is commonly

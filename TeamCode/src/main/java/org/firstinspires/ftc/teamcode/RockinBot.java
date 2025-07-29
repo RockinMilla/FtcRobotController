@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -17,13 +16,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-import java.util.Locale;
-
 
 public class RockinBot {
     private LinearOpMode o;
-    private SparkFunOTOS myOtos;
-    private Pose2d myPose;
+    private Pose2D pos;
     private double xLoc = 0;
     private double yLoc = 0;
     private double hLoc = 0;
@@ -37,7 +33,7 @@ public class RockinBot {
     private double rightBackPower = 0;
     private double max = 0;
     public boolean wheelClimb = false;
-    public GoBildaPinpointDriver pinpoint = null;
+    public GoBildaPinpointDriver odo = null;
 
     // This chunk controls our vertical
     private DcMotor vertical = null;
@@ -84,7 +80,7 @@ public class RockinBot {
 
     public void initializeHardwareVariables() {
         //myOtos = o.hardwareMap.get(SparkFunOTOS.class, "OTOS");
-        myPose = new Pose2d(0, 0, 0);
+     //   pos = new Pose2D(DistanceUnit.MM, 0, 0); // todo: update this
 
         leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -99,7 +95,13 @@ public class RockinBot {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        pinpoint = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        odo.resetPosAndIMU();
+
+        odo.update();
+     //   sleep(3 * 1000);
+        RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
+
         //rightDeadWheel = o.hardwareMap.get(GoBildaPinpointDriver.GoBildaOdometryPods.class, "right_dead_wheel");
         //frontDeadWheel = o.hardwareMap.get(GoBildaPinpointDriver.GoBildaOdometryPods.class, "front_dead_wheel");
 
@@ -201,22 +203,18 @@ public class RockinBot {
         yLoc = pos.y;
         hLoc = pos.h;
     }
-
-    public void getDeadWheelPosition() {
-        GoBildaPinpointDriver odo;
-        odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint"); // todo
-        odo.setOffsets(-84.0, -168.0); //these are tuned for 3110-0002-0001 Product Insight #1
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-
-        odo.resetPosAndIMU();
-
-        Pose2D pos = odo.getPosition();
-        pos.getX(DistanceUnit.MM);
-        pos.getY(DistanceUnit.MM);
-        pos.getHeading(AngleUnit.DEGREES);
-    }
 */
+    public void getPinpointPosition() {
+        RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
+        odo.update();
+        pos = odo.getPosition();
+        xLoc = pos.getX(DistanceUnit.MM);
+        yLoc = pos.getY(DistanceUnit.MM);
+        hLoc = pos.getHeading(AngleUnit.DEGREES);
+        String data = String.format("{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
+        RobotLog.vv("Rockin' Robots", "Position: " + data);
+    }
+
     public void tScoringPosition() {
         RobotLog.vv("Rockin' Robots", "Get in scoring position");
         while (getVertical() < 1000 && getViper() > 500) {
@@ -361,7 +359,7 @@ public class RockinBot {
 
     public void driveToPos(double xTarget, double yTarget, double hTarget, double accuracy) {
         // Get initial position
-        Pose2D currentPose = pinpoint.getPosition(); // Get the Pose2D object
+        Pose2D currentPose = odo.getPosition(); // Get the Pose2D object
         xLoc = currentPose.getX(DistanceUnit.MM);    // Update xLoc with MM
         yLoc = currentPose.getY(DistanceUnit.MM);    // Update yLoc with MM
         hLoc = currentPose.getHeading(AngleUnit.DEGREES); // Update hLoc with Degrees
@@ -416,7 +414,7 @@ public class RockinBot {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-            currentPose = pinpoint.getPosition();
+            currentPose = odo.getPosition();
             xLoc = currentPose.getX(DistanceUnit.MM);
             yLoc = currentPose.getY(DistanceUnit.MM);
             hLoc = currentPose.getHeading(AngleUnit.DEGREES);
