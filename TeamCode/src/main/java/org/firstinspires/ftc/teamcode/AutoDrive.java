@@ -25,7 +25,7 @@ public class AutoDrive extends LinearOpMode {
         RockinBot r = new RockinBot(o);
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "07/28/2025, 2:46 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "08/05/2025, 2:25 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
