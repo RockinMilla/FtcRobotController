@@ -14,9 +14,7 @@
  * which will pick up this file here. This approach allows makes it easier to integrate
  * updates to the FTC SDK into your code.
  */
-
 import java.util.regex.Pattern
-
 apply plugin: 'com.android.application'
 
 android {
@@ -38,7 +36,6 @@ android {
                 storePassword 'android'
             }
         }
-
         debug {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
@@ -46,14 +43,12 @@ android {
             storePassword 'android'
         }
     }
-
     defaultConfig {
         signingConfig signingConfigs.debug
         applicationId 'com.qualcomm.ftcrobotcontroller'
         minSdkVersion 24
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
-
         /**
          * We keep the versionCode and versionName of robot controller applications in sync with
          * the master information published in the AndroidManifest.xml file of the FtcRobotController
@@ -82,12 +77,10 @@ android {
         versionCode vCode
         versionName vName
     }
-
     // http://google.github.io/android-gradle-dsl/current/com.android.build.gradle.internal.dsl.BuildType.html
     buildTypes {
         release {
             signingConfig signingConfigs.release
-
             ndk {
                 abiFilters "armeabi-v7a", "arm64-v8a"
             }
@@ -100,12 +93,10 @@ android {
             }
         }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     packagingOptions {
         pickFirst '**/*.so'
     }
@@ -114,4 +105,3 @@ android {
 
 repositories {
 }
-
