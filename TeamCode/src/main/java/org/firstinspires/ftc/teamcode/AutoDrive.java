@@ -14,7 +14,7 @@ public class AutoDrive extends LinearOpMode {
     @Override
     public void runOpMode() {
         LinearOpMode o = this;
-        RockinBot r = new RockinBot(o);
+        RockinBot r = new RockinBot(o);     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
         telemetry.addData("This code was last updated", "08/05/2025, 2:25 pm"); // Todo: Update this date when the code is updated
@@ -24,13 +24,10 @@ public class AutoDrive extends LinearOpMode {
         waitForStart();
         r.getPinpointPosition();
         r.driveToPos(0, 500, 0);
-        RobotLog.vv("IDK", "taco");
         sleep(500);
         r.driveToPos(0, 500, 90);
-        RobotLog.vv("IDK", "cat");
         sleep(500);
         r.driveToPos(500, 500, 90);
-        RobotLog.vv("IDK", "goat");
         sleep(500);
         r.driveToPos(500, 200, 90);
         sleep(500);
