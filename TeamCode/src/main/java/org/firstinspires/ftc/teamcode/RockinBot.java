@@ -77,9 +77,6 @@ public class RockinBot {
     }
 
     public void initializeHardwareVariables() {
-        //myOtos = o.hardwareMap.get(SparkFunOTOS.class, "OTOS");
-     //   pos = new Pose2D(DistanceUnit.MM, 0, 0); // todo: update this
-
         leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
@@ -97,54 +94,12 @@ public class RockinBot {
         odo.resetPosAndIMU();
 
         odo.update();
-     //   sleep(3 * 1000);
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
-
-        //rightDeadWheel = o.hardwareMap.get(GoBildaPinpointDriver.GoBildaOdometryPods.class, "right_dead_wheel");
-        //frontDeadWheel = o.hardwareMap.get(GoBildaPinpointDriver.GoBildaOdometryPods.class, "front_dead_wheel");
-
-        /*
-        vertical = o.hardwareMap.get(DcMotor.class, "vertical");
-        vertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        viperSlide = o.hardwareMap.get(DcMotor.class, "viper");
-        viperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        viperSlide.setDirection(DcMotor.Direction.REVERSE);
-        viperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        claw = o.hardwareMap.get(Servo.class, "claw");
-        claw.setPosition(CLAW_MAX);
-
-        wrist = o.hardwareMap.get(Servo.class, "wrist");
-        wrist.setDirection(Servo.Direction.REVERSE);
-        setWrist(WRIST_DROPOFF);
-
-        ascentStick = o.hardwareMap.get(Servo.class, "ascentStick");
-        ascentStick.setDirection(Servo.Direction.REVERSE);
-         */
 
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
-
-    /*public void configureOtos() { // // don't call this because we don't have Otos
-        myOtos.setLinearUnit(DistanceUnit.INCH);
-        myOtos.setAngularUnit(AngleUnit.DEGREES);
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.5, 1.1, 90);
-        myOtos.setOffset(offset);
-        myOtos.setLinearScalar(1.0);
-        myOtos.setAngularScalar(1.0);
-        myOtos.calibrateImu();
-        myOtos.resetTracking();
-        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
-        myOtos.setPosition(currentPosition);
-        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
-        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
-        myOtos.getVersionInfo(hwVersion, fwVersion);
-    }*/
-
     public void setWheelPower(double left_y, double left_x, double right_x){
         leftFrontPower = (left_y + left_x + right_x) * 0.75;
         rightFrontPower = (left_y - left_x - right_x) * 0.75;
@@ -178,30 +133,6 @@ public class RockinBot {
         rightBackDrive.setPower(0);
     }
 
-    public void activeClimb() {
-        if (getVertical() > 100) {
-            wheelClimb = true;
-            vertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            vertical.setPower(-0.8);
-            leftBackDrive.setPower(0.5);
-            rightBackDrive.setPower(0.5);
-        }
-        else {
-            leftBackDrive.setPower(0);
-            rightBackDrive.setPower(0);
-            wheelClimb = false;
-            setVertical(VERTICAL_MIN, 1000);
-        }
-    }
-/*
-    public void getOtosPosition() { // don't call this because we don't have Otos
-
-        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
-        xLoc = pos.x;
-        yLoc = pos.y;
-        hLoc = pos.h;
-    }
-*/
     public void getPinpointPosition() {
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
         odo.update();
@@ -213,149 +144,11 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "Position: " + data);
     }
 
-    public void tScoringPosition() {
-        RobotLog.vv("Rockin' Robots", "Get in scoring position");
-        while (getVertical() < 1000 && getViper() > 500) {
-            setViper(VIPER_MIN, 4000);
-        }
-        while (getVertical() < 1700) {
-            setVertical(VERTICAL_MAX, 3000);
-        }
-        setViper(VIPER_MAX_TALL, 4000);
-        setWrist(WRIST_DROPOFF);
-    }
-
-    public void oPickupPosition() {
-        RobotLog.vv("Rockin' Robots", "Get in pickup position");
-        while (getViper() > 500) {
-            setViper(VIPER_MIN, 4000);
-        }
-        setVertical(170, 3000);
-        while (getVertical() > 500) {
-            setVertical(200, 3000);
-        }
-        setViper(VIPER_MAX_WIDE, 4000);
-        setWrist(WRIST_PICKUP);
-        setClaw(CLAW_MAX);
-    }
-
-    public void sDrivingPosition() {
-        RobotLog.vv("Rockin' Robots", "sDrivingPosition()");
-        setWrist(WRIST_DROPOFF);
-        if (getVertical() < 500)
-        {
-            RobotLog.vv("Rockin' Robots", "sDrivingPosition(): Starting from low position");
-            setVertical(VERTICAL_DRIVE_POSITION, 3000);
-            setViper(VIPER_MIN, 4000);
-            while (getViper() > 500) {
-                RobotLog.vv("Rockin' Robots", "sDrivingPosition(): while waiting for viper from low position");
-                setViper(VIPER_MIN, 4000);
-            }
-        }
-        else {
-            RobotLog.vv("Rockin' Robots", "sDrivingPosition(): Starting from high position");
-            setViper(VIPER_MIN, 4000);
-            while (getViper() > 500) {
-                RobotLog.vv("Rockin' Robots", "sDrivingPosition(): while waiting for viper from high position");
-                setViper(VIPER_MIN, 4000);
-            }
-            setVertical(VERTICAL_DRIVE_POSITION, 3000);
-        }
-    }
-
-    public void xClosedPosition() {
-        RobotLog.vv("Rockin' Robots", "Get in closed position");
-        setWrist(WRIST_DROPOFF);
-        setViper(VIPER_MIN, 4000);
-        while (getViper() > 900) {
-            setViper(VIPER_MIN, 4000);
-        }
-        setVertical(VERTICAL_MIN, 3000);
-        while (getVertical() > 500) {
-            setVertical(VERTICAL_MIN, 3000);
-        }
-        setClaw(CLAW_MIN);
-    }
-
-    public void setAscentStick(double target) {
-        RobotLog.vv("Rockin' Robots", "Set Ascent Stick to: %4.2f, Current: %4.2f", target, ascentStick.getPosition());
-        ascentStick.setPosition(target);
-        //sleep(1000);
-        RobotLog.vv("Rockin' Robots", "Target: %4.2f, Current: %4.2f", target, ascentStick.getPosition());
-    }
-
-    public double getAscentStick() {
-        return ascentStick.getPosition();
-    }
-
-    public void setClaw(double target) {
-        RobotLog.vv("Rockin' Robots", "Set Claw to: %4.2f, Current: %4.2f", target, claw.getPosition());
-        claw.setPosition(target);
-        RobotLog.vv("Rockin' Robots", "Target: %4.2f, Current: %4.2f", target, claw.getPosition());
-    }
-
-    public void disableClaw() {
-        claw.close();
-    }
-
-    public double getClaw() {
-        return claw.getPosition();
-    }
-
-    public void setWrist(double target) {
-        RobotLog.vv("Rockin' Robots", "Set Wrist to: %4.2f, Current: %4.2f", target, wrist.getPosition());
-        wrist.setPosition(target);
-        //sleep(1000);
-        RobotLog.vv("Rockin' Robots", "Target: %4.2f, Current: %4.2f", target, wrist.getPosition());
-    }
-
-    public double getWrist() {
-        return wrist.getPosition();
-    }
-
-    public void setVertical(int height){
-        setVertical(height, VERTICAL_DEFAULT_SPEED);
-    }
-
-    public void setVertical(int height, int speed){
-        RobotLog.vv("Rockin' Robots", "Set Vertical to: %4.2f, At speed: %4.2f Current: %4.2f", height, speed, vertical.getCurrentPosition());
-        vertical.setTargetPosition(height);
-        ((DcMotorEx) vertical).setVelocity(speed);
-        vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "Target: %4.2f, Current: %4.2f", height, vertical.getCurrentPosition());
-    }
-
-    public double getVertical() {
-        return verticalPosition;
-    }
-
-    public void updateVertical() {
-        verticalPosition = vertical.getCurrentPosition();
-    }
-
-    public void setViper(int length){ setViper(length, VIPER_DEFAULT_SPEED); }
-
-    public void setViper(int length, int speed){
-        RobotLog.vv("Rockin' Robots", "Set Viper to: %4.2f, At speed: %4.2f Current: %4.2f", length, speed, viperSlide.getCurrentPosition());
-        viperSlide.setTargetPosition(length);
-        ((DcMotorEx) viperSlide).setVelocity(speed);
-        viperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "Target: %4.2f, Current: %4.2f", length, viperSlide.getCurrentPosition());
-    }
-
-    public double getViper() {
-        return viperSlidePosition;
-    }
-
-    public void updateViper() {
-        viperSlidePosition = viperSlide.getCurrentPosition();
-    }
-
     public void driveToPos(double xTarget, double yTarget, double hTarget) {
-        driveToPos(xTarget, yTarget, hTarget, 100); //todo
+        driveToPos(xTarget, yTarget, hTarget, 15, 3); //todo
     }
 
-    public void driveToPos(double xTarget, double yTarget, double hTarget, double accuracy) {
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy) {
         // Get initial position
         getPinpointPosition();
 
@@ -368,12 +161,12 @@ public class RockinBot {
         double xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
         double yRotatedDistance = -xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
 
-        RobotLog.vv("Rockin' Robots", "driveToPos() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, accuracy: %.2f",
-                xTarget, yTarget, hTarget, accuracy);
+        RobotLog.vv("Rockin' Robots", "driveToPos() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, xyAccuracy: %.2f, hAccuracy: %.2f",
+                xTarget, yTarget, hTarget, xyAccuracy, hAccuracy);
 
-        while (o.opModeIsActive() && Math.abs(xDistance) > accuracy
-                || Math.abs(yDistance) > accuracy
-                || Math.abs(hDistance) > accuracy) {
+        while (o.opModeIsActive() && Math.abs(xDistance) > xyAccuracy
+                || Math.abs(yDistance) > xyAccuracy
+                || Math.abs(hDistance) > hAccuracy) {
 
             leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance) / 8;
             rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance) / 8;
@@ -390,10 +183,10 @@ public class RockinBot {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            leftFrontPower *= 0.6;
-            rightFrontPower *= 0.6;
-            leftBackPower *= 0.6;
-            rightBackPower *= 0.6;
+            leftFrontPower *= 0.4;
+            rightFrontPower *= 0.4;
+            leftBackPower *= 0.4;
+            rightBackPower *= 0.4;
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
@@ -423,24 +216,15 @@ public class RockinBot {
                     xDistance, yDistance, hDistance);
         }
         stopMoving();
-        RobotLog.vv("Rockin' Robots", "Done Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
-                xDistance, yDistance, hDistance);
+        getPinpointPosition();
+        RobotLog.vv("Rockin' Robots", "Done Moving: xLoc: %.2f, yLoc: %.2f, hLoc:  %.2f, leftFrontPower: %.2f, rightFrontPower: %.2f, leftBackPower: %.2f, rightBackPower: %.2f",
+                xLoc, yLoc, hLoc, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
     }
 
     // Log all (relevant) info about the robot on the hub.
     public void printDataOnScreen() {
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        o.telemetry.addData("Claw position", "%4.2f", claw.getPosition());
-        o.telemetry.addData("Viper Slide Velocity", "%4.2f", ((DcMotorEx) viperSlide).getVelocity());
-
-        o.telemetry.addData("Viper power consumption", "%.1f", ((DcMotorEx) viperSlide).getCurrent(CurrentUnit.AMPS));
-        o.telemetry.addData("Viper Slide Position", "%d", viperSlidePosition);
-        o.telemetry.addData("Vertical Power", "%.1f", ((DcMotorEx) vertical).getVelocity());
-        o.telemetry.addData("Vertical power consumption", "%.1f", ((DcMotorEx) vertical).getCurrent(CurrentUnit.AMPS));
-        o.telemetry.addData("Vertical Position", "%d", vertical.getCurrentPosition());
-        o.telemetry.addData("Vertical Adjusted Min", "%d", verticalAdjustedMin);
-        o.telemetry.addData("Wrist position", "%4.2f", wrist.getPosition());
 
         o.telemetry.update();
     }

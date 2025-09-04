@@ -2,9 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
-
 
 @Autonomous(name="Auto Drive", group="Robot")
 public class AutoDrive extends LinearOpMode {
@@ -22,10 +23,25 @@ public class AutoDrive extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         r.getPinpointPosition();
-        r.driveToPos(550, 1000, 97);
+        r.driveToPos(0, 500, 0);
+        RobotLog.vv("IDK", "taco");
+        sleep(500);
+        r.driveToPos(0, 500, 90);
+        RobotLog.vv("IDK", "cat");
+        sleep(500);
+        r.driveToPos(500, 500, 90);
+        RobotLog.vv("IDK", "goat");
+        sleep(500);
+        r.driveToPos(500, 200, 90);
+        sleep(500);
+        r.driveToPos(0, 200, 90);
+        sleep(500);
+        r.driveToPos(0, 200, 0);
+        sleep(500);
+        r.driveToPos(0, 0, 0);
+        sleep(500);
         RobotLog.vv("Rockin' Robots", "Test Done");
         telemetry.addData("Autonomous lasted", runtime.toString());
-        sleep(1 * 1000);
-
+        sleep(4 * 1000);
     }
 }
