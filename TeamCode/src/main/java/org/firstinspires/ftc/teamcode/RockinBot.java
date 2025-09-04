@@ -1,21 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
-
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-
 public class RockinBot {
+    // Motors and sensors
     private LinearOpMode o;
     private Pose2D pos;
     private double xLoc = 0;
@@ -52,7 +47,7 @@ public class RockinBot {
     public static final int VIPER_DEFAULT_SPEED = 3000;
     public final int VIPER_MIN = 0;
     private int viperSlidePosition = VIPER_MIN;
-
+/*
     // This chunk controls our claw
     private Servo claw = null;
     public final double CLAW_MIN = 0.2;        // Claw is closed
@@ -68,7 +63,8 @@ public class RockinBot {
     private Servo ascentStick = null;
     public final double ASCENT_MIN = 0.2;          // Stick is down
     public final double ASCENT_MAX = 0.49;         // Stick is up
-
+*/
+    // During runtime
     public RockinBot(LinearOpMode opMode) {
         o = opMode;
         o.telemetry.addData("This code was last updated", "3/31/2025, 7:51 pm"); // Todo: Update this date when the code is updated
@@ -76,7 +72,9 @@ public class RockinBot {
         initializeHardwareVariables();
     }
 
+    // Allow driving and braking
     public void initializeHardwareVariables() {
+        // Wheel variables
         leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
@@ -89,18 +87,20 @@ public class RockinBot {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        RobotLog.vv("Rockin' Robots", "Hardware Initialized");
 
+        // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         odo.resetPosAndIMU();
-
         odo.update();
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
 
+        // Robot orientation
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
-    public void setWheelPower(double left_y, double left_x, double right_x){
+    public void setWheelPower(double left_y, double left_x, double right_x){        // Wheel power and speed
         leftFrontPower = (left_y + left_x + right_x) * 0.75;
         rightFrontPower = (left_y - left_x - right_x) * 0.75;
         leftBackPower = (left_y - left_x + right_x) * 0.75;
@@ -133,7 +133,7 @@ public class RockinBot {
         rightBackDrive.setPower(0);
     }
 
-    public void getPinpointPosition() {
+    public void getPinpointPosition() {     // Finds robot position
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
         odo.update();
         pos = odo.getPosition();
@@ -144,17 +144,18 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "Position: " + data);
     }
 
-    public void driveToPos(double xTarget, double yTarget, double hTarget) {
-        driveToPos(xTarget, yTarget, hTarget, 15, 3); //todo
+    public void driveToPos(double xTarget, double yTarget, double hTarget) {    // Defaults hAccuracy to 3 if no hAccuracy is given
+        driveToPos(xTarget, yTarget, hTarget, 15, 3); //todo: should hAccuracy be 3? What unit is it?
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy) {
-        // Get initial position
-        getPinpointPosition();
+        getPinpointPosition();      // Get initial position
 
+        // Calculate distance from target
         double xDistance = xTarget - xLoc;
         double yDistance = yTarget - yLoc;
         double hDistance = hTarget - hLoc;
+        // Prevent heading errors
         if (hDistance > 180) hDistance -= 360;
         if (hDistance < -180) hDistance += 360;
         double angleRadians = Math.toRadians(hLoc);
@@ -164,16 +165,18 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "driveToPos() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, xyAccuracy: %.2f, hAccuracy: %.2f",
                 xTarget, yTarget, hTarget, xyAccuracy, hAccuracy);
 
+        // While the program is running
         while (o.opModeIsActive() && Math.abs(xDistance) > xyAccuracy
                 || Math.abs(yDistance) > xyAccuracy
                 || Math.abs(hDistance) > hAccuracy) {
 
+            // Set wheel power
             leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance) / 8;
             rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance) / 8;
             leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance) / 8;
             rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance) / 8;
 
-            // Normalize the values so no wheel power exceeds 100%
+            // Normalize the values so wheel power does not exceed 100%
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
@@ -197,12 +200,14 @@ public class RockinBot {
                 rightBackPower *= 1.5;
             }
 
+            // Move wheels
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-           getPinpointPosition();
+            // Recalibrate position
+            getPinpointPosition();
             xDistance = xTarget - xLoc;
             yDistance = yTarget - yLoc;
             hDistance = hTarget - hLoc;
@@ -215,6 +220,7 @@ public class RockinBot {
             RobotLog.vv("Rockin' Robots", "Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
                     xDistance, yDistance, hDistance);
         }
+        // Finish up
         stopMoving();
         getPinpointPosition();
         RobotLog.vv("Rockin' Robots", "Done Moving: xLoc: %.2f, yLoc: %.2f, hLoc:  %.2f, leftFrontPower: %.2f, rightFrontPower: %.2f, leftBackPower: %.2f, rightBackPower: %.2f",
