@@ -171,11 +171,11 @@ public class RockinBot {
                 || Math.abs(hDistance) > hAccuracy) {
 
             // Set wheel power
-            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance) / 8;
-            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance) / 8;
-            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance) / 8;
-            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance) / 8;
-
+            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
+            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance);
+            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
+            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance);
+            RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f");
             // Normalize the values so wheel power does not exceed 100%
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
@@ -186,10 +186,10 @@ public class RockinBot {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            leftFrontPower *= 0.4;
-            rightFrontPower *= 0.4;
-            leftBackPower *= 0.4;
-            rightBackPower *= 0.4;
+            leftFrontPower *= 0.5;
+            rightFrontPower *= 0.5;
+            leftBackPower *= 0.5;
+            rightBackPower *= 0.5;
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
