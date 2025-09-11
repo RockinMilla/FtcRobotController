@@ -69,15 +69,19 @@ public class RockinBot {
     public final double ASCENT_MAX = 0.49;         // Stick is up
 */
     // During runtime
-    public RockinBot(LinearOpMode opMode) {
+    public RockinBot(LinearOpMode opMode, String robotType) {
         o = opMode;
         o.telemetry.addData("This code was last updated", "3/31/2025, 7:51 pm"); // Todo: Update this date when the code is updated
         o.telemetry.update();
-        initializeHardwareVariables();
+
+        if(robotType.equals("Shooter"))
+            initializeShooterVar();
+        else if(robotType.equals("Driver"))
+            initializeDriverVar();
     }
 
     // Allow driving and braking
-    public void initializeHardwareVariables() {
+    public void initializeShooterVar() {
         // Wheel variables
         /**leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -115,6 +119,47 @@ public class RockinBot {
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
+
+    // Allow driving and braking
+    public void initializeDriverVar() {
+        //Wheel variables
+        leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
+         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
+         rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
+         rightBackDrive = o.hardwareMap.get(DcMotor.class, "right_back_drive");
+
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        /*
+        //Launcher variables
+        leftLauncher = o.hardwareMap.get(DcMotor.class, "left_launcher");
+        rightLauncher = o.hardwareMap.get(DcMotor.class, "right_launcher");
+        leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftLauncher.setDirection(DcMotor.Direction.REVERSE);
+        rightLauncher.setDirection(DcMotor.Direction.FORWARD);
+*/
+        RobotLog.vv("Rockin' Robots", "Hardware Initialized");
+
+        // Initializes the pinpoint
+        /*odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        odo.resetPosAndIMU();
+        odo.update();
+        RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
+        */
+
+        // Robot orientation
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+    }
+
     public void setWheelPower(double left_y, double left_x, double right_x){        // Wheel power and speed
         leftFrontPower = (left_y + left_x + right_x) * 0.75;
         rightFrontPower = (left_y - left_x - right_x) * 0.75;

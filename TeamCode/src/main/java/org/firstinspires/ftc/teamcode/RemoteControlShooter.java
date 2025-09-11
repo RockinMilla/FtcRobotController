@@ -13,7 +13,7 @@ public class RemoteControlShooter extends LinearOpMode {
     public void runOpMode() {
         // Create a LinearOpModeVariable and pass it to the RockinBot constructor
         LinearOpMode o = this;
-        RockinBot r = new RockinBot(o);
+        RockinBot r = new RockinBot(o, "Shooter");
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
