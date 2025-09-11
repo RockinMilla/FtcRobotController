@@ -20,6 +20,10 @@ public class RockinBot {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+    private DcMotor leftLauncher = null;
+    private DcMotor rightLauncher = null;
+    private double leftLauncherPower = 0;
+    private double rightLauncherPower = 0;
     private double leftFrontPower = 0;
     private double rightFrontPower = 0;
     private double leftBackPower = 0;
@@ -75,11 +79,12 @@ public class RockinBot {
     // Allow driving and braking
     public void initializeHardwareVariables() {
         // Wheel variables
-        leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
+        /**leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = o.hardwareMap.get(DcMotor.class, "right_back_drive");
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         */
+        /*leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -87,13 +92,23 @@ public class RockinBot {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        */
+        //Launcher variables
+        leftLauncher = o.hardwareMap.get(DcMotor.class, "left_launcher");
+        rightLauncher = o.hardwareMap.get(DcMotor.class, "right_launcher");
+        leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftLauncher.setDirection(DcMotor.Direction.REVERSE);
+        rightLauncher.setDirection(DcMotor.Direction.FORWARD);
+
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
 
         // Initializes the pinpoint
-        odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        /*odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         odo.resetPosAndIMU();
         odo.update();
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
+        */
 
         // Robot orientation
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
@@ -131,6 +146,11 @@ public class RockinBot {
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
+    }
+
+    public void launcherPower() {
+        leftLauncher.setPower(1);
+        rightLauncher.setPower(1);
     }
 
     public void getPinpointPosition() {     // Finds robot position
