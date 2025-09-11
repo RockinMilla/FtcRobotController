@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
-@TeleOp(name="Remote Control", group="Linear OpMode")
-public class RemoteControl extends LinearOpMode {
+@TeleOp(name="Remote Control Wheels", group="Linear OpMode")
+public class RemoteControlWheels extends LinearOpMode {
     @Override
 
     //Op mode runs when the robot runs. It runs the whole time.
@@ -24,7 +24,7 @@ public class RemoteControl extends LinearOpMode {
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            r.launcherPower();
+            r.setWheelPower(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);  // Set wheel power based on gamepad input
             // Show the elapsed game time and wheel power.
             r.printDataOnScreen();
             RobotLog.vv("Rockin' Robots", "Wheel Power: %.2f, %.2f, %.2f, %.2f");
