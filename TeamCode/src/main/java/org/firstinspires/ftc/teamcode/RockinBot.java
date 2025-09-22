@@ -22,12 +22,14 @@ public class RockinBot {
     private DcMotor rightBackDrive = null;
     private DcMotor leftLauncher = null;
     private DcMotor rightLauncher = null;
+    private DcMotor intake = null;
     private double leftLauncherPower = 0;
     private double rightLauncherPower = 0;
     private double leftFrontPower = 0;
     private double rightFrontPower = 0;
     private double leftBackPower = 0;
     private double rightBackPower = 0;
+    private double intakePower = 0;
     private double max = 0;
     public boolean wheelClimb = false;
     public GoBildaPinpointDriver odo = null;
@@ -104,15 +106,11 @@ public class RockinBot {
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
+        intake = o.hardwareMap.get(DcMotor.class, "intake");
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
 
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
-
-        // Initializes the pinpoint
-        /*odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        odo.resetPosAndIMU();
-        odo.update();
-        RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
-        */
 
         // Robot orientation
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
@@ -136,23 +134,28 @@ public class RockinBot {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        /*
         //Launcher variables
+        /*
         leftLauncher = o.hardwareMap.get(DcMotor.class, "left_launcher");
         rightLauncher = o.hardwareMap.get(DcMotor.class, "right_launcher");
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
-*/
+        //Intake variables
+        intake = o.hardwareMap.get(DcMotor.class, "intake");
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
+
+         */
+
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
 
         // Initializes the pinpoint
-        /*odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         odo.resetPosAndIMU();
         odo.update();
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
-        */
 
         // Robot orientation
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
@@ -193,9 +196,13 @@ public class RockinBot {
         rightBackDrive.setPower(0);
     }
 
-    public void launcherPower() {
-        leftLauncher.setPower(1);
-        rightLauncher.setPower(1);
+    public void launcherPower(double power) {
+        leftLauncher.setPower(power);
+        rightLauncher.setPower(power);
+    }
+
+    public void intakePower() {
+        intake.setPower(-0.5);
     }
 
     public void getPinpointPosition() {     // Finds robot position
@@ -213,7 +220,7 @@ public class RockinBot {
         driveToPos(xTarget, yTarget, hTarget, 15, 3); //todo: should hAccuracy be 3? What unit is it?
     }
 
-    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy) {
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy) {   // In millimeters
         getPinpointPosition();      // Get initial position
 
         // Calculate distance from target
