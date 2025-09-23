@@ -31,49 +31,12 @@ public class RockinBot {
     private double rightBackPower = 0;
     private double intakePower = 0;
     private double max = 0;
-    public boolean wheelClimb = false;
     public GoBildaPinpointDriver odo = null;
 
-    // This chunk controls our vertical
-    private DcMotor vertical = null;
-    public final int VERTICAL_MIN = 0;
-    public final int VERTICAL_MAX = 2155;
-    public final int VERTICAL_MAX_VIPER = 1200;
-    public final int VERTICAL_CLIMB_POSITION = 2300;
-    public final int VERTICAL_DRIVE_POSITION = 400;
-    public final int VERTICAL_DEFAULT_SPEED = 2000;
-    public int verticalAdjustedMin = 0;
-    private int verticalPosition = VERTICAL_MIN;
-
-    // This chunk controls our viper slide
-    private DcMotor viperSlide = null;
-    public final int VIPER_MAX = 2540;
-    public final int VIPER_MAX_WIDE = 1800;
-    public final int VIPER_MAX_TALL = 2637;
-    public static final int VIPER_DEFAULT_SPEED = 3000;
-    public final int VIPER_MIN = 0;
-    private int viperSlidePosition = VIPER_MIN;
-/*
-    // This chunk controls our claw
-    private Servo claw = null;
-    public final double CLAW_MIN = 0.2;        // Claw is closed
-    public final double CLAW_MAX = 0.36;       // Claw is open - Og non-wrist value was 0.8
-
-    // This chunk controls our wrist
-    private Servo wrist = null;
-    public final double WRIST_PICKUP = 0.23;       // Wrist is in intake position (picking up)
-    public final double WRIST_DROPOFF = 0.89;      // Wrist is in outtake position (dropping in basket)
-    public final double WRIST_MID = 0.4;           // Wrist is in the middle position
-
-    // This chunk controls our nose picker (ascent stick)
-    private Servo ascentStick = null;
-    public final double ASCENT_MIN = 0.2;          // Stick is down
-    public final double ASCENT_MAX = 0.49;         // Stick is up
-*/
     // During runtime
     public RockinBot(LinearOpMode opMode, String robotType) {
         o = opMode;
-        o.telemetry.addData("This code was last updated", "3/31/2025, 7:51 pm"); // Todo: Update this date when the code is updated
+        o.telemetry.addData("This code was last updated", "9/23/2025, 2:45 pm"); // Todo: Update this date when the code is updated
         o.telemetry.update();
 
         if(robotType.equals("Shooter"))
@@ -84,21 +47,6 @@ public class RockinBot {
 
     // Allow driving and braking
     public void initializeShooterVar() {
-        // Wheel variables
-        /**leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive = o.hardwareMap.get(DcMotor.class, "right_back_drive");
-         */
-        /*leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        */
         //Launcher variables
         leftLauncher = o.hardwareMap.get(DcMotor.class, "left_launcher");
         rightLauncher = o.hardwareMap.get(DcMotor.class, "right_launcher");
@@ -110,11 +58,20 @@ public class RockinBot {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intake.setDirection(DcMotor.Direction.REVERSE);
 
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
 
         // Robot orientation
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
@@ -134,20 +91,6 @@ public class RockinBot {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        //Launcher variables
-        /*
-        leftLauncher = o.hardwareMap.get(DcMotor.class, "left_launcher");
-        rightLauncher = o.hardwareMap.get(DcMotor.class, "right_launcher");
-        leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftLauncher.setDirection(DcMotor.Direction.REVERSE);
-        rightLauncher.setDirection(DcMotor.Direction.FORWARD);
-        //Intake variables
-        intake = o.hardwareMap.get(DcMotor.class, "intake");
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intake.setDirection(DcMotor.Direction.REVERSE);
-
-         */
 
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
 
@@ -158,8 +101,8 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
 
         // Robot orientation
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
@@ -179,13 +122,11 @@ public class RockinBot {
             rightBackPower /= max;
         }
 
-        if(!wheelClimb) {
-            // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
-        }
+        // Send calculated power to wheels
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
     }
 
     public void stopMoving() {
