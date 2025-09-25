@@ -34,6 +34,7 @@ public class RockinBot {
     public GoBildaPinpointDriver odo = null;
 
     // During runtime
+
     public RockinBot(LinearOpMode opMode, String robotType) {
         o = opMode;
         o.telemetry.addData("This code was last updated", "9/23/2025, 2:45 pm"); // Todo: Update this date when the code is updated
@@ -58,6 +59,11 @@ public class RockinBot {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intake.setDirection(DcMotor.Direction.REVERSE);
 
+        //Wheel variables
+        leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
+        rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
+        rightBackDrive = o.hardwareMap.get(DcMotor.class, "right_back_drive");
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -142,8 +148,8 @@ public class RockinBot {
         rightLauncher.setPower(power);
     }
 
-    public void intakePower() {
-        intake.setPower(-0.5);
+    public void intakePower(double speed) {
+        intake.setPower(speed);
     }
 
     public void getPinpointPosition() {     // Finds robot position
