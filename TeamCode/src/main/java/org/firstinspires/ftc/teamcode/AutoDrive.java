@@ -17,14 +17,15 @@ public class AutoDrive extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Driver");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "09/25/2025, 4:13 pm"); // Todo: Update this date when the code is updated
-        telemetry.update();
+
+        telemetry.addData("This code was last updated", "09/25/2025, 5:47 pm"); // Todo: Update this date when the code is updated
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         r.getPinpointPosition();
         r.driveToPos(500, -500, 0); // backwards, strafe left
         r.driveToPos(500, -500, -45); // turn towards goal
+
         sleep(2000); // pew pew pew
         r.driveToPos(500, -600, -45); // strafe right
         r.driveToPos(1000, -600, -90); // turn right
