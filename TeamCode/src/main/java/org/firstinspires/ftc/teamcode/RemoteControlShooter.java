@@ -13,7 +13,7 @@ public class RemoteControlShooter extends LinearOpMode {
     public void runOpMode() {
         // Create a LinearOpModeVariable and pass it to the RockinBot constructor
         LinearOpMode o = this;
-        RockinBot r = new RockinBot(o, "Shooter");
+        RockinBot r = new RockinBot(o);
 
         double launcherSpeed = 1;
         double intakeSpeed = -0.5;

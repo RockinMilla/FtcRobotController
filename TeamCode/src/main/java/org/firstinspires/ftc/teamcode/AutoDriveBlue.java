@@ -12,7 +12,7 @@ public class AutoDriveBlue extends LinearOpMode {
     @Override
     public void runOpMode() {
         LinearOpMode o = this;
-        RockinBot r = new RockinBot(o, "Driver");     // Passing in code from RockinBot
+        RockinBot r = new RockinBot(o);     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
 
