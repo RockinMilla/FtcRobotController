@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-    android:versionCode="59"
-          android:versionName="10.3">
+    android:versionCode="60"
+          android:versionName="11.0">
 
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -19,7 +19,7 @@
         android:name="org.firstinspires.latestSupportedControlHubVersion"
         android:value="1" />
 
-            <!-- The main robot controller activity -->
+    <!-- The main robot controller activity -->
     <activity android:name="org.firstinspires.ftc.robotcontroller.internal.PermissionValidatorWrapper"
               android:screenOrientation="fullUser"
               android:configChanges="orientation|screenSize"
