@@ -29,28 +29,39 @@ public class RemoteControlShooter extends LinearOpMode {
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            if (gamepad1.right_bumper) {
+            if (gamepad1.dpad_right) {
                 launcherSpeed += 0.001;
             }
-            else if (gamepad1.left_bumper) {
+            else if (gamepad1.dpad_left) {
                 launcherSpeed -= 0.001;
             }
 
-            if(gamepad1.dpad_right){
-                intakeSpeed += 0.001;
+            if(gamepad1.circle){
+                intakeSpeed = -0.53;
             }
-            else if(gamepad1.dpad_left){
-                intakeSpeed -= 0.001;
+            else if(gamepad1.square){
+                intakeSpeed = 0;
             }
 
             if(gamepad1.right_trigger > 0){
                 lifterPower = -0.5;
             }
-            else{
-                lifterPower = 0.0;
+
+            if (gamepad1.left_trigger > 0){
+                lifterPower = 0.5;
             }
 
-            r.setWheelPower(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
+                lifterPower = 0;
+            }
+            
+            /*
+            if (gamepad1.right_bumper){
+                lifterPower = 1;
+            }
+            */
+            
+            r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             r.launcherPower(launcherSpeed);
             r.intakePower(intakeSpeed);
