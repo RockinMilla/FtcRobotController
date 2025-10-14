@@ -124,9 +124,9 @@ public class RockinBot {
 
     public void setWheelPower(double left_y, double left_x, double right_x){        // Wheel power and speed
         leftFrontPower = (left_y + left_x + right_x) * 0.75;
-        rightFrontPower = (-left_y - left_x - right_x) * 0.75;
+        rightFrontPower = (left_y - left_x - right_x) * 0.75;
         leftBackPower = (left_y - left_x + right_x) * 0.75;
-        rightBackPower = (-left_y + left_x - right_x) * 0.75;
+        rightBackPower = (left_y + left_x - right_x) * 0.75;
 
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
