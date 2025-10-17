@@ -84,6 +84,11 @@ public class RockinBot {
         lifter = o.hardwareMap.get(CRServo.class, "lifter");
         lifter.setPower(0);
 
+        // Initializes the pinpoint
+        odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        odo.resetPosAndIMU();
+        odo.update();
+
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
 
         // Robot orientation
@@ -125,9 +130,9 @@ public class RockinBot {
 
     public void setWheelPower(double left_y, double left_x, double right_x){        // Wheel power and speed
         leftFrontPower = (left_y + left_x + right_x) * 0.75;
-        rightFrontPower = (left_y - left_x - right_x) * 0.75;
+        rightFrontPower = (left_y + left_x - right_x) * 0.75;
         leftBackPower = (left_y - left_x + right_x) * 0.75;
-        rightBackPower = (left_y + left_x - right_x) * 0.75;
+        rightBackPower = (left_y - left_x - right_x) * 0.75;
 
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
@@ -208,11 +213,11 @@ public class RockinBot {
                 || Math.abs(hDistance) > hAccuracy) {
 
             // Set wheel power
-            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
-            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance);
-            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
-            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance);
-            RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f");
+            leftFrontPower = (yRotatedDistance + xRotatedDistance + hDistance);
+            rightFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
+            leftBackPower = (yRotatedDistance - xRotatedDistance + hDistance);
+            rightBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
+            RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
             // Normalize the values so wheel power does not exceed 100%
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));

@@ -12,11 +12,11 @@ public class AutoDriveRed extends LinearOpMode {
     @Override
     public void runOpMode() {
         LinearOpMode o = this;
-        RockinBot r = new RockinBot(o, "Driver");     // Passing in code from RockinBot
+        RockinBot r = new RockinBot(o,"Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
 
-        telemetry.addData("This code was last updated", "10/2/2025, 5:32 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "10/16/2025, 4:18 pm"); // Todo: Update this date when the code is updated
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
