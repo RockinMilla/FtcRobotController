@@ -45,9 +45,6 @@ public class RockinBot {
     public RockinBot(LinearOpMode opMode, String robotType) {
         o = opMode;
         o.telemetry.addData("This code was last updated", "10/17/2025, 2:41 pm"); // Todo: Update this date when the code is updated
-        o.telemetry.addData("Launcher Speed", "%d", launcherSpeed*100, "%");
-        o.telemetry.addData("Intake Speed", "%d", intakeSpeed*100, "%");
-        o.telemetry.addData("Lifter Power", "%d", lifterSpeed*100, "%");
         o.telemetry.update();
 
         if(robotType.equals("Shooter"))
@@ -165,11 +162,12 @@ public class RockinBot {
 
     public void intakePower(double speed) {
         intakeSpeed = speed;
-        intake.setPower(speed);
+        intake.setPower(intakeSpeed);
     }
 
     public void lifterPower(double power) {
-        lifter.setPower(power);
+        lifterSpeed = power;
+        lifter.setPower(lifterSpeed);
     }
 
     public void getPinpointPosition() {     // Finds robot position
@@ -270,8 +268,9 @@ public class RockinBot {
     public void printDataOnScreen() {
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        o.telemetry.addData("Launcher Power", "%.2f", launcherSpeed);
-        o.telemetry.addData("Intake Power", "%.2f", intakeSpeed);
+        o.telemetry.addData("Launcher Speed", "%d%%",(int) (launcherSpeed*100));
+        o.telemetry.addData("Intake Speed", "%d%%", (int) (intakeSpeed*100));
+        o.telemetry.addData("Lifter Power", "%d%%", (int) (lifterSpeed*100));
         o.telemetry.update();
     }
 }
