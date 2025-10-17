@@ -15,14 +15,14 @@ public class RemoteControlShooter extends LinearOpMode {
         LinearOpMode o = this;
         RockinBot r = new RockinBot(o, "Shooter");
 
-        double launcherSpeed = 0.4;
-        double intakeSpeed = -0.5;
+        double launcherSpeed = 0.47;
+        double intakeSpeed = -0.57;
         double lifterPower = 0;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
         RobotLog.vv("Rockin' Robots", "Remote Control Ready");
-        telemetry.addData("This code was last updated", "9/18/2025, 5:30 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "10/16/2025, 8:52pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
 
@@ -44,11 +44,11 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.right_trigger > 0){
-                lifterPower = -0.5;
+                lifterPower = -1;
             }
 
             if (gamepad1.left_trigger > 0){
-                lifterPower = 0.5;
+                lifterPower = 1;
             }
 
             if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
