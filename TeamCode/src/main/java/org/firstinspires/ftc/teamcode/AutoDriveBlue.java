@@ -42,7 +42,6 @@ public class AutoDriveBlue extends LinearOpMode {
         // turn towards gate
         // park ready to activate gate
         RobotLog.vv("Rockin' Robots", "Test Done");
-        telemetry.addData("Autonomous lasted", runtime.toString());
         sleep(4 * 1000);
     }
 }

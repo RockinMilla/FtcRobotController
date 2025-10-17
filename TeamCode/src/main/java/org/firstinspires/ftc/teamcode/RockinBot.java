@@ -37,13 +37,17 @@ public class RockinBot {
     private double max = 0;
     double launcherSpeed = 0.4;
     double intakeSpeed = -0.5;
+    double lifterSpeed = 0;
     public GoBildaPinpointDriver odo = null;
 
     // During runtime
 
     public RockinBot(LinearOpMode opMode, String robotType) {
         o = opMode;
-        o.telemetry.addData("This code was last updated", "9/23/2025, 2:45 pm"); // Todo: Update this date when the code is updated
+        o.telemetry.addData("This code was last updated", "10/17/2025, 2:41 pm"); // Todo: Update this date when the code is updated
+        o.telemetry.addData("Launcher Speed", "%d", launcherSpeed*100, "%");
+        o.telemetry.addData("Intake Speed", "%d", intakeSpeed*100, "%");
+        o.telemetry.addData("Lifter Power", "%d", lifterSpeed*100, "%");
         o.telemetry.update();
 
         if(robotType.equals("Shooter"))
@@ -166,7 +170,6 @@ public class RockinBot {
 
     public void lifterPower(double power) {
         lifter.setPower(power);
-
     }
 
     public void getPinpointPosition() {     // Finds robot position

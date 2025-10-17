@@ -22,7 +22,7 @@ public class RemoteControlShooter extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
         RobotLog.vv("Rockin' Robots", "Remote Control Ready");
-        telemetry.addData("This code was last updated", "9/18/2025, 5:30 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "10/17/2025, 2:43 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
 
@@ -67,11 +67,6 @@ public class RemoteControlShooter extends LinearOpMode {
             r.intakePower(intakeSpeed);
             r.lifterPower(lifterPower);
             // Show the elapsed game time and wheel power.
-            //telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Launcher Power", "%.2f", launcherSpeed);
-            telemetry.addData("Intake Power", "%.2f", intakeSpeed);
-            telemetry.addData("Lifter Power", "%.2f", lifterPower);
-            telemetry.update();
             r.printDataOnScreen();
             RobotLog.vv("Rockin' Robots", "Wheel Power: %.2f, %.2f, %.2f, %.2f");
         }
