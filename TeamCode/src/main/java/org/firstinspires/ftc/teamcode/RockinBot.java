@@ -118,9 +118,10 @@ public class RockinBot {
 
         // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         odo.resetPosAndIMU();
         odo.update();
-        RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
+        RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus() + " and position: " + odo.getPosition());
 
         // Robot orientation
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
@@ -206,6 +207,7 @@ public class RockinBot {
 
         RobotLog.vv("Rockin' Robots", "driveToPos() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, xyAccuracy: %.2f, hAccuracy: %.2f",
                 xTarget, yTarget, hTarget, xyAccuracy, hAccuracy);
+        RobotLog.vv("Rockin' Robots", "driveToPos() xDistance: %.2f, yDistance: %.2f, hDistance: %.2f", xDistance, yDistance, hDistance);
 
         // While the program is running
         while (o.opModeIsActive() && Math.abs(xDistance) > xyAccuracy
