@@ -35,8 +35,8 @@ public class RockinBot {
     private double rightBackPower = 0;
     private double intakePower = 0;
     private double max = 0;
-    double launcherSpeed = 0.4;
-    double intakeSpeed = -0.5;
+    double launcherSpeed = 0.45;
+    double intakeSpeed = -0.55;
     public GoBildaPinpointDriver odo = null;
 
     // During runtime
@@ -162,6 +162,8 @@ public class RockinBot {
         launcherSpeed = power;
         leftLauncher.setPower(power);
         rightLauncher.setPower(power);
+        leftLauncherPower = leftLauncher.getPower();
+        rightLauncherPower = rightLauncher.getPower();
     }
 
     public void intakePower(double speed) {
@@ -216,6 +218,7 @@ public class RockinBot {
             rightFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
             leftBackPower = (yRotatedDistance - xRotatedDistance + hDistance);
             rightBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
+
             RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
             // Normalize the values so wheel power does not exceed 100%
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -272,7 +275,9 @@ public class RockinBot {
     public void printDataOnScreen() {
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        o.telemetry.addData("Launcher Power", "%.2f", launcherSpeed);
+        o.telemetry.addData("Goal Launcher Power", "%.2f", launcherSpeed);
+        o.telemetry.addData("Current Right Launcher", "%.2f", rightLauncherPower);
+        o.telemetry.addData("Current Left Launcher", "%.2f", leftLauncherPower);
         o.telemetry.addData("Intake Power", "%.2f", intakeSpeed);
         o.telemetry.update();
     }
