@@ -16,7 +16,7 @@ public class RemoteControlShooter extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");
 
         double launcherSpeed = 0.4;
-        double intakeSpeed = -0.5;
+        double intakeSpeed = -1;
         double lifterPower = 0;
 
         // Wait for the game to start (driver presses PLAY)
