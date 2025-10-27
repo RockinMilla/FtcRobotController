@@ -35,16 +35,15 @@ public class RockinBot {
     private double rightBackPower = 0;
     private double intakePower = 0;
     private double max = 0;
-    double launcherSpeed = 0.4;
-    double intakeSpeed = -0.5;
-    double lifterSpeed = 0;
+    double launcherSpeed = 0.45;
+    double intakeSpeed = -0.55;
     public GoBildaPinpointDriver odo = null;
 
     // During runtime
 
     public RockinBot(LinearOpMode opMode, String robotType) {
         o = opMode;
-        o.telemetry.addData("This code was last updated", "10/17/2025, 2:41 pm"); // Todo: Update this date when the code is updated
+        o.telemetry.addData("This code was last updated", "9/23/2025, 2:45 pm"); // Todo: Update this date when the code is updated
         o.telemetry.update();
 
         if(robotType.equals("Shooter"))
@@ -118,10 +117,9 @@ public class RockinBot {
 
         // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         odo.resetPosAndIMU();
         odo.update();
-        RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus() + " and position: " + odo.getPosition());
+        RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
 
         // Robot orientation
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
@@ -164,16 +162,18 @@ public class RockinBot {
         launcherSpeed = power;
         leftLauncher.setPower(power);
         rightLauncher.setPower(power);
+        leftLauncherPower = leftLauncher.getPower();
+        rightLauncherPower = rightLauncher.getPower();
     }
 
     public void intakePower(double speed) {
         intakeSpeed = speed;
-        intake.setPower(intakeSpeed);
+        intake.setPower(speed);
     }
 
     public void lifterPower(double power) {
-        lifterSpeed = power;
-        lifter.setPower(lifterSpeed);
+        lifter.setPower(power);
+
     }
 
     public void getPinpointPosition() {     // Finds robot position
@@ -207,7 +207,6 @@ public class RockinBot {
 
         RobotLog.vv("Rockin' Robots", "driveToPos() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, xyAccuracy: %.2f, hAccuracy: %.2f",
                 xTarget, yTarget, hTarget, xyAccuracy, hAccuracy);
-        RobotLog.vv("Rockin' Robots", "driveToPos() xDistance: %.2f, yDistance: %.2f, hDistance: %.2f", xDistance, yDistance, hDistance);
 
         // While the program is running
         while (o.opModeIsActive() && Math.abs(xDistance) > xyAccuracy
@@ -219,6 +218,7 @@ public class RockinBot {
             rightFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
             leftBackPower = (yRotatedDistance - xRotatedDistance + hDistance);
             rightBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
+
             RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
             // Normalize the values so wheel power does not exceed 100%
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -275,9 +275,10 @@ public class RockinBot {
     public void printDataOnScreen() {
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        o.telemetry.addData("Launcher Speed", "%d%%",(int) (launcherSpeed*100));
-        o.telemetry.addData("Intake Speed", "%d%%", (int) (intakeSpeed*100));
-        o.telemetry.addData("Lifter Power", "%d%%", (int) (lifterSpeed*100));
+        o.telemetry.addData("Goal Launcher Power", "%.2f", launcherSpeed);
+        o.telemetry.addData("Current Right Launcher", "%.2f", rightLauncherPower);
+        o.telemetry.addData("Current Left Launcher", "%.2f", leftLauncherPower);
+        o.telemetry.addData("Intake Power", "%.2f", intakeSpeed);
         o.telemetry.update();
     }
 }
