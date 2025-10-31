@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
+import static android.os.SystemClock.sleep;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -158,6 +160,24 @@ public class RockinBot {
         rightBackDrive.setPower(0);
     }
 
+    public void driveBack(int ms) {
+        leftFrontDrive.setPower(-0.5); // counter
+        rightFrontDrive.setPower(-0.5); // clock
+        leftBackDrive.setPower(-0.5); // clock
+        rightBackDrive.setPower(-0.5); // counter
+        sleep(ms);
+        stopMoving();
+    }
+
+    public void driveRight(int ms) {
+        leftFrontDrive.setPower(0.5); // clock
+        rightFrontDrive.setPower(0.5); // clock
+        leftBackDrive.setPower(-0.5); // clock
+        rightBackDrive.setPower(-0.5); // clock
+        sleep(ms);
+        stopMoving();
+    }
+
     public void launcherPower(double power) {
         launcherSpeed = power;
         leftLauncher.setPower(power);
@@ -173,7 +193,6 @@ public class RockinBot {
 
     public void lifterPower(double power) {
         lifter.setPower(power);
-
     }
 
     public void getPinpointPosition() {     // Finds robot position

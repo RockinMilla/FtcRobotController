@@ -17,7 +17,7 @@ public class AutoDriveBlue extends LinearOpMode {
 
         telemetry.addData("Autonomous Ready", "You can press start now");
 
-        telemetry.addData("This code was last updated", "10/26/2025, 2:10 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "10/27/2025, 1:35 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

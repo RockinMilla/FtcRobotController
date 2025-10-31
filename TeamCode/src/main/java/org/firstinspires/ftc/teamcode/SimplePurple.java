@@ -16,20 +16,32 @@ public class SimplePurple extends LinearOpMode {
 
         telemetry.addData("Autonomous Ready", "You can press start now");
 
-        telemetry.addData("This code was last updated", "10/26/2025, 2:32 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "10/29/2025, 10:54" + " am"); // Todo: Update this date when the code is updated
+        telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        r.getPinpointPosition();
-        r.launcherPower(0.65);
-        r.driveToPos(0, -500, 0);
-        sleep(4000);
-        r.lifterPower(-1.0);
+        r.lifterPower(0.05);
+        r.launcherPower(0.55);
+        r.intakePower(-0.1);
+        sleep(500);
+        r.driveBack(1000);
+        r.intakePower(-0.7);
+        r.lifterPower(-0.6);
+        sleep(300);
         r.lifterPower(0);
-        r.launcherPower(0.65);
-        sleep(5000);
-        r.lifterPower(-1.0);
+        sleep(1000);
+        for(int i = 1; i<4; i++) {
+            r.lifterPower(-0.6);
+            sleep(500);
+            r.lifterPower(0);
+            sleep(1000);
+        }
+        r.launcherPower(0);
+        r.lifterPower(0);
+        r.intakePower(0);
+        r.driveRight(500);
+        sleep(2000);
         RobotLog.vv("Rockin' Robots", "Test Done");
-        sleep(4 * 1000);
     }
 }
