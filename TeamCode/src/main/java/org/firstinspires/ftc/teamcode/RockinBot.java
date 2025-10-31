@@ -37,8 +37,9 @@ public class RockinBot {
     private double rightBackPower = 0;
     private double intakePower = 0;
     private double max = 0;
-    double launcherSpeed = 0.45;
-    double intakeSpeed = -0.55;
+    // Change these to change the default values
+    double launcherSpeed = 0.4;
+    double intakeSpeed = -0.4;
     public GoBildaPinpointDriver odo = null;
 
     // During runtime
