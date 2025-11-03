@@ -16,13 +16,13 @@ public class SimplePurple extends LinearOpMode {
 
         telemetry.addData("Autonomous Ready", "You can press start now");
 
-        telemetry.addData("This code was last updated", "10/31/2025, 3:26" + " pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "11/1/2025, 1:36" + " pm"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         r.lifterPower(0.05);
-        r.launcherPower(0.55);
+        r.launcherPower(0.57);
         r.intakePower(-0.1);
         sleep(500);
         r.driveBack(1000);

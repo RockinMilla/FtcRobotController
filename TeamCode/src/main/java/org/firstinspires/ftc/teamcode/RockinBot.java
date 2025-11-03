@@ -37,9 +37,10 @@ public class RockinBot {
     private double rightBackPower = 0;
     private double intakePower = 0;
     private double max = 0;
-    // Change these to change the default values
-    double launcherSpeed = 0.4;
-    double intakeSpeed = -0.4;
+    // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
+    // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
+    double launcherSpeed = 0.5;
+    double intakeSpeed = -0.6;
     public GoBildaPinpointDriver odo = null;
 
     // During runtime
@@ -159,6 +160,15 @@ public class RockinBot {
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
+    }
+
+    public void driveForward(int ms) {
+        leftFrontDrive.setPower(0.5); // counter
+        rightFrontDrive.setPower(0.5); // clock
+        leftBackDrive.setPower(0.5); // clock
+        rightBackDrive.setPower(0.5); // counter
+        sleep(ms);
+        stopMoving();
     }
 
     public void driveBack(int ms) {

@@ -15,15 +15,17 @@ public class RemoteControlShooter extends LinearOpMode {
         LinearOpMode o = this;
         RockinBot r = new RockinBot(o, "Shooter");
 
-        // Don't edit these-- go to RockinBot & control+F "change these to change the default variables"!
-        double launcherSpeed = 0;
-        double intakeSpeed = 0;
-        double lifterPower = 0;
+        // We don't know why, but EDIT THESE!!! THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
+        // The ones in RockinBot are supposed to be running, but these are instead, so don't question it! If it works, it works!
+        // These are the defaults that run when the program starts. Their values can be modified by RC inputs
+        double launcherSpeed = 0.5;
+        double intakeSpeed = -0.6;
+        double lifterPower = 0.05;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
         RobotLog.vv("Rockin' Robots", "Remote Control Ready");
-        telemetry.addData("This code was last updated", "10/30/2025, 4:46pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "11/1/2025, 1:41 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
 
@@ -38,7 +40,7 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.circle){
-                intakeSpeed = -0.53;
+                intakeSpeed = -0.6;
             }
             else if(gamepad1.square){
                 intakeSpeed = 0;
@@ -53,14 +55,8 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
-                lifterPower = 0;
+                lifterPower = 0.05;
             }
-            
-            /*
-            if (gamepad1.right_bumper){
-                lifterPower = 1;
-            }
-            */
             
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
