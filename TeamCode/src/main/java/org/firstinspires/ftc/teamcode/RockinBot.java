@@ -7,8 +7,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -29,8 +27,8 @@ public class RockinBot {
     private DcMotor rightLauncher = null;
     private DcMotor intake = null;
     private CRServo lifter = null;
-    private double leftLauncherPower = 0;
-    private double rightLauncherPower = 0;
+    private double leftLauncherPos = 0;
+    private double rightLauncherPos = 0;
     private double leftFrontPower = 0;
     private double rightFrontPower = 0;
     private double leftBackPower = 0;
@@ -40,7 +38,7 @@ public class RockinBot {
     // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
     // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
     double launcherSpeed = 0.5;
-    double intakeSpeed = -0.6;
+    double intakeSpeed = 0.6;
     public GoBildaPinpointDriver odo = null;
 
     // During runtime
@@ -67,7 +65,6 @@ public class RockinBot {
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
         intake = o.hardwareMap.get(DcMotor.class, "intake");
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intake.setDirection(DcMotor.Direction.REVERSE);
 
         //Wheel variables
         leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
@@ -117,6 +114,8 @@ public class RockinBot {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+
+
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
 
         // Initializes the pinpoint
@@ -131,11 +130,16 @@ public class RockinBot {
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
-    public void setWheelPower(double left_y, double left_x, double right_x){        // Wheel power and speed
-        leftFrontPower = (left_y + left_x + right_x) * 0.75;
-        rightFrontPower = (left_y + left_x - right_x) * 0.75;
-        leftBackPower = (left_y - left_x + right_x) * 0.75;
-        rightBackPower = (left_y - left_x - right_x) * 0.75;
+    public void setWheelPower(double left_y, double left_x, double right_x, boolean park){        // Wheel power and speed
+        double wheelMultiplier = 0.75;
+
+        if(park){
+            wheelMultiplier = 0.25;
+        }
+        leftFrontPower = (left_y + left_x + right_x) * wheelMultiplier;
+        rightFrontPower = (left_y + left_x - right_x) * wheelMultiplier;
+        leftBackPower = (left_y - left_x + right_x) * wheelMultiplier;
+        rightBackPower = (left_y - left_x - right_x) * wheelMultiplier;
 
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
@@ -193,8 +197,6 @@ public class RockinBot {
         launcherSpeed = power;
         leftLauncher.setPower(power);
         rightLauncher.setPower(power);
-        leftLauncherPower = leftLauncher.getPower();
-        rightLauncherPower = rightLauncher.getPower();
     }
 
     public void intakePower(double speed) {
@@ -303,12 +305,16 @@ public class RockinBot {
 
     // Log all (relevant) info about the robot on the hub.
     public void printDataOnScreen() {
+        leftLauncherPos = leftLauncher.getCurrentPosition();
+        rightLauncherPos = rightLauncher.getCurrentPosition();
+
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         o.telemetry.addData("Goal Launcher Power", "%.2f", launcherSpeed);
-        o.telemetry.addData("Current Right Launcher", "%.2f", rightLauncherPower);
-        o.telemetry.addData("Current Left Launcher", "%.2f", leftLauncherPower);
+        o.telemetry.addData("Current Right Launcher", "%.2f", rightLauncherPos);
+        o.telemetry.addData("Current Left Launcher", "%.2f", leftLauncherPos);
         o.telemetry.addData("Intake Power", "%.2f", intakeSpeed);
         o.telemetry.update();
+        RobotLog.vv("Rockin' Robots", "Launcher Power (l/r): %.2f, %.2f", leftLauncherPos, rightLauncherPos);
     }
 }

@@ -23,14 +23,14 @@ public class SimplePurple extends LinearOpMode {
         waitForStart();
         r.lifterPower(0.05);
         r.launcherPower(0.57);
-        r.intakePower(-0.1);
+        r.intakePower(0.1);
         sleep(500);
         r.driveBack(1000);
         sleep(2000);
         //r.intakePower(-0.7);
         r.lifterPower(-0.7);
         sleep(200);
-        r.intakePower(-0.7);
+        r.intakePower(0.7);
         r.lifterPower(0.05);
         sleep(1000);
         for(int i = 1; i<4; i++) {
