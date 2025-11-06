@@ -26,7 +26,7 @@ public class RockinBot {
     private DcMotor leftLauncher = null;
     private DcMotor rightLauncher = null;
     private DcMotor intake = null;
-    private CRServo lifter = null;
+    private DcMotor lifter = null;
     private double leftLauncherPos = 0;
     private double rightLauncherPos = 0;
     private double leftFrontPower = 0;
@@ -81,8 +81,9 @@ public class RockinBot {
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
         //Lifter Variables
-        lifter = o.hardwareMap.get(CRServo.class, "lifter");
-        lifter.setPower(0);
+        lifter = o.hardwareMap.get(DcMotor.class, "lifter");
+        lifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lifter.setDirection(DcMotor.Direction.REVERSE);
 
         // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
