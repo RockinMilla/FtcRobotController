@@ -83,7 +83,6 @@ public class RockinBot {
         //Lifter Variables
         lifter = o.hardwareMap.get(DcMotor.class, "lifter");
         lifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lifter.setDirection(DcMotor.Direction.REVERSE);
 
         // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
