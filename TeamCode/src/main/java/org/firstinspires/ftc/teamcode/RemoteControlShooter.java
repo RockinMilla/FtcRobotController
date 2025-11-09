@@ -30,7 +30,7 @@ public class RemoteControlShooter extends LinearOpMode {
         telemetry.update();
         waitForStart();
         r.intakePower(0);
-        r.lifterPower(-1);
+        r.lifterPower(1);
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -53,11 +53,11 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.right_trigger > 0){
-                lifterPower = -0.5;
+                lifterPower = 0.5;
             }
 
             if (gamepad1.left_trigger > 0){
-                lifterPower = 0.5;
+                lifterPower = -0.5;
             }
 
             if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
