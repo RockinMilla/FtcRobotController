@@ -53,11 +53,11 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.right_trigger > 0){
-                lifterPower = -0.5;
+                lifterPower = 0.5;
             }
 
             if (gamepad1.left_trigger > 0){
-                lifterPower = 0.5;
+                lifterPower = -0.5;
             }
 
             if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
