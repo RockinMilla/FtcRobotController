@@ -21,18 +21,19 @@ public class SimplePurple extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        r.launcherPower(0.38);
-        r.intakePower(0.4);
+        r.launcherPower(0.41);
+        r.intakePower(1);
         sleep(500); // Wait for motors to get up to speed
-        r.driveBack(1000); // Drive to shooting position
-        sleep(2000);
-        r.lifterPower(0.3);
-        sleep(1000); // Shoot
+        r.driveBack(1250); // Drive to shooting position
+        sleep(1000);
+        r.lifterPower(0.2);
+        sleep(500); // Shoot
         r.lifterPower(0);
-        r.intakePower(0.7);
+        r.launcherPower(0.41);
+        r.intakePower(1);
         sleep(1000); // Pause
-        r.lifterPower(0.4);
-        sleep(1000); // Shoot
+        r.lifterPower(0.2);
+        sleep(3000); // Shoot
         r.launcherPower(0);
         r.lifterPower(0);
         r.intakePower(0); // Set all motors to 0
