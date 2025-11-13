@@ -15,12 +15,11 @@ public class RemoteControlShooter extends LinearOpMode {
         LinearOpMode o = this;
         RockinBot r = new RockinBot(o, "Shooter");
 
-        // We don't know why, but EDIT THESE!!! THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
-        // The ones in RockinBot are supposed to be running, but these are instead, so don't question it! If it works, it works!
+        // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
         double launcherSpeed = 0.37;
-        double intakeSpeed = 0.6;
-        double lifterPower = 0.05;
+        double intakeSpeed = 1;
+        double lifterPower = 0;
         boolean park = false;
 
         // Wait for the game to start (driver presses PLAY)
@@ -29,8 +28,8 @@ public class RemoteControlShooter extends LinearOpMode {
         telemetry.addData("This code was last updated", "11/3/2025, 10:10 am"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
-        r.intakePower(0);
-        r.lifterPower(1);
+        r.intakePower(intakeSpeed);
+        r.lifterPower(lifterPower);
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -77,7 +76,6 @@ public class RemoteControlShooter extends LinearOpMode {
             r.launcherPower(launcherSpeed);
             // Show the elapsed game time and wheel power.
             r.printDataOnScreen();
-            //RobotLog.vv("Rockin' Robots", "Wheel Power: %.2f, %.2f, %.2f, %.2f");
         }
     }
 }
