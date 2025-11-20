@@ -64,10 +64,10 @@ public class RockinBot {
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
-        //leftLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //rightLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake = o.hardwareMap.get(DcMotor.class, "intake");
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

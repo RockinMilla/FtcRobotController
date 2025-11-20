@@ -17,7 +17,7 @@ public class RemoteControlShooter extends LinearOpMode {
 
         // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
-        double launcherSpeed = 0;
+        double launcherSpeed = 0.37;
         double intakeSpeed = 1;
         double lifterPower = 0;
         boolean park = false;
