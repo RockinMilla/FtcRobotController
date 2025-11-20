@@ -17,7 +17,7 @@ public class RemoteControlShooter extends LinearOpMode {
 
         // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
-        double launcherSpeed = 0.37;
+        double launcherSpeed = 0;
         double intakeSpeed = 1;
         double lifterPower = 0;
         boolean park = false;
@@ -36,31 +36,39 @@ public class RemoteControlShooter extends LinearOpMode {
 
             if (gamepad1.dpad_right) {
                 launcherSpeed += 0.001;
+                r.launcherPower(launcherSpeed);
             }
             else if (gamepad1.dpad_left) {
                 launcherSpeed -= 0.001;
+                r.launcherPower(launcherSpeed);
             }
 
             if(gamepad1.circle){
                 intakeSpeed = 1;
+                r.intakePower(intakeSpeed);
             }
             else if(gamepad1.square){
                 intakeSpeed = -1;
+                r.intakePower(intakeSpeed);
             }
             else if(gamepad1.cross){
                 intakeSpeed = 0;
+                r.intakePower(intakeSpeed);
             }
 
             if(gamepad1.right_trigger > 0){
                 lifterPower = 0.35;
+                r.lifterPower(lifterPower);
             }
 
             if (gamepad1.left_trigger > 0){
                 lifterPower = -0.35;
+                r.lifterPower(lifterPower);
             }
 
             if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
                 lifterPower = 0;
+                r.lifterPower(lifterPower);
             }
 
             if(gamepad1.dpad_down){
@@ -71,9 +79,6 @@ public class RemoteControlShooter extends LinearOpMode {
             }
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
 
-            r.intakePower(intakeSpeed);
-            r.lifterPower(lifterPower);
-            r.launcherPower(launcherSpeed);
             // Show the elapsed game time and wheel power.
             r.printDataOnScreen();
         }

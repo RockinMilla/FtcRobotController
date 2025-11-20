@@ -64,6 +64,10 @@ public class RockinBot {
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
+        //leftLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //rightLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake = o.hardwareMap.get(DcMotor.class, "intake");
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -133,7 +137,7 @@ public class RockinBot {
     }
 
     public void setWheelPower(double left_y, double left_x, double right_x, boolean park){        // Wheel power and speed
-        double wheelMultiplier = 0.75;
+        double wheelMultiplier = 1;
 
         if(park){
             wheelMultiplier = 0.25;
@@ -197,8 +201,8 @@ public class RockinBot {
 
     public void launcherPower(double power) {
         launcherSpeed = power;
-        leftLauncher.setPower(power);
-        rightLauncher.setPower(power);
+        leftLauncher.setPower(launcherSpeed);
+        rightLauncher.setPower(launcherSpeed);
     }
 
     public void intakePower(double speed) {
