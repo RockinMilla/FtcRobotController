@@ -220,7 +220,7 @@ public class RockinBot {
         pos = odo.getPosition();
         xLoc = pos.getX(DistanceUnit.MM);
         yLoc = pos.getY(DistanceUnit.MM);
-        hLoc = pos.getHeading(AngleUnit.DEGREES);
+        hLoc = -pos.getHeading(AngleUnit.DEGREES);
         String data = String.format("{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
         RobotLog.vv("Rockin' Robots", "Position: " + data);
     }
@@ -295,6 +295,7 @@ public class RockinBot {
             hDistance = hTarget - hLoc;
             if (hDistance > 180) hDistance -= 360;
             if (hDistance < -180) hDistance += 360;
+            RobotLog.vv("Rockin' Robots", "Julia: hLoc: %.2f, hDist: %.2f, hTarget: %.2f", hLoc, hDistance, hTarget);
 
             angleRadians = Math.toRadians(hLoc);
             xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);

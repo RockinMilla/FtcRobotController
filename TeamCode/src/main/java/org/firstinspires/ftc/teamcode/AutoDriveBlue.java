@@ -17,11 +17,23 @@ public class AutoDriveBlue extends LinearOpMode {
 
         telemetry.addData("Autonomous Ready", "You can press start now");
 
-        telemetry.addData("This code was last updated", "10/27/2025, 1:35 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "11/23/2025, 2:20 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         r.getPinpointPosition();
+        r.intakePower(0.6);
+        r.launcherPower(.37);
+        sleep(500);
+        r.driveToPos(0, -500, 0);
+        r.lifterPower(1);
+        sleep(500);
+        r.lifterPower(0);
+        sleep(200);
+        r.driveToPos(0, -500, -45);
+        sleep(500);
+        r.driveToPos(-100, -700, -45);
+/*
         r.driveToPos(500, 500, 0); // backwards, strafe left
         r.driveToPos(500, 500, -45); // turn towards goal
         sleep(500); // pew pew pew
@@ -42,6 +54,7 @@ public class AutoDriveBlue extends LinearOpMode {
         sleep(500); // pew pew pew
         // turn towards gate
         // park ready to activate gate
+         */
         RobotLog.vv("Rockin' Robots", "Test Done");
         sleep(4 * 1000);
     }
