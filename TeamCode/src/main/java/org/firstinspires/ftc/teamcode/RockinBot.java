@@ -24,7 +24,7 @@ public class RockinBot {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private DcMotor leftLauncher = null;
+    private DcMotor leftLauncher = null; // Milla: We want to use SetVelocity instead of SetPower, that requires our launcher motors to be of type DcMotorEx
     private DcMotor rightLauncher = null;
     private DcMotor intake = null;
     private DcMotor lifter = null;
@@ -58,7 +58,7 @@ public class RockinBot {
     // Allow driving and braking
     public void initializeShooterVar() {
         //Launcher + intake variables
-        leftLauncher = o.hardwareMap.get(DcMotor.class, "left_launcher");
+        leftLauncher = o.hardwareMap.get(DcMotor.class, "left_launcher"); // Milla: Our hardware map needs DcMotorEx as well
         rightLauncher = o.hardwareMap.get(DcMotor.class, "right_launcher");
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -194,14 +194,16 @@ public class RockinBot {
         leftFrontDrive.setPower(0.5); // clock
         rightFrontDrive.setPower(0.5); // clock
         leftBackDrive.setPower(-0.5); // clock
-        rightBackDrive.setPower(-0.5); // clock
+        rightBackDrive.setPower(-0.5); // clocksetVelocity
         sleep(ms);
         stopMoving();
     }
 
     public void launcherPower(double power) {
         launcherSpeed = power;
-        leftLauncher.setPower(launcherSpeed);
+        leftLauncher.setPower(launcherSpeed); // Milla: With the changes above, you should now be able to use setVelocity() instead of setPower()
+                                        // Velocity is measured differently than power, so you need to start with different default values and ask the
+                                        // drive team to pick a velocity that should be the new default. I would start with something like 300.
         rightLauncher.setPower(launcherSpeed);
     }
 
