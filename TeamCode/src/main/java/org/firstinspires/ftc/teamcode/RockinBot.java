@@ -93,6 +93,7 @@ public class RockinBot {
         // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         odo.resetPosAndIMU();
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         odo.update();
 
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
@@ -120,8 +121,6 @@ public class RockinBot {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-
-
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
 
         // Initializes the pinpoint
@@ -143,9 +142,9 @@ public class RockinBot {
             wheelMultiplier = 0.25;
         }
         leftFrontPower = (left_y + left_x + right_x) * wheelMultiplier;
-        rightFrontPower = (left_y + left_x - right_x) * wheelMultiplier;
+        rightFrontPower = (left_y - left_x - right_x) * wheelMultiplier;
         leftBackPower = (left_y - left_x + right_x) * wheelMultiplier;
-        rightBackPower = (left_y - left_x - right_x) * wheelMultiplier;
+        rightBackPower = (left_y + left_x - right_x) * wheelMultiplier;
 
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
@@ -220,7 +219,7 @@ public class RockinBot {
         pos = odo.getPosition();
         xLoc = pos.getX(DistanceUnit.MM);
         yLoc = pos.getY(DistanceUnit.MM);
-        hLoc = -pos.getHeading(AngleUnit.DEGREES);
+        hLoc = pos.getHeading(AngleUnit.DEGREES);
         String data = String.format("{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
         RobotLog.vv("Rockin' Robots", "Position: " + data);
     }
@@ -241,7 +240,7 @@ public class RockinBot {
         if (hDistance < -180) hDistance += 360;
         double angleRadians = Math.toRadians(hLoc);
         double xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
-        double yRotatedDistance = -xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
+        double yRotatedDistance = xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
 
         RobotLog.vv("Rockin' Robots", "driveToPos() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, xyAccuracy: %.2f, hAccuracy: %.2f",
                 xTarget, yTarget, hTarget, xyAccuracy, hAccuracy);
@@ -252,10 +251,10 @@ public class RockinBot {
                 || Math.abs(hDistance) > hAccuracy) {
 
             // Set wheel power
-            leftFrontPower = (yRotatedDistance + xRotatedDistance + hDistance);
-            rightFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
-            leftBackPower = (yRotatedDistance - xRotatedDistance + hDistance);
-            rightBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
+            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
+            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance);
+            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
+            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance);
 
             RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
             // Normalize the values so wheel power does not exceed 100%
@@ -268,10 +267,10 @@ public class RockinBot {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            leftFrontPower *= 0.5;
-            rightFrontPower *= 0.5;
-            leftBackPower *= 0.5;
-            rightBackPower *= 0.5;
+            leftFrontPower *= 0.4;
+            rightFrontPower *= 0.4;
+            leftBackPower *= 0.4;
+            rightBackPower *= 0.4;
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
@@ -295,7 +294,6 @@ public class RockinBot {
             hDistance = hTarget - hLoc;
             if (hDistance > 180) hDistance -= 360;
             if (hDistance < -180) hDistance += 360;
-            RobotLog.vv("Rockin' Robots", "Julia: hLoc: %.2f, hDist: %.2f, hTarget: %.2f", hLoc, hDistance, hTarget);
 
             angleRadians = Math.toRadians(hLoc);
             xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
