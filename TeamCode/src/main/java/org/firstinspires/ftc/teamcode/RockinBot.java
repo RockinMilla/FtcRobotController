@@ -38,8 +38,8 @@ public class RockinBot {
     private double max = 0;
     // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
     // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
-    double launcherSpeed = 0.5;
-    double intakeSpeed = 0.6;
+    double launcherSpeed = 0.37;
+    double intakeSpeed = 1.0;
     public GoBildaPinpointDriver odo = null;
 
     // During runtime

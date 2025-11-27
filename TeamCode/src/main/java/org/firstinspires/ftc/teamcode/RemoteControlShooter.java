@@ -29,6 +29,7 @@ public class RemoteControlShooter extends LinearOpMode {
         telemetry.update();
         waitForStart();
         r.intakePower(intakeSpeed);
+        r.launcherPower(launcherSpeed);
         r.lifterPower(lifterPower);
 
         // Run until the end of the match (driver presses STOP)
