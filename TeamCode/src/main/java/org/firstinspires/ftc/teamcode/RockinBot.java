@@ -143,9 +143,9 @@ public class RockinBot {
             wheelMultiplier = 0.25;
         }
         leftFrontPower = (left_y + left_x + right_x) * wheelMultiplier;
-        rightFrontPower = (left_y + left_x - right_x) * wheelMultiplier;
+        rightFrontPower = (left_y - left_x - right_x) * wheelMultiplier;
         leftBackPower = (left_y - left_x + right_x) * wheelMultiplier;
-        rightBackPower = (left_y - left_x - right_x) * wheelMultiplier;
+        rightBackPower = (left_y + left_x - right_x) * wheelMultiplier;
 
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
@@ -243,7 +243,7 @@ public class RockinBot {
         if (hDistance < -180) hDistance += 360;
         double angleRadians = Math.toRadians(hLoc);
         double xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
-        double yRotatedDistance = -xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
+        double yRotatedDistance = xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
 
         RobotLog.vv("Rockin' Robots", "driveToPos() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, xyAccuracy: %.2f, hAccuracy: %.2f",
                 xTarget, yTarget, hTarget, xyAccuracy, hAccuracy);
@@ -254,10 +254,10 @@ public class RockinBot {
                 || Math.abs(hDistance) > hAccuracy) {
 
             // Set wheel power
-            leftFrontPower = (yRotatedDistance + xRotatedDistance + hDistance);
-            rightFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
-            leftBackPower = (yRotatedDistance - xRotatedDistance + hDistance);
-            rightBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
+            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance);
+            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance);
+            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance);
+            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance);
 
             RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
             // Normalize the values so wheel power does not exceed 100%

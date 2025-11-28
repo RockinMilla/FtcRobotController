@@ -39,7 +39,7 @@ public class AutoDriveBlue extends LinearOpMode {
         sleep(500); // slurp up balls
         r.driveToPos(500, 500, -90); // backward, strafe left
         r.driveToPos(500, 500, -45); // turn towards goal
-        sleep(500); // pew pew pew
+        sleep(500); // pew pew pew*/
         // turn towards gate
         // park ready to activate gate
         RobotLog.vv("Rockin' Robots", "Test Done");
