@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
-@Autonomous(name="Simple Purple", group="Robot")
+// @Autonomous(name="Simple Purple", group="Robot")
 public class SimplePurple extends LinearOpMode {
     final ElapsedTime runtime = new ElapsedTime();
 
