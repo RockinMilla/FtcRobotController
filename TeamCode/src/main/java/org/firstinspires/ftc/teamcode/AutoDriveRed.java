@@ -22,7 +22,7 @@ public class AutoDriveRed extends LinearOpMode {
         waitForStart();
         r.getPinpointPosition();
         r.intakePower(1.0);
-        r.launcherPower(0.34);
+        r.launcherVelocity(0.34);
 
         shootBalls(r);
 
@@ -43,7 +43,7 @@ public class AutoDriveRed extends LinearOpMode {
 
         shootBalls(r);
 
-        r.launcherPower(0);
+        r.launcherVelocity(0);
         r.intakePower(0);
 
         RobotLog.vv("Rockin' Robots", "Test Done");

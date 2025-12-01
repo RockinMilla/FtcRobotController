@@ -17,49 +17,48 @@ public class AutoDriveBlue extends LinearOpMode {
 
         telemetry.addData("Autonomous Ready", "You can press start now");
 
-        telemetry.addData("This code was last updated", "11/30/2025, 2:29" +
-                " pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "12/1/2025, 1:53 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         r.getPinpointPosition();
-        r.intakePower(1.0);
-        r.launcherPower(0.34);
+        r.lifterPower(-0.1);
+        r.intakePower(0.5);
+        r.launcherVelocity(880);
 
-        shootBalls(r);
+        shootBalls(r); // Shoot preloaded balls
 
+        // Pick up 1st set of balls
         r.driveToPos(-800, -1000, 0);
-        r.lifterPower(0.2);
+        r.lifterPower(0.3);
         r.driveToPos(-800, -50, 0);
+        sleep(300);
         r.lifterPower(0);
-        sleep(500);
 
         shootBalls(r);
 
+        // Pick up 2nd set of balls
         r.driveToPos(-1400, -800, 0);
-        r.lifterPower(0.2);
+        r.lifterPower(0.3);
         r.driveToPos(-1400, 100, 0);
+        sleep(300);
         r.lifterPower(0);
 
         r.driveToPos(-1400, -300, 0); // move to avoid gate
 
         shootBalls(r);
 
-        r.launcherPower(0);
+        r.driveToPos(100, -800, -35); // park
+        r.launcherVelocity(0);
         r.intakePower(0);
 
         RobotLog.vv("Rockin' Robots", "Test Done");
     }
     private void shootBalls(RockinBot r)
     {
-        r.driveToPos(-100, -700, -40);
-        r.lifterPower(0.6);
-        sleep(300);
-        r.lifterPower(0);
-        sleep(500);
-        r.lifterPower(0.6);
-        sleep(300);
-        r.lifterPower(0);
-        sleep(500);
+        r.driveToPos(-100, -700, -35);
+        r.lifterPower(0.4);
+        sleep(2000);
+        r.lifterPower(0.0);
     }
 }
