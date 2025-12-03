@@ -17,7 +17,7 @@ public class RemoteControlShooter extends LinearOpMode {
 
         // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
-        double launcherSpeed = 500; // figure this out
+        double launcherSpeed = 800; // figure this out
         double intakeSpeed = 1;
         double lifterPower = 0;
         boolean park = false;
@@ -36,20 +36,12 @@ public class RemoteControlShooter extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (gamepad1.dpad_right) {
-                r.turnLifterByDegrees(90);
-                sleep(2000);
+                launcherSpeed += 10;
+                r.launcherVelocity(launcherSpeed);
             }
             else if (gamepad1.dpad_left) {
-                r.turnLifterByDegrees(360);
-                sleep(2000);
-            }
-            else if (gamepad1.dpad_down){
-                r.turnLifterByDegrees(180);
-                sleep(2000);
-            }
-            else if (gamepad1.dpad_up){
-                r.turnLifterByDegrees(45);
-                sleep(2000);
+                launcherSpeed -= 10;
+                r.launcherVelocity(launcherSpeed);
             }
 
             if(gamepad1.circle){
@@ -66,12 +58,12 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.right_trigger > 0){
-                lifterPower = 0.35;
+                lifterPower = 1000;
                 r.lifterPower(lifterPower);
             }
 
             if (gamepad1.left_trigger > 0){
-                lifterPower = -0.35;
+                lifterPower = -1000;
                 r.lifterPower(lifterPower);
             }
 

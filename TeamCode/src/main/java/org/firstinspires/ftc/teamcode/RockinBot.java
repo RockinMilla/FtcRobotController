@@ -28,7 +28,7 @@ public class RockinBot {
     private DcMotorEx leftLauncher = null;
     private DcMotorEx rightLauncher = null;
     private DcMotor intake = null;
-    private DcMotor lifter = null;
+    private DcMotorEx lifter = null;
     private double leftLauncherVelocity = 0;
     private double rightLauncherVelocity = 0;
     private double leftFrontPower = 0;
@@ -58,7 +58,8 @@ public class RockinBot {
     }
 
     // Allow driving and braking
-    public void initializeShooterVar() {
+    public void initializeShooterVar()
+    {
         //Launcher + intake variables
         leftLauncher = o.hardwareMap.get(DcMotorEx.class, "left_launcher");
         rightLauncher = o.hardwareMap.get(DcMotorEx.class, "right_launcher");
@@ -92,7 +93,8 @@ public class RockinBot {
         lifter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         lifter.setDirection(DcMotorEx.Direction.REVERSE);
         lifter.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        lifter.setTargetPosition(0);
+        lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -215,15 +217,22 @@ public class RockinBot {
     }
 
     public void lifterPower(double power) {
-        lifter.setPower(power);
+        lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        lifter.setVelocity(power);
     }
 
     public void turnLifterByDegrees(int degrees) {
-        RobotLog.vv("Rockin' Robots", "Lifter position: "+ lifter.getCurrentPosition());
-        lifter.setTargetPosition((int)(lifter.getCurrentPosition()+degrees*3.9));
-        ((DcMotorEx) lifter).setVelocity(1000);
-        lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "Turned lifter by "+ degrees+ " degrees");
+        turnLifterByDegrees(degrees, 2000);
+    }
+
+    public void turnLifterByDegrees(int degrees, int velocity) {
+        RobotLog.vv("Rockin' Robots", "Lifter position before: "+ lifter.getCurrentPosition());
+        int moveToDegrees = (int)(lifter.getCurrentPosition()+(degrees*3.9));
+        lifter.setTargetPosition(moveToDegrees);
+        ((DcMotorEx) lifter).setVelocity(velocity);
+        lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        RobotLog.vv("Rockin' Robots", "Turned lifter to "+ moveToDegrees+ " degrees");
+        RobotLog.vv("Rockin' Robots", "Lifter position after: "+ lifter.getCurrentPosition());
     }
 
     public void getPinpointPosition() {     // Finds robot position
@@ -238,10 +247,10 @@ public class RockinBot {
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget) {    // Defaults hAccuracy to 3 if no hAccuracy is given
-        driveToPos(xTarget, yTarget, hTarget, 15, 3); //todo: should hAccuracy be 3? What unit is it?
+        driveToPos(xTarget, yTarget, hTarget, 15, 3, 5); //todo: should hAccuracy be 3? What unit is it?
     }
 
-    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy) {   // In millimeters
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, int maxDuration) {   // In millimeters
         getPinpointPosition();      // Get initial position
 
         // Calculate distance from target
@@ -261,7 +270,7 @@ public class RockinBot {
         runtime.reset();
         // While the program is running
         while (o.opModeIsActive()
-                && runtime.seconds() < 5
+                && runtime.seconds() < maxDuration
                 && (Math.abs(xDistance) > xyAccuracy
                 || Math.abs(yDistance) > xyAccuracy
                 || Math.abs(hDistance) > hAccuracy)) {

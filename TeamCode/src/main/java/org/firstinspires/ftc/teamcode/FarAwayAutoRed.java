@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="BlueFarAway", group="Robot")
-public class FarAwayAutoBlue extends LinearOpMode {
+@Autonomous(name="RedFarAway", group="Robot")
+public class FarAwayAutoRed extends LinearOpMode {
     final ElapsedTime runtime = new ElapsedTime();
 
     @Override
@@ -26,13 +26,13 @@ public class FarAwayAutoBlue extends LinearOpMode {
         r.intakePower(0.5);
         r.launcherVelocity(1300); // finetune this (higher?)
 
-        //r.driveToPos(0, 100, 0);
         shootBalls(r); // Shoot preloaded balls
 
         // Pick up 1st set of balls
-        r.driveToPos(-400, 750, 90);
-        r.turnLifterByDegrees(360, 300);
-        r.driveToPos(-1100, 750, 90, 15, 3, 3); // slurp the balls up
+        r.driveToPos(400, 700, -90);
+        r.driveToPos(400, 700, -90); // Intentionally duplicated
+        r.turnLifterByDegrees(300, 300);
+        r.driveToPos(1100, 700, -90, 15, 3, 3); // slurp the balls up
         sleep(300);
         r.turnLifterByDegrees(-50);
         sleep(100);
@@ -40,14 +40,14 @@ public class FarAwayAutoBlue extends LinearOpMode {
 
         shootBalls(r); // youll never guess what this does
 
-        r.driveToPos(-400, 300, 90); // park
+        r.driveToPos(400, 300, -90); // park
         r.launcherVelocity(0);
         r.intakePower(0);
     }
 
     private void shootBalls(RockinBot r)
     {
-        r.driveToPos(0, 100, 30);
+        r.driveToPos(0, 100, -30);
         sleep(1000);
         r.turnLifterByDegrees(360);
         sleep(3000);
