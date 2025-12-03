@@ -15,7 +15,7 @@ public class FarAwayAutoRed extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "12/2/2025, 2:57 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "12/3/2025, 2:44 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -24,15 +24,16 @@ public class FarAwayAutoRed extends LinearOpMode {
         r.getPinpointPosition();
         //r.lifterPower(-0.1);
         r.intakePower(0.5);
-        r.launcherVelocity(1300); // finetune this (higher?)
+        r.launcherVelocity(1100); // finetune this
 
         shootBalls(r); // Shoot preloaded balls
 
         // Pick up 1st set of balls
-        r.driveToPos(400, 700, -90);
-        r.driveToPos(400, 700, -90); // Intentionally duplicated
-        r.turnLifterByDegrees(300, 300);
-        r.driveToPos(1100, 700, -90, 15, 3, 3); // slurp the balls up
+        r.driveToPos(300, 670, -90);
+        r.driveToPos(300, 670, -90); // Intentionally duplicated
+        r.turnLifterByDegrees(300, 400);
+        sleep(100);
+        r.driveToPos(1300, 670, -90, 15, 3, 3); // slurp the balls up
         sleep(300);
         r.turnLifterByDegrees(-50);
         sleep(100);
@@ -47,9 +48,14 @@ public class FarAwayAutoRed extends LinearOpMode {
 
     private void shootBalls(RockinBot r)
     {
-        r.driveToPos(0, 100, -30);
+        r.driveToPos(0, 100, -25);
+        r.launcherVelocity(1100);
         sleep(1000);
-        r.turnLifterByDegrees(360);
+        r.turnLifterByDegrees(80, 2000);
+        sleep(1500);
+        r.turnLifterByDegrees(80, 2000);
+        sleep(1500);
+        r.turnLifterByDegrees(360, 2000);
         sleep(3000);
     }
 }
