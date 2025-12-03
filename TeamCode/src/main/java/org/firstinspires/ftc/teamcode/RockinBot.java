@@ -7,6 +7,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+//import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -87,9 +88,11 @@ public class RockinBot {
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
         //Lifter Variables
-        lifter = o.hardwareMap.get(DcMotor.class, "lifter");
-        lifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lifter.setDirection(DcMotor.Direction.REVERSE);
+        lifter = o.hardwareMap.get(DcMotorEx.class, "lifter");
+        lifter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        lifter.setDirection(DcMotorEx.Direction.REVERSE);
+        lifter.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -213,6 +216,14 @@ public class RockinBot {
 
     public void lifterPower(double power) {
         lifter.setPower(power);
+    }
+
+    public void turnLifterByDegrees(int degrees) {
+        RobotLog.vv("Rockin' Robots", "Lifter position: "+ lifter.getCurrentPosition());
+        lifter.setTargetPosition((int)(lifter.getCurrentPosition()+degrees*3.9));
+        ((DcMotorEx) lifter).setVelocity(1000);
+        lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RobotLog.vv("Rockin' Robots", "Turned lifter by "+ degrees+ " degrees");
     }
 
     public void getPinpointPosition() {     // Finds robot position
