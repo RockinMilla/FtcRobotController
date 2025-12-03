@@ -36,12 +36,20 @@ public class RemoteControlShooter extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (gamepad1.dpad_right) {
-                launcherSpeed += 1;
-                r.launcherVelocity(launcherSpeed);
+                r.turnLifterByDegrees(90);
+                sleep(2000);
             }
             else if (gamepad1.dpad_left) {
-                launcherSpeed -= 1;
-                r.launcherVelocity(launcherSpeed);
+                r.turnLifterByDegrees(360);
+                sleep(2000);
+            }
+            else if (gamepad1.dpad_down){
+                r.turnLifterByDegrees(180);
+                sleep(2000);
+            }
+            else if (gamepad1.dpad_up){
+                r.turnLifterByDegrees(45);
+                sleep(2000);
             }
 
             if(gamepad1.circle){

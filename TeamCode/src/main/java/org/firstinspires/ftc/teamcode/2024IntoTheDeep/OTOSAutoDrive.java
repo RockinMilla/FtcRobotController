@@ -304,6 +304,7 @@ public class OTOSAutoDrive extends LinearOpMode {
             getPosition();
             xDistance = xTarget - xLoc;
             yDistance = yTarget - yLoc;
+            yDistance = yTarget - yLoc;
             hDistance = hTarget - hLoc;
             if(hDistance > 180) hDistance -= 360;
             if(hDistance < -180) hDistance += 360;
