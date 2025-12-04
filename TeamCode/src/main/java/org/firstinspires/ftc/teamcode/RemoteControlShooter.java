@@ -25,7 +25,7 @@ public class RemoteControlShooter extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
         RobotLog.vv("Rockin' Robots", "Remote Control Ready");
-        telemetry.addData("This code was last updated", "11/3/2025, 10:10 am"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "12/3/2025, 5:09 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
         r.intakePower(intakeSpeed);
@@ -36,11 +36,11 @@ public class RemoteControlShooter extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (gamepad1.dpad_right) {
-                launcherSpeed += 10;
+                launcherSpeed += 5;
                 r.launcherVelocity(launcherSpeed);
             }
             else if (gamepad1.dpad_left) {
-                launcherSpeed -= 10;
+                launcherSpeed -= 5;
                 r.launcherVelocity(launcherSpeed);
             }
 
@@ -58,12 +58,12 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.right_trigger > 0){
-                lifterPower = 1000;
+                lifterPower = 1500;
                 r.lifterPower(lifterPower);
             }
 
             if (gamepad1.left_trigger > 0){
-                lifterPower = -1000;
+                lifterPower = -1500;
                 r.lifterPower(lifterPower);
             }
 
