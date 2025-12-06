@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
-@Autonomous(name="Red", group="Robot")
-public class AutoDriveRed extends LinearOpMode {
+@Autonomous(name="Red Close", group="Robot")
+public class AutoRedClose extends LinearOpMode {
     final ElapsedTime runtime = new ElapsedTime();
 
     @Override
