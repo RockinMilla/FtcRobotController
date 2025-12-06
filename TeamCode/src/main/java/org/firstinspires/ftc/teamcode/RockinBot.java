@@ -221,11 +221,32 @@ public class RockinBot {
         lifter.setVelocity(power);
     }
 
+    public void waitForLifter() {
+        RobotLog.vv("Rockin' Robots", "Waiting for lifter");
+        while(lifter.isBusy())
+        {
+            sleep(10);
+        }
+        RobotLog.vv("Rockin' Robots", "Lifter complete");
+        return;
+    }
+
+    public void waitForLaunchers(double target) {
+        runtime.reset();
+        RobotLog.vv("Rockin' Robots", "Waiting for launchers, current velocity: " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+        while((leftLauncher.getVelocity() < target*0.95 || rightLauncher.getVelocity() < target*0.95)&&runtime.seconds()<1) {
+            sleep(10);
+        }
+        RobotLog.vv("Rockin' Robots", "Launchers complete");
+        return;
+    }
+
     public void turnLifterByDegrees(int degrees) {
         turnLifterByDegrees(degrees, 2000);
     }
 
     public void turnLifterByDegrees(int degrees, int velocity) {
+        lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         RobotLog.vv("Rockin' Robots", "Lifter position before: "+ lifter.getCurrentPosition());
         int moveToDegrees = (int)(lifter.getCurrentPosition()+(degrees*3.9));
         lifter.setTargetPosition(moveToDegrees);
@@ -292,10 +313,10 @@ public class RockinBot {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            leftFrontPower *= 0.5;
-            rightFrontPower *= 0.5;
-            leftBackPower *= 0.5;
-            rightBackPower *= 0.5;
+            leftFrontPower *= 0.7;
+            rightFrontPower *= 0.7;
+            leftBackPower *= 0.7;
+            rightBackPower *= 0.7;
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));

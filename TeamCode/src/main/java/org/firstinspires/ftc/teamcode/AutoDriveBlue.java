@@ -15,61 +15,57 @@ public class AutoDriveBlue extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-
-        telemetry.addData("This code was last updated", "12/2/2025, 2:57 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "12/6/2025, 11:58 am"); // Todo: Update this date when the code is updated
         telemetry.update();
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        r.turnLifterByDegrees(45);
-        sleep(2000);
-        r.turnLifterByDegrees(-90);
-        sleep(2000);
-        r.turnLifterByDegrees(5000);
-        sleep(2000);
-
-        /*
         r.getPinpointPosition();
-        r.lifterPower(-0.1);
-        r.intakePower(0.5);
-        r.launcherVelocity(880);
+        //r.intakePower(0.5);
+        r.launcherVelocity(800);
 
         shootBalls(r); // Shoot preloaded balls
 
         // Pick up 1st set of balls
-        r.driveToPos(-800, -1000, 0);
-        r.lifterPower(0.3);
-        r.driveToPos(-800, -50, 0);
-        sleep(300);
-        r.lifterPower(0);
+        r.driveToPos(-800, -900, 0);
+        r.turnLifterByDegrees(270, 400);
+        r.driveToPos(-800, 0, 0, 15, 3, 3);
+        sleep(700);
 
         shootBalls(r);
 
         // Pick up 2nd set of balls
         r.driveToPos(-1400, -800, 0);
-        r.lifterPower(0.3);
-        r.driveToPos(-1400, 100, 0);
+        r.turnLifterByDegrees(270, 500);
+        r.driveToPos(-1400, 200, 0, 15, 3, 3);
         sleep(300);
-        r.lifterPower(0);
 
         r.driveToPos(-1400, -300, 0); // move to avoid gate
 
         shootBalls(r);
-
         r.driveToPos(100, -800, -35); // park
         r.launcherVelocity(0);
         r.intakePower(0);
 
-        RobotLog.vv("Rockin' Robots", "Test Done");
-
-         */
+        //RobotLog.vv("Rockin' Robots", "Test Done");
     }
 
     private void shootBalls(RockinBot r)
     {
+        r.intakePower(-0.05);
         r.driveToPos(-100, -700, -35);
-        r.lifterPower(0.4);
-        sleep(2000);
-        r.lifterPower(0.0);
+        r.intakePower(0.5);
+        sleep(500);
+        r.waitForLaunchers(800);
+        r.turnLifterByDegrees(90, 2000);
+        r.launcherVelocity(800);
+        r.waitForLifter();
+        r.waitForLaunchers(800);
+        r.turnLifterByDegrees(90, 2000);
+        r.waitForLifter();
+        r.waitForLaunchers(800);
+        r.turnLifterByDegrees(360, 2000);
+        r.waitForLifter();
     }
 }
