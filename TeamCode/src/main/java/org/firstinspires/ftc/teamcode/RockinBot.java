@@ -217,13 +217,16 @@ public class RockinBot {
     }
 
     public void lifterPower(double power) {
-        lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        lifter.setVelocity(power);
+        if(!lifter.isBusy()) {
+            lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            lifter.setVelocity(power);
+        }
     }
 
     public void waitForLifter() {
         RobotLog.vv("Rockin' Robots", "Waiting for lifter");
-        while(lifter.isBusy())
+        runtime.reset();
+        while(lifter.isBusy()&&runtime.seconds()<1)
         {
             sleep(10);
         }
@@ -245,15 +248,28 @@ public class RockinBot {
         turnLifterByDegrees(degrees, 2000);
     }
 
+    public void turnLifterByDegreesRC(int degrees, int velocity) {
+        RobotLog.vv("Rockin' Robots", "Lifter position before: " + lifter.getCurrentPosition());
+        if(!lifter.isBusy()) {
+            lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            int moveToDegrees = (int) (lifter.getCurrentPosition() + (degrees * 3.9));
+            lifter.setTargetPosition(moveToDegrees);
+            ((DcMotorEx) lifter).setVelocity(velocity);
+            lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            RobotLog.vv("Rockin' Robots", "Turned lifter to " + moveToDegrees + " degrees");
+            RobotLog.vv("Rockin' Robots", "Lifter position after: " + lifter.getCurrentPosition());
+        }
+    }
+
     public void turnLifterByDegrees(int degrees, int velocity) {
+        RobotLog.vv("Rockin' Robots", "turnLifterByDegrees target:" + degrees);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "Lifter position before: "+ lifter.getCurrentPosition());
-        int moveToDegrees = (int)(lifter.getCurrentPosition()+(degrees*3.9));
+        int moveToDegrees = (int) (lifter.getCurrentPosition() + (degrees * 3.9));
         lifter.setTargetPosition(moveToDegrees);
         ((DcMotorEx) lifter).setVelocity(velocity);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "Turned lifter to "+ moveToDegrees+ " degrees");
-        RobotLog.vv("Rockin' Robots", "Lifter position after: "+ lifter.getCurrentPosition());
+        RobotLog.vv("Rockin' Robots", "Turned lifter to " + moveToDegrees + " degrees");
+        RobotLog.vv("Rockin' Robots", "Lifter position after: " + lifter.getCurrentPosition());
     }
 
     public void getPinpointPosition() {     // Finds robot position
