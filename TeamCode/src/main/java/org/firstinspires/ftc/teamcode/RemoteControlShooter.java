@@ -21,6 +21,7 @@ public class RemoteControlShooter extends LinearOpMode {
         double intakeSpeed = 1;
         double lifterPower = 0;
         boolean park = false;
+        boolean bumperPressed = false;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
@@ -70,6 +71,13 @@ public class RemoteControlShooter extends LinearOpMode {
             if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
                 lifterPower = 0;
                 r.lifterPower(lifterPower);
+            }
+
+            if(gamepad1.right_bumper) {
+                r.turnLifterByDegreesRC(90, 1500);
+            }
+            else if(gamepad1.left_bumper) {
+                r.turnLifterByDegreesRC(-90, 1500);
             }
 
             if(gamepad1.dpad_down){
