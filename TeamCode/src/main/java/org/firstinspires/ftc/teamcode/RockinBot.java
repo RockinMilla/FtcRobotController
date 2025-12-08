@@ -242,17 +242,21 @@ public class RockinBot {
     }
 
     public void turnLifterByDegrees(int degrees) {
-        turnLifterByDegrees(degrees, 2000);
+        turnLifterByDegrees(degrees, 2000, 5);
     }
 
     public void turnLifterByDegrees(int degrees, int velocity) {
+        turnLifterByDegrees(degrees, velocity, 5);
+    }
+
+    public void turnLifterByDegrees(int degrees, int velocity, int maxDuration) {
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         RobotLog.vv("Rockin' Robots", "Lifter position before: "+ lifter.getCurrentPosition());
         int moveToDegrees = (int)(lifter.getCurrentPosition()+(degrees*3.9));
         lifter.setTargetPosition(moveToDegrees);
         ((DcMotorEx) lifter).setVelocity(velocity);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "Turned lifter to "+ moveToDegrees+ " degrees");
+        //RobotLog.vv("Rockin' Robots", "Turned lifter to "+ moveToDegrees+ " degrees");
         RobotLog.vv("Rockin' Robots", "Lifter position after: "+ lifter.getCurrentPosition());
     }
 

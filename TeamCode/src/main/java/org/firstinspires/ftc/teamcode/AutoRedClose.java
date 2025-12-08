@@ -20,44 +20,57 @@ public class AutoRedClose extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+
         r.getPinpointPosition();
-        r.intakePower(1.0);
-        r.launcherVelocity(0.34);
+        //r.intakePower(0.5);
+        r.launcherVelocity(800);
+
+        shootBalls(r); // Shoot preloaded balls
+
+        // Pick up 1st set of balls
+        r.driveToPos(720, -900, 0, 15, 3, 4);
+        r.turnLifterByDegrees(270, 300);
+        r.intakePower(0.9);
+        r.driveToPos(720, 0, 0, 15, 3, 3);
+        r.turnLifterByDegrees(-10, 700);
+        sleep(700);
 
         shootBalls(r);
 
-        r.driveToPos(740, -1000, 0);
-        r.lifterPower(0.2);
-        r.driveToPos(740, -50, 0);
-        r.lifterPower(0);
-        sleep(500);
+        // Pick up 2nd set of balls
+        r.driveToPos(1350, -900, 0, 15, 3, 4);
+        r.turnLifterByDegrees(270, 250);
+        r.intakePower(0.9);
+        r.driveToPos(1350, 200, 0, 15, 3, 3);
+        r.turnLifterByDegrees(-10, 700);
+        sleep(300);
 
+        r.driveToPos(1400, -300, 0); // move to avoid gate
+
+        r.turnLifterByDegrees(-10, 700);
         shootBalls(r);
-
-        r.driveToPos(1350, -800, 0);
-        r.lifterPower(0.2);
-        r.driveToPos(1350, 100, 0);
-        r.lifterPower(0);
-
-        r.driveToPos(1350, -300, 0); // move to avoid gate
-
-        shootBalls(r);
-
+        r.driveToPos(-200, -800, 37); // park
         r.launcherVelocity(0);
         r.intakePower(0);
 
-        RobotLog.vv("Rockin' Robots", "Test Done");
+        //RobotLog.vv("Rockin' Robots", "Test Done");
     }
+
     private void shootBalls(RockinBot r)
     {
-        r.driveToPos(100, -700, 40);
-        r.lifterPower(0.6);
-        sleep(300);
-        r.lifterPower(0);
+        r.intakePower(-0.05);
+        r.driveToPos(100, -700, 37);
+        r.intakePower(0.5);
         sleep(500);
-        r.lifterPower(0.6);
-        sleep(300);
-        r.lifterPower(0);
-        sleep(500);
+        r.waitForLaunchers(800);
+        r.turnLifterByDegrees(90, 1400);
+        r.launcherVelocity(800);
+        r.waitForLifter();
+        r.waitForLaunchers(800);
+        r.turnLifterByDegrees(90, 1350);
+        r.waitForLifter();
+        r.waitForLaunchers(800);
+        r.turnLifterByDegrees(360, 1200);
+        r.waitForLifter();
     }
 }
