@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name="Blue Close", group="Robot")
 public class AutoBlueClose extends LinearOpMode {
     final ElapsedTime runtime = new ElapsedTime();
+    int launcherVelocity = 770;
 
     @Override
     public void runOpMode() {
@@ -22,39 +23,35 @@ public class AutoBlueClose extends LinearOpMode {
         waitForStart();
 
         r.getPinpointPosition();
-        //r.intakePower(0.5);
-        r.launcherVelocity(770);
+        r.launcherVelocity(launcherVelocity);
 
         shootBalls(r); // Shoot preloaded balls
 
         // Pick up 1st set of balls
-        r.driveToPos(-780, -900, 0, 15, 3, 3);
-        r.turnLifterByDegrees(250, 600);
+        r.driveToPos(-780, -900, 0, 3);
+        r.turnLifterToDegrees(0, 600);
         r.intakePower(0.8);
-        r.driveToPos(-780, 0, 0, 15, 3, 2);
-        r.waitForLifter();
-        sleep(700);
+        r.driveToPos(-780, 0, 0, 2);
+        r.waitForLifter(1.0);
 
         shootBalls(r);
 
         // Pick up 2nd set of balls
-        r.driveToPos(-1400, -900, 0, 15, 3, 3);
-        r.turnLifterByDegrees(230, 500);
+        r.driveToPos(-1400, -900, 0, 3);
+        r.turnLifterToDegrees(0, 500);
         r.intakePower(0.8);
-        r.driveToPos(-1400, 200, 0, 15, 3, 2);
+        r.driveToPos(-1400, 200, 0, 2);
         r.waitForLifter();
-        r.turnLifterByDegrees(-10, 700);
-        sleep(300);
 
-        r.driveToPos(-1400, -300, 0); // move to avoid gate
+        // move to avoid gate
+        r.driveToPos(-1400, -300, 0);
 
-        r.turnLifterByDegrees(-10, 700);
         shootBalls(r);
-        r.driveToPos(100, -800, -35); // park
+
+        // park
+        r.driveToPos(100, -800, -35);
         r.launcherVelocity(0);
         r.intakePower(0);
-
-        //RobotLog.vv("Rockin' Robots", "Test Done");
     }
 
     private void shootBalls(RockinBot r)
@@ -62,20 +59,15 @@ public class AutoBlueClose extends LinearOpMode {
         r.intakePower(0.2);
         r.driveToPos(-150, -750, -35);
         r.intakePower(0.5);
-        sleep(500);
-        r.waitForLaunchers(800);
-        sleep(200);
-        r.turnLifterByDegrees(90, 1500);
+        r.waitForLaunchers(launcherVelocity);
+        r.turnLifterToDegrees(90);
         r.waitForLifter();
-        r.turnLifterByDegrees(-10, 1000);
+        r.waitForLaunchers(launcherVelocity);
+        r.turnLifterToDegrees(180);
         r.waitForLifter();
-        r.waitForLaunchers(800);
-        sleep(200);
-        r.turnLifterByDegrees(100, 1350);
+        r.waitForLaunchers(launcherVelocity);
+        r.turnLifterToDegrees(360);
         r.waitForLifter();
-        r.waitForLaunchers(800);
-        sleep(200);
-        r.turnLifterByDegrees(360, 1250);
-        r.waitForLifter();
+        r.turnLifterToDegrees(-180);
     }
 }

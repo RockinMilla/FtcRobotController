@@ -222,13 +222,16 @@ public class RockinBot {
     }
 
     public void waitForLifter() {
+        waitForLifter(0.5);
+    }
+
+    public void waitForLifter(double maxDuration) {
         RobotLog.vv("Rockin' Robots", "Waiting for lifter");
-        while(lifter.isBusy())
-        {
+        runtime.reset();
+        while(lifter.isBusy() && runtime.seconds() < maxDuration) {
             sleep(10);
         }
         RobotLog.vv("Rockin' Robots", "Lifter complete");
-        return;
     }
 
     public void waitForLaunchers(double target) {
@@ -264,6 +267,19 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "Lifter position after: "+ lifter.getCurrentPosition());
     }
 
+    public void turnLifterToDegrees(int degrees) {
+        turnLifterToDegrees(degrees, 1500);
+    }
+
+    public void turnLifterToDegrees(int degrees, int velocity) {
+        lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        RobotLog.vv("Rockin' Robots", "Lifter position before: "+ lifter.getCurrentPosition());
+        int moveToDegrees = (int)(degrees*3.9);
+        lifter.setTargetPosition(moveToDegrees);
+        ((DcMotorEx) lifter).setVelocity(velocity);
+        lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+    }
+
     public void getPinpointPosition() {     // Finds robot position
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
         odo.update();
@@ -277,6 +293,10 @@ public class RockinBot {
 
     public void driveToPos(double xTarget, double yTarget, double hTarget) {    // Defaults hAccuracy to 3 if no hAccuracy is given
         driveToPos(xTarget, yTarget, hTarget, 15, 3, 5); //todo: should hAccuracy be 3? What unit is it?
+    }
+
+    public void driveToPos(double xTarget, double yTarget, double hTarget, int maxDuration) {    // Defaults hAccuracy to 3 if no hAccuracy is given
+        driveToPos(xTarget, yTarget, hTarget, 15, 3, maxDuration);
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, int maxDuration) {   // In millimeters
