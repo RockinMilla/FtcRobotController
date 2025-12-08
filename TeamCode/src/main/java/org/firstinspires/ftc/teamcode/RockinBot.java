@@ -234,11 +234,15 @@ public class RockinBot {
     public void waitForLaunchers(double target) {
         runtime.reset();
         RobotLog.vv("Rockin' Robots", "Waiting for launchers, current velocity: " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
-        while((leftLauncher.getVelocity() < target*0.95 || rightLauncher.getVelocity() < target*0.95)&&runtime.seconds()<1) {
+        while((leftLauncher.getVelocity() < target*0.97 || rightLauncher.getVelocity() < target*0.97)&&runtime.seconds()<1) {
             sleep(10);
         }
         RobotLog.vv("Rockin' Robots", "Launchers complete");
         return;
+    }
+
+    public void turnLifterByDegreesRC(int degrees, int velocity) {
+        turnLifterByDegrees(degrees, 2000, 5);
     }
 
     public void turnLifterByDegrees(int degrees) {
