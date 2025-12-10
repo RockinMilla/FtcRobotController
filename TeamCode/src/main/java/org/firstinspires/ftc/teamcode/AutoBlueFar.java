@@ -45,14 +45,14 @@ public class AutoBlueFar extends LinearOpMode {
 
     private void shootBalls(RockinBot r)
     {
-        r.driveToPos(0, 100, 25);
-        r.launcherVelocity(1300);
+        r.driveToPos(0, 100, 30); // URGENT: this angle should be 25
+        r.launcherVelocity(900); // URGENT: this velocity should be 1300
         sleep(1000);
-        r.turnLifterByDegrees(80, 2000);
+        r.turnLifterByDegrees(90, 2000);
         sleep(700);
-        r.turnLifterByDegrees(80, 2000);
+        r.turnLifterByDegrees(90, 2000);
         sleep(700);
         r.turnLifterByDegrees(360, 2000);
-        sleep(3000);
+        sleep(2000);
     }
 }

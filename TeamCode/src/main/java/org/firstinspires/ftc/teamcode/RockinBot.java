@@ -217,13 +217,16 @@ public class RockinBot {
     }
 
     public void lifterPower(double power) {
-        lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        lifter.setVelocity(power);
+        if(!lifter.isBusy()) {
+            lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            lifter.setVelocity(power);
+        }
     }
 
     public void waitForLifter() {
         RobotLog.vv("Rockin' Robots", "Waiting for lifter");
-        while(lifter.isBusy())
+        runtime.reset();
+        while(lifter.isBusy() && runtime.seconds() < 1)
         {
             sleep(10);
         }
@@ -242,7 +245,11 @@ public class RockinBot {
     }
 
     public void turnLifterByDegreesRC(int degrees, int velocity) {
-        turnLifterByDegrees(degrees, 2000, 5);
+        if(!lifter.isBusy())
+        {
+            lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            turnLifterByDegrees(degrees, 2000, 5);
+        }
     }
 
     public void turnLifterByDegrees(int degrees) {

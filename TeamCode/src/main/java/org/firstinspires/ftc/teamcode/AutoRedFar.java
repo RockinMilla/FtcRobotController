@@ -31,13 +31,11 @@ public class AutoRedFar extends LinearOpMode {
         // Pick up 1st set of balls
         r.driveToPos(300, 670, -90);
         r.driveToPos(300, 670, -90); // Intentionally duplicated
-        r.turnLifterByDegrees(300, 400);
-        sleep(100);
+        r.turnLifterByDegrees(210, 700);
+        r.intakePower(0.8);
         r.driveToPos(1300, 670, -90, 15, 3, 3); // slurp the balls up
-        sleep(300);
-        r.turnLifterByDegrees(-50);
-        sleep(100);
-        r.turnLifterByDegrees(100);
+        r.waitForLifter();
+        sleep(700);
 
         shootBalls(r); // youll never guess what this does
 
@@ -48,14 +46,14 @@ public class AutoRedFar extends LinearOpMode {
 
     private void shootBalls(RockinBot r)
     {
-        r.driveToPos(0, 100, -25);
-        r.launcherVelocity(1100);
+        r.driveToPos(0, 100, -30); // URGENT: this angle should be -25
+        r.launcherVelocity(950); // URGENT: this velocity should be 1100
         sleep(1000);
-        r.turnLifterByDegrees(80, 2000);
+        r.turnLifterByDegrees(90, 2000);
         sleep(1500);
-        r.turnLifterByDegrees(80, 2000);
+        r.turnLifterByDegrees(90, 2000);
         sleep(1500);
         r.turnLifterByDegrees(360, 2000);
-        sleep(3000);
+        sleep(2000);
     }
 }
