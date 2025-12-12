@@ -56,7 +56,7 @@ public class AutoBlueClose extends LinearOpMode {
     private void shootBalls(RockinBot r)
     {
         r.intakePower(0.2);
-        r.driveToPos(-150, -750, -35);
+        r.driveToPos(-100, -700, -35);
         r.intakePower(0.5);
         r.waitForLaunchers(800);
         r.turnLifterToDegrees(90); // Shoot the first ball
