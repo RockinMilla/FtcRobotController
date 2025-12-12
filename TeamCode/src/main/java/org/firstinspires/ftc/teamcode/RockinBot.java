@@ -224,7 +224,7 @@ public class RockinBot {
     }
 
     public void waitForLifter() {
-        RobotLog.vv("Rockin' Robots", "Waiting for lifter");
+        RobotLog.vv("Rockin' Robots", "waitForLifter LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         runtime.reset();
         while(lifter.isBusy() && runtime.seconds() < 1)
         {
@@ -236,11 +236,11 @@ public class RockinBot {
 
     public void waitForLaunchers(double target) {
         runtime.reset();
-        RobotLog.vv("Rockin' Robots", "waitForLaunchers: start: " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+        RobotLog.vv("Rockin' Robots", "waitForLaunchers start: LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         while((leftLauncher.getVelocity() < target*0.95 || rightLauncher.getVelocity() < target*0.95) && runtime.seconds() < 1) {
             sleep(10);
         }
-        RobotLog.vv("Rockin' Robots", "waitForLaunchers: end: " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+        RobotLog.vv("Rockin' Robots", "waitForLaunchers end LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         return;
     }
 
@@ -258,8 +258,8 @@ public class RockinBot {
 
     public void turnLifterToDegrees(int degrees, int velocity) {
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "turnLifterToDegrees: Lifter position: "+ lifter.getCurrentPosition()/3.9
-                + " Launcher speed: " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+        RobotLog.vv("Rockin' Robots", "turnLifterToDegrees: " + degrees + " Current position: "+ lifter.getCurrentPosition()/3.9
+                + " LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         lifter.setTargetPosition((int) (degrees*3.9));
         ((DcMotorEx) lifter).setVelocity(velocity);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -275,7 +275,8 @@ public class RockinBot {
 
     public void turnLifterByDegrees(int degrees, int velocity, int maxDuration) {
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "turnLifterByDegrees: Lifter position: "+ lifter.getCurrentPosition() + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+        RobotLog.vv("Rockin' Robots", "turnLifterByDegrees: Lifter position: "+ lifter.getCurrentPosition()
+                + " LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         int moveToDegrees = (int)(lifter.getCurrentPosition()+(degrees*3.9));
         lifter.setTargetPosition(moveToDegrees);
         ((DcMotorEx) lifter).setVelocity(velocity);
