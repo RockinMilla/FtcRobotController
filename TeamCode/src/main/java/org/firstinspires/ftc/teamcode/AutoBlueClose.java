@@ -23,13 +23,13 @@ public class AutoBlueClose extends LinearOpMode {
 
         r.getPinpointPosition();
         //r.intakePower(0.5);
-        r.launcherVelocity(770);
+        r.launcherVelocity(800);
 
         shootBalls(r); // Shoot preloaded balls
 
         // Pick up 1st set of balls
         r.driveToPos(-780, -900, 0, 15, 3, 3);
-        r.turnLifterByDegrees(250, 600);
+        r.turnLifterToDegrees(0, 500);
         r.intakePower(0.8);
         r.driveToPos(-780, 0, 0, 15, 3, 2);
         r.waitForLifter();
@@ -39,22 +39,18 @@ public class AutoBlueClose extends LinearOpMode {
 
         // Pick up 2nd set of balls
         r.driveToPos(-1400, -900, 0, 15, 3, 3);
-        r.turnLifterByDegrees(230, 500);
+        r.turnLifterToDegrees(0, 400);
         r.intakePower(0.8);
         r.driveToPos(-1400, 200, 0, 15, 3, 2);
         r.waitForLifter();
-        r.turnLifterByDegrees(-10, 700);
         sleep(300);
 
         r.driveToPos(-1400, -300, 0); // move to avoid gate
 
-        r.turnLifterByDegrees(-10, 700);
         shootBalls(r);
         r.driveToPos(100, -800, -35); // park
         r.launcherVelocity(0);
         r.intakePower(0);
-
-        //RobotLog.vv("Rockin' Robots", "Test Done");
     }
 
     private void shootBalls(RockinBot r)
@@ -62,20 +58,15 @@ public class AutoBlueClose extends LinearOpMode {
         r.intakePower(0.2);
         r.driveToPos(-150, -750, -35);
         r.intakePower(0.5);
-        sleep(500);
         r.waitForLaunchers(800);
-        sleep(200);
-        r.turnLifterByDegrees(90, 1500);
-        r.waitForLifter();
-        r.turnLifterByDegrees(-10, 1000);
+        r.turnLifterToDegrees(90); // Shoot the first ball
         r.waitForLifter();
         r.waitForLaunchers(800);
-        sleep(200);
-        r.turnLifterByDegrees(100, 1350);
+        r.turnLifterToDegrees(180); // Shoot the second ball
         r.waitForLifter();
         r.waitForLaunchers(800);
-        sleep(200);
-        r.turnLifterByDegrees(360, 1250);
+        r.turnLifterToDegrees(360); // Shoot the third ball
         r.waitForLifter();
+        r.turnLifterToDegrees(-190); // Reset lifter
     }
 }
