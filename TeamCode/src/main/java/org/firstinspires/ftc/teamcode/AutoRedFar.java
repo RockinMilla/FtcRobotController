@@ -23,7 +23,7 @@ public class AutoRedFar extends LinearOpMode {
 
         r.getPinpointPosition();
         r.intakePower(0.5);
-        r.launcherVelocity(950); // Should be 1100
+        r.launcherVelocity(1100); // Should be 1100
 
         shootBalls(r); // Shoot preloaded balls
 
@@ -48,15 +48,18 @@ public class AutoRedFar extends LinearOpMode {
         r.intakePower(0.2);
         r.driveToPos(0, 100, -35); // URGENT: this angle should be -25
         r.intakePower(0.5);
-        r.waitForLaunchers(950); // Should be 1100
+        r.waitForLaunchers(1100); // Should be 1100
+        sleep(500);
         r.turnLifterToDegrees(90); // Shoot the first ball
         r.waitForLifter();
-        r.waitForLaunchers(950); // Should be 1100
+        r.waitForLaunchers(1100); // Should be 1100
+        sleep(500);
         r.turnLifterToDegrees(180); // Shoot the second ball
         r.waitForLifter();
-        r.waitForLaunchers(950); // Should be 1100
+        r.waitForLaunchers(1100); // Should be 1100
         r.turnLifterToDegrees(360); // Shoot the third ball
         r.waitForLifter();
         r.turnLifterToDegrees(-190); // Reset lifter
+        sleep(1000);
     }
 }
