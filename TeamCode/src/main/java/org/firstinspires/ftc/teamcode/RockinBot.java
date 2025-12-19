@@ -217,9 +217,16 @@ public class RockinBot {
     }
 
     public void lifterPower(double power) {
-        if(!lifter.isBusy()) {
-            lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            lifter.setVelocity(power);
+        lifterPower(power, 1);
+    }
+
+    public void lifterPower(double power, double duration) {
+        lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        lifter.setVelocity(power);
+        runtime.reset();
+        while(runtime.seconds() < duration) {
+            RobotLog.vv("Rockin' Robots", "lifterPower lifterVelocity: " + lifter.getVelocity() + " LauncherVelocity: " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+            sleep(10);
         }
     }
 
@@ -237,7 +244,9 @@ public class RockinBot {
     public void waitForLaunchers(double target) {
         runtime.reset();
         RobotLog.vv("Rockin' Robots", "waitForLaunchers start: LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
-        while((leftLauncher.getVelocity() < target*0.95 || rightLauncher.getVelocity() < target*0.95) && runtime.seconds() < 1) {
+        while((leftLauncher.getVelocity() < target*0.95 || rightLauncher.getVelocity() < target*0.95
+            || leftLauncher.getVelocity() > target*1.05 || rightLauncher.getVelocity() > target*1.05)
+                && runtime.seconds() < 1) {
             sleep(10);
         }
         RobotLog.vv("Rockin' Robots", "waitForLaunchers end LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());

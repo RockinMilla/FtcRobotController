@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 @Autonomous(name="Red Close", group="Robot")
 public class AutoRedClose extends LinearOpMode {
     final ElapsedTime runtime = new ElapsedTime();
+    int launcherVel = 900;
+    int lifterVel = 1000;
 
     @Override
     public void runOpMode() {
@@ -15,39 +17,16 @@ public class AutoRedClose extends LinearOpMode {
         RockinBot r = new RockinBot(o,"Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "11/30/2025, 2:45 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "12/18/2025, 2:45 pm"); // Todo: Update this date when the code is updated
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         r.getPinpointPosition();
-        r.launcherVelocity(790);
+        r.launcherVelocity(launcherVel);
 
         shootBalls(r); // Shoot preloaded balls
-
-        // Pick up 1st set of balls
-        r.driveToPos(720, -900, 0, 15, 3, 4);
-        r.turnLifterToDegrees(0, 500);
-        r.intakePower(0.8);
-        r.driveToPos(720, 0, 0, 15, 3, 3);
-        r.waitForLifter();
-        sleep(700);
-
-        shootBalls(r);
-
-        // Pick up 2nd set of balls
-        r.driveToPos(1350, -900, 0, 15, 3, 4);
-        r.turnLifterToDegrees(0, 400);
-        r.intakePower(0.8);
-        r.driveToPos(1350, 200, 0, 15, 3, 3);
-        r.waitForLifter();
-        sleep(300);
-
-        r.driveToPos(1400, -300, 0); // move to avoid gate
-
-        r.turnLifterByDegrees(-10, 700);
-        shootBalls(r);
-        r.driveToPos(-200, -800, 37); // park
+        //r.driveToPos(0, -700, 37); // park
         r.launcherVelocity(0);
         r.intakePower(0);
     }
@@ -55,17 +34,10 @@ public class AutoRedClose extends LinearOpMode {
     private void shootBalls(RockinBot r)
     {
         r.intakePower(0.2);
-        r.driveToPos(100, -700, 37);
+        r.driveToPos(150, -600, 45);
         r.intakePower(0.5);
-        r.waitForLaunchers(800);
-        r.turnLifterToDegrees(90); // Shoot the first ball
-        r.waitForLifter();
-        r.waitForLaunchers(800);
-        r.turnLifterToDegrees(180); // Shoot the second ball
-        r.waitForLifter();
-        r.waitForLaunchers(800);
-        r.turnLifterToDegrees(360);
-        r.waitForLifter();
-        r.turnLifterToDegrees(-190); // Reset lifter
+        r.waitForLaunchers(launcherVel);
+        r.lifterPower(lifterVel, 3);
+        r.lifterPower(0, .01);
     }
 }
