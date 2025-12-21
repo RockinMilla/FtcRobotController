@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Blue Close", group="Robot")
 public class AutoBlueClose extends LinearOpMode {
-    final ElapsedTime runtime = new ElapsedTime();
+
+    int launcherVel = 800;
+    int lifterVel = 1000;
 
     @Override
     public void runOpMode() {
@@ -15,39 +16,17 @@ public class AutoBlueClose extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "12/8/2025, 11:15 am"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "12/17/2025, 11:15 am"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         r.getPinpointPosition();
-        //r.intakePower(0.5);
-        r.launcherVelocity(800);
+        r.launcherVelocity(launcherVel);
 
         shootBalls(r); // Shoot preloaded balls
 
-        // Pick up 1st set of balls
-        r.driveToPos(-780, -900, 0, 15, 3, 3);
-        r.turnLifterToDegrees(0, 500);
-        r.intakePower(0.8);
-        r.driveToPos(-780, 0, 0, 15, 3, 2);
-        r.waitForLifter();
-        sleep(700);
-
-        shootBalls(r);
-
-        // Pick up 2nd set of balls
-        r.driveToPos(-1400, -900, 0, 15, 3, 3);
-        r.turnLifterToDegrees(0, 400);
-        r.intakePower(0.8);
-        r.driveToPos(-1400, 200, 0, 15, 3, 2);
-        r.waitForLifter();
-        sleep(300);
-
-        r.driveToPos(-1400, -300, 0); // move to avoid gate
-
-        shootBalls(r);
         r.driveToPos(100, -800, -35); // park
         r.launcherVelocity(0);
         r.intakePower(0);
@@ -56,16 +35,10 @@ public class AutoBlueClose extends LinearOpMode {
     private void shootBalls(RockinBot r)
     {
         r.intakePower(0.2);
-        r.driveToPos(-100, -700, -35);
+        r.driveToPos(0, -700, -32);
         r.intakePower(0.5);
-        r.waitForLaunchers(800);
-        r.turnLifterToDegrees(90); // Shoot the first ball
-        r.waitForLifter();
-        r.waitForLaunchers(800);
-        r.turnLifterToDegrees(180); // Shoot the second ball
-        r.waitForLifter();
-        r.waitForLaunchers(800);
-        r.turnLifterToDegrees(360); // Shoot the third ball
+        r.waitForLaunchers(launcherVel);
+        r.turnLifterToDegrees(360, lifterVel); // Shoot all three balls
         r.waitForLifter();
         r.turnLifterToDegrees(-190); // Reset lifter
     }

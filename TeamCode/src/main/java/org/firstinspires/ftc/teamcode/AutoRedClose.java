@@ -2,12 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.RobotLog;
 
 @Autonomous(name="Red Close", group="Robot")
 public class AutoRedClose extends LinearOpMode {
-    final ElapsedTime runtime = new ElapsedTime();
     int launcherVel = 900;
     int lifterVel = 1000;
 
@@ -37,7 +34,7 @@ public class AutoRedClose extends LinearOpMode {
         r.driveToPos(150, -600, 45);
         r.intakePower(0.5);
         r.waitForLaunchers(launcherVel);
-        r.lifterPower(lifterVel, 3);
-        r.lifterPower(0, .01);
+        r.lifterVelocity(lifterVel, 3);
+        r.lifterVelocity(0);
     }
 }

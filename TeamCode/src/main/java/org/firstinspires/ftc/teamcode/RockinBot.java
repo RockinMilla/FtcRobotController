@@ -2,12 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
 import static android.os.SystemClock.sleep;
-
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-//import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -17,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 public class RockinBot {
     // Motors and sensors
     private LinearOpMode o;
-    private Pose2D pos;
     private double xLoc = 0;
     private double yLoc = 0;
     private double hLoc = 0;
@@ -27,20 +24,17 @@ public class RockinBot {
     private DcMotor rightBackDrive = null;
     private DcMotorEx leftLauncher = null;
     private DcMotorEx rightLauncher = null;
+    private PIDFCoefficients pidfLauncher = null;
     private DcMotor intake = null;
     private DcMotorEx lifter = null;
-    private double leftLauncherVelocity = 0;
-    private double rightLauncherVelocity = 0;
     private double leftFrontPower = 0;
     private double rightFrontPower = 0;
     private double leftBackPower = 0;
     private double rightBackPower = 0;
     private double intakePower = 0;
-    private double max = 0;
     // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
     // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
     double launcherVelocity = 820;
-    double intakeSpeed = 1.0;
     public GoBildaPinpointDriver odo = null;
 
     final ElapsedTime runtime = new ElapsedTime();
@@ -71,6 +65,8 @@ public class RockinBot {
         rightLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        pidfLauncher = leftLauncher.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
         intake = o.hardwareMap.get(DcMotor.class, "intake");
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -102,11 +98,6 @@ public class RockinBot {
         odo.update();
 
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
-
-        // Robot orientation
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
     // Allow driving and braking
@@ -135,11 +126,6 @@ public class RockinBot {
         odo.resetPosAndIMU();
         odo.update();
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
-
-        // Robot orientation
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
     public void setWheelPower(double left_y, double left_x, double right_x, boolean park){        // Wheel power and speed
@@ -153,7 +139,7 @@ public class RockinBot {
         leftBackPower = (left_y - left_x + right_x) * wheelMultiplier;
         rightBackPower = (left_y + left_x - right_x) * wheelMultiplier;
 
-        max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
         max = Math.max(max, Math.abs(rightBackPower));
         if (max > 1.0) {
@@ -197,35 +183,35 @@ public class RockinBot {
     }
 
     public void driveRight(int ms) {
-        leftFrontDrive.setPower(0.5); // clock
-        rightFrontDrive.setPower(0.5); // clock
-        leftBackDrive.setPower(-0.5); // clock
-        rightBackDrive.setPower(-0.5); // clocksetVelocity
+        leftFrontDrive.setPower(0.5);
+        rightFrontDrive.setPower(0.5);
+        leftBackDrive.setPower(-0.5);
+        rightBackDrive.setPower(-0.5);
         sleep(ms);
         stopMoving();
     }
 
-    public void launcherVelocity(double power) {
-        launcherVelocity = power;
+    public void launcherVelocity(double velocity) {
+        launcherVelocity = velocity;
         leftLauncher.setVelocity(launcherVelocity);
         rightLauncher.setVelocity(launcherVelocity);
     }
 
-    public void intakePower(double speed) {
-        intakeSpeed = speed;
-        intake.setPower(speed);
+    public void intakePower(double power) {
+        intakePower = power;
+        intake.setPower(intakePower);
     }
 
-    public void lifterPower(double power) {
-        lifterPower(power, 1);
+    public void lifterVelocity(double velocity) {
+        lifterVelocity(velocity, .001);
     }
 
-    public void lifterPower(double power, double duration) {
+    public void lifterVelocity(double velocity, double duration) {
         lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        lifter.setVelocity(power);
+        lifter.setVelocity(velocity);
         runtime.reset();
         while(runtime.seconds() < duration) {
-            RobotLog.vv("Rockin' Robots", "lifterPower lifterVelocity: " + lifter.getVelocity() + " LauncherVelocity: " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+            RobotLog.vv("Rockin' Robots", "lifterVelocity: " + lifter.getVelocity() + " LauncherVelocity: " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
             sleep(10);
         }
     }
@@ -238,7 +224,6 @@ public class RockinBot {
             sleep(10);
         }
         RobotLog.vv("Rockin' Robots", "Lifter complete");
-        return;
     }
 
     public void waitForLaunchers(double target) {
@@ -250,15 +235,18 @@ public class RockinBot {
             sleep(10);
         }
         RobotLog.vv("Rockin' Robots", "waitForLaunchers end LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
-        return;
     }
 
-    public void turnLifterByDegreesRC(int degrees, int velocity) {
-        if(!lifter.isBusy())
-        {
-            lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            turnLifterByDegrees(degrees, 2000, 5);
-        }
+    public void setLifterP(double pChange) {
+        pidfLauncher.p = pidfLauncher.p + pChange;
+        leftLauncher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        rightLauncher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfLauncher);
+    }
+
+    public void setLifterF(double fChange) {
+        pidfLauncher.f = pidfLauncher.f + fChange;
+        leftLauncher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        rightLauncher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfLauncher);
     }
 
     public void turnLifterToDegrees(int degrees) {
@@ -270,32 +258,32 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "turnLifterToDegrees: " + degrees + " Current position: "+ lifter.getCurrentPosition()/3.9
                 + " LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         lifter.setTargetPosition((int) (degrees*3.9));
-        ((DcMotorEx) lifter).setVelocity(velocity);
+        lifter.setVelocity(velocity);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
 
-    public void turnLifterByDegrees(int degrees) {
-        turnLifterByDegrees(degrees, 2000, 5);
+    public void turnLifterByDegreesRC(int degrees, int velocity) {
+        if(!lifter.isBusy())
+        {
+            lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            turnLifterByDegrees(degrees, velocity);
+        }
     }
 
     public void turnLifterByDegrees(int degrees, int velocity) {
-        turnLifterByDegrees(degrees, velocity, 5);
-    }
-
-    public void turnLifterByDegrees(int degrees, int velocity, int maxDuration) {
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         RobotLog.vv("Rockin' Robots", "turnLifterByDegrees: Lifter position: "+ lifter.getCurrentPosition()
                 + " LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         int moveToDegrees = (int)(lifter.getCurrentPosition()+(degrees*3.9));
         lifter.setTargetPosition(moveToDegrees);
-        ((DcMotorEx) lifter).setVelocity(velocity);
+        lifter.setVelocity(velocity);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
 
     public void getPinpointPosition() {     // Finds robot position
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
         odo.update();
-        pos = odo.getPosition();
+        Pose2D pos = odo.getPosition();
         xLoc = pos.getX(DistanceUnit.MM);
         yLoc = pos.getY(DistanceUnit.MM);
         hLoc = pos.getHeading(AngleUnit.DEGREES);
@@ -340,7 +328,7 @@ public class RockinBot {
 
             RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
             // Normalize the values so wheel power does not exceed 100%
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+            double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
             if (max > 1.0) {
@@ -349,10 +337,10 @@ public class RockinBot {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            leftFrontPower *= 0.7;
-            rightFrontPower *= 0.7;
-            leftBackPower *= 0.7;
-            rightBackPower *= 0.7;
+            leftFrontPower *= 0.9;
+            rightFrontPower *= 0.9;
+            leftBackPower *= 0.9;
+            rightBackPower *= 0.9;
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
@@ -392,15 +380,18 @@ public class RockinBot {
 
     // Log all (relevant) info about the robot on the hub.
     public void printDataOnScreen() {
-        leftLauncherVelocity = leftLauncher.getVelocity();
-        rightLauncherVelocity = rightLauncher.getVelocity();
+        double leftLauncherVelocity = leftLauncher.getVelocity();
+        double rightLauncherVelocity = rightLauncher.getVelocity();
+        PIDFCoefficients leftPIDF = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients rightPIDF = rightLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         o.telemetry.addData("Goal Launcher Velocity", "%.2f", launcherVelocity);
-        o.telemetry.addData("Current Left Launcher", "%.2f", leftLauncherVelocity);
-        o.telemetry.addData("Current Right Launcher", "%.2f", rightLauncherVelocity);
-        o.telemetry.addData("Intake Power", "%.2f", intakeSpeed);
+        o.telemetry.addData("Current Launcher Velocity", "%.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
+        o.telemetry.addData("Left Launcher PID", "%.2f, %.2f", leftPIDF.p, leftPIDF.f);
+        o.telemetry.addData("Right Launcher PID", "%.2f, %.2f", rightPIDF.p, rightPIDF.f);
+        o.telemetry.addData("Intake Power", "%.2f", intakePower);
         o.telemetry.update();
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
     }
