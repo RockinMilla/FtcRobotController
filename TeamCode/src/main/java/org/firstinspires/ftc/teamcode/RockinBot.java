@@ -71,6 +71,12 @@ public class RockinBot {
         rightLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        // PID tuning 1: This is where you set up your leftLauncher and rightLauncher
+        // See if you can "get" the default values for each launcher. Try leftLauncher. and see what functions you have.
+        // Then, you'll need to create a variable up above to store the PIDF coefficients
+        // You'll also need to go down to PrintDataOnScreen and print out the PIDF coefficient.
+
         intake = o.hardwareMap.get(DcMotor.class, "intake");
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -204,6 +210,11 @@ public class RockinBot {
         sleep(ms);
         stopMoving();
     }
+
+    // PIDF Tuning 2: This is where you will create a function to adjust the P coefficient of the launchers
+    // You'll want to start with the value in your PIDF variable, then adjust it based on the input parameter
+    // After you create this function, go to RemoteControlShooter and program two of the buttons to call this new
+    // function to make the p value go up and down.
 
     public void launcherVelocity(double power) {
         launcherVelocity = power;
