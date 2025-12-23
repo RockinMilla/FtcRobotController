@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(name="Red Close", group="Robot")
 public class AutoRedClose extends LinearOpMode {
-    int launcherVel = 900;
+    int launcherVel = 800;
     int lifterVel = 1000;
 
     @Override
@@ -23,7 +23,8 @@ public class AutoRedClose extends LinearOpMode {
         r.launcherVelocity(launcherVel);
 
         shootBalls(r); // Shoot preloaded balls
-        //r.driveToPos(0, -700, 37); // park
+
+        r.driveToPos(-200, -800, 37); // park
         r.launcherVelocity(0);
         r.intakePower(0);
     }
@@ -34,7 +35,8 @@ public class AutoRedClose extends LinearOpMode {
         r.driveToPos(100, -700, 45);
         r.intakePower(0.5);
         r.waitForLaunchers(launcherVel);
-        r.lifterVelocity(lifterVel, 3);
-        r.lifterVelocity(0);
+        r.lifterVelocity(lifterVel, 2);
+        r.turnLifterToDegrees(-190); // Reset lifter
+        r.waitForLifter();
     }
 }
