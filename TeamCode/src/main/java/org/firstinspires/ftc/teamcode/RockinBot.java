@@ -66,6 +66,9 @@ public class RockinBot {
         leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         pidfLauncher = leftLauncher.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        pidfLauncher.p = 30;
+        leftLauncher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        rightLauncher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfLauncher);
 
         intake = o.hardwareMap.get(DcMotor.class, "intake");
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -211,6 +214,7 @@ public class RockinBot {
         lifter.setVelocity(velocity);
         runtime.reset();
         while(runtime.seconds() < duration) {
+            RobotLog.vv("Rockin' Robots", "Lifter is lifting LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
             sleep(10);
         }
         if(velocity > 0) {
@@ -340,10 +344,10 @@ public class RockinBot {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            leftFrontPower *= 0.9;
-            rightFrontPower *= 0.9;
-            leftBackPower *= 0.9;
-            rightBackPower *= 0.9;
+            leftFrontPower *= 0.8;
+            rightFrontPower *= 0.8;
+            leftBackPower *= 0.8;
+            rightBackPower *= 0.8;
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
