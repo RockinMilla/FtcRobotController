@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
-@TeleOp(name="Remote Control Shooter", group="Linear OpMode")
+@TeleOp(name="PIDF tuner", group="Linear OpMode")
 public class PIDTuner extends LinearOpMode {
     @Override
 
@@ -19,7 +19,7 @@ public class PIDTuner extends LinearOpMode {
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
         double launcherSpeed = 800; // figure this out
         double intakeSpeed = 1;
-        double lifterVel = 1000;
+        double lifterVel = 2000;
         boolean park = false;
 
         // Wait for the game to start (driver presses PLAY)
@@ -69,10 +69,10 @@ public class PIDTuner extends LinearOpMode {
             }
 
             if(gamepad1.dpad_down){
-                r.setLifterP(-0.01);
+                r.setLifterP(-0.1);
             }
             else if(gamepad1.dpad_up){
-                r.setLifterP(0.01);
+                r.setLifterP(0.1);
             }
             else if(gamepad1.dpad_left){
                 r.setLifterF(-0.001);

@@ -31,7 +31,7 @@ public class AutoRedClose extends LinearOpMode {
     private void shootBalls(RockinBot r)
     {
         r.intakePower(0.2);
-        r.driveToPos(150, -600, 45);
+        r.driveToPos(100, -700, 45);
         r.intakePower(0.5);
         r.waitForLaunchers(launcherVel);
         r.lifterVelocity(lifterVel, 3);

@@ -211,8 +211,10 @@ public class RockinBot {
         lifter.setVelocity(velocity);
         runtime.reset();
         while(runtime.seconds() < duration) {
-            RobotLog.vv("Rockin' Robots", "lifterVelocity: " + lifter.getVelocity() + " LauncherVelocity: " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
             sleep(10);
+        }
+        if(velocity > 0) {
+            RobotLog.vv("Rockin' Robots", "lifter used");
         }
     }
 
@@ -241,6 +243,7 @@ public class RockinBot {
         pidfLauncher.p = pidfLauncher.p + pChange;
         leftLauncher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfLauncher);
         rightLauncher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        RobotLog.vv("Rockin' Robots", "Launcher PID: " + pidfLauncher.p + " / " + pidfLauncher.f);
     }
 
     public void setLifterF(double fChange) {
@@ -389,10 +392,14 @@ public class RockinBot {
         o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         o.telemetry.addData("Goal Launcher Velocity", "%.2f", launcherVelocity);
         o.telemetry.addData("Current Launcher Velocity", "%.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
+        o.telemetry.addData("Launcher PID", "%.2f, %.2f", pidfLauncher.p, pidfLauncher.f);
         o.telemetry.addData("Left Launcher PID", "%.2f, %.2f", leftPIDF.p, leftPIDF.f);
         o.telemetry.addData("Right Launcher PID", "%.2f, %.2f", rightPIDF.p, rightPIDF.f);
         o.telemetry.addData("Intake Power", "%.2f", intakePower);
         o.telemetry.update();
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
+        if(leftLauncherVelocity >= launcherVelocity*.95 && leftLauncherVelocity <= launcherVelocity*1.05 &&
+                rightLauncherVelocity >= launcherVelocity*.95 && rightLauncherVelocity <= launcherVelocity*1.05)
+            RobotLog.vv("Rockin' Robots", "***");
     }
 }
