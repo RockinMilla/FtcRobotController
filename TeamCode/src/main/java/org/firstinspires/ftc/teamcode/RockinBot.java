@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 //import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -27,6 +28,7 @@ public class RockinBot {
     private DcMotor rightBackDrive = null;
     private DcMotorEx leftLauncher = null;
     private DcMotorEx rightLauncher = null;
+    PIDFCoefficients pidf = null;
     private DcMotor intake = null;
     private DcMotorEx lifter = null;
     private double leftLauncherVelocity = 0;
@@ -44,6 +46,7 @@ public class RockinBot {
     public GoBildaPinpointDriver odo = null;
 
     final ElapsedTime runtime = new ElapsedTime();
+
     // During runtime
 
     public RockinBot(LinearOpMode opMode, String robotType) {
@@ -71,6 +74,9 @@ public class RockinBot {
         rightLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        pidf = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        pidf.p = 40;
+
         intake = o.hardwareMap.get(DcMotor.class, "intake");
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -125,8 +131,6 @@ public class RockinBot {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-
-
 
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
 
@@ -283,6 +287,13 @@ public class RockinBot {
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
 
+    public void changePIDF(double pValue) {
+        pidf.p = pValue;
+        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        RobotLog.vv("Rockin' Robots", "PIDF changed. New value: " + pValue);
+    }
+
     public void getPinpointPosition() {     // Finds robot position
         RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
         odo.update();
@@ -392,6 +403,7 @@ public class RockinBot {
         o.telemetry.addData("Current Left Launcher", "%.2f", leftLauncherVelocity);
         o.telemetry.addData("Current Right Launcher", "%.2f", rightLauncherVelocity);
         o.telemetry.addData("Intake Power", "%.2f", intakeSpeed);
+        o.telemetry.addData("P value: ", "%.2f", pidf.p);
         o.telemetry.update();
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
     }

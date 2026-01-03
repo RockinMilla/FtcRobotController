@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 // All the things that we use and borrow
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.RobotLog;
 
 @TeleOp(name="Remote Control Shooter", group="Linear OpMode")
@@ -17,11 +19,13 @@ public class RemoteControlShooter extends LinearOpMode {
 
         // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
-        double launcherSpeed = 800; // figure this out
+        double launcherSpeed = 810; // figure this out
         double intakeSpeed = 1;
         double lifterPower = 0;
+        double pValue = 10;
         boolean park = false;
         boolean bumperPressed = false;
+        PIDFCoefficients pidf = null;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
@@ -32,6 +36,7 @@ public class RemoteControlShooter extends LinearOpMode {
         r.intakePower(intakeSpeed);
         r.launcherVelocity(launcherSpeed);
         r.lifterPower(lifterPower);
+        r.changePIDF(pValue);
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -81,10 +86,12 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.dpad_down){
-                park = true;
+                pValue -= 2;
+                r.changePIDF(pValue);
             }
             else if(gamepad1.dpad_up){
-                park = false;
+                pValue += 2;
+                r.changePIDF(pValue);
             }
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
 
