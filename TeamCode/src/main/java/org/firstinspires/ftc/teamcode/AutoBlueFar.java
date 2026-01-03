@@ -15,7 +15,7 @@ public class AutoBlueFar extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "12/3/2025, 2:20 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "12/13/2025, 10:44 am"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -23,7 +23,7 @@ public class AutoBlueFar extends LinearOpMode {
 
         r.getPinpointPosition();
         r.intakePower(0.5);
-        r.launcherVelocity(950); // should be 1100
+        r.launcherVelocity(1150); // Change this when changing launcher velocity
 
         shootBalls(r); // Shoot preloaded balls
 
@@ -45,15 +45,18 @@ public class AutoBlueFar extends LinearOpMode {
     private void shootBalls(RockinBot r)
     {
         r.intakePower(0.2);
-        r.driveToPos(50, 150, 35); // URGENT: this angle should be 25
+        r.driveToPos(50, 150, 23);
         r.intakePower(0.5);
-        r.waitForLaunchers(950); // Should be 1100
+        r.waitForLaunchers(1150); // Change this when changing launcher velocity
+        sleep(1000);
         r.turnLifterToDegrees(90); // Shoot the first ball
         r.waitForLifter();
-        r.waitForLaunchers(950); // Should be 1100
+        r.waitForLaunchers(1150); // Change this when changing launcher velocity
+        sleep(1000);
         r.turnLifterToDegrees(180); // Shoot the second ball
         r.waitForLifter();
-        r.waitForLaunchers(950); // Should be 1100
+        r.waitForLaunchers(1150); // Change this when changing launcher velocity
+        sleep(1000);
         r.turnLifterToDegrees(360); // Shoot the third ball
         r.waitForLifter();
         r.turnLifterToDegrees(-190); // Reset lifter
