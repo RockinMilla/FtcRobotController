@@ -76,7 +76,9 @@ public class RockinBot {
         rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         pidf = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         pidf.p = 40;
-        RobotLog.vv("Rockin' Robots", "PIDF changed. New value: " + pidf.p);
+        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
 
         intake = o.hardwareMap.get(DcMotor.class, "intake");
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
