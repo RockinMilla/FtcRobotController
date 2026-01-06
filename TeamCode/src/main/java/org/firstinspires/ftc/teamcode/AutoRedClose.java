@@ -23,7 +23,7 @@ public class AutoRedClose extends LinearOpMode {
         r.getPinpointPosition();
         r.launcherVelocity(launcherSpeed);
 
-        shootBalls(r, launcherSpeed); // Shoot preloaded balls
+        shootBalls(r); // Shoot preloaded balls
 
         // Pick up 1st set of balls
         r.driveToPos(720, -900, 0, 15, 3, 4);
@@ -34,7 +34,7 @@ public class AutoRedClose extends LinearOpMode {
         r.waitForLifter();
         sleep(100);
 
-        shootBalls(r, launcherSpeed);
+        shootBalls(r);
 
         // Pick up 2nd set of balls
         r.driveToPos(1350, -900, 0, 15, 3, 4);
@@ -48,7 +48,7 @@ public class AutoRedClose extends LinearOpMode {
         r.driveToPos(1400, -300, 0); // move to avoid gate
 
         r.turnLifterByDegrees(-10, 700); // prevent stuckages
-        shootBalls(r, launcherSpeed);
+        shootBalls(r);
 
         // Pick up 3rd set of balls
         r.driveToPos(1900,-900,0,15,3,4);
@@ -61,13 +61,13 @@ public class AutoRedClose extends LinearOpMode {
         r.driveToPos(1900, -400, 0); // Get out of the way of the gate
 
         r.turnLifterByDegrees(-10, 700);
-        shootBalls(r, launcherSpeed);
+        shootBalls(r);
         r.driveToPos(-200, -800, 37); // park
         r.launcherVelocity(0);
         r.intakePower(0);
     }
 
-    private void shootBalls(RockinBot r, int launchVeloc)
+    private void shootBalls(RockinBot r)
     {
         r.intakePower(0.2);
         r.driveToPos(100, -700, 37); // Go to shooting position
