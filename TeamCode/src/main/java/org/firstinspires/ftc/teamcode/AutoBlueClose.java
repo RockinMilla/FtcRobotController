@@ -15,7 +15,7 @@ public class AutoBlueClose extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "1/5/2026, 5:57 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "1/7/2026, 2:53 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -29,32 +29,35 @@ public class AutoBlueClose extends LinearOpMode {
 
         // Pick up 1st set of balls
         r.driveToPos(-780, -900, 0, 15, 3, 3);
-        r.turnLifterToDegrees(0, 600);
         r.intakePower(0.8);
-        r.driveToPos(-780, -10, 0, 15, 3, 1.5);
+        r.driveToPos(-780, -600, 0, 15,3,3);
+        r.turnLifterToDegrees(0, 600);
+        r.driveToPos(-780, -10, 0, 15, 3, 2);
         r.waitForLifter();
-        sleep(700);
+        sleep(100);
 
         shootBalls(r);
 
         // Pick up 2nd set of balls
-        r.driveToPos(-1400, -950, 0, 15, 3, 3);
-        r.turnLifterToDegrees(0, 600);
+        r.driveToPos(-1350, -950, 0, 15, 3, 3);
         r.intakePower(0.8);
-        r.driveToPos(-1400, 190, 0, 15, 3, 1.5);
+        r.driveToPos(-1350, -650, 0, 15,3,3);
+        r.turnLifterToDegrees(0, 500);
+        r.driveToPos(-1350, 190, 0, 15, 3, 1.5);
         r.waitForLifter();
-        sleep(300);
+        sleep(100);
 
         r.driveToPos(-1400, -300, 0); // move to avoid gate
 
         shootBalls(r);
 
         // Pick up 3rd set of balls
-        r.driveToPos(-2000,-950,0,15,3,4);
+        r.driveToPos(-1950,-950,0,15,3,4);
         r.waitForLifter();
-        r.turnLifterToDegrees(0,600);
         r.intakePower(0.8);
-        r.driveToPos(-2000,160,0,15,3,1.5);
+        r.driveToPos(-1950, -650, 0, 15, 3, 3);
+        r.turnLifterToDegrees(0,500);
+        r.driveToPos(-1950,160,0,15,3,1.5);
         r.waitForLifter();
         sleep(100);
         r.driveToPos(-2000, -400, 0); // Get out of the way of the gate

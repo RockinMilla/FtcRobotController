@@ -233,7 +233,7 @@ public class RockinBot {
     public void waitForLifter() {
         RobotLog.vv("Rockin' Robots", "waitForLifter LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         runtime.reset();
-        while(lifter.isBusy() && runtime.seconds() < 1)
+        while(lifter.isBusy() && runtime.seconds() < 1.5)
         {
             sleep(10);
         }
