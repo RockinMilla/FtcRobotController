@@ -397,6 +397,7 @@ public class RockinBot {
     public void printDataOnScreen() {
         leftLauncherVelocity = leftLauncher.getVelocity();
         rightLauncherVelocity = rightLauncher.getVelocity();
+        PIDFCoefficients pidfActual = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
@@ -404,7 +405,7 @@ public class RockinBot {
         o.telemetry.addData("Current Left Launcher", "%.2f", leftLauncherVelocity);
         o.telemetry.addData("Current Right Launcher", "%.2f", rightLauncherVelocity);
         o.telemetry.addData("Intake Power", "%.2f", intakeSpeed);
-        o.telemetry.addData("P value: ", "%.2f", pidf.p);
+        o.telemetry.addData("P value: ", "%.2f", pidfActual.p);
         o.telemetry.update();
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
     }
