@@ -268,6 +268,8 @@ public class RockinBot {
         lifter.setTargetPosition((int) (degrees*3.9));
         lifter.setVelocity(velocity);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        RobotLog.vv("Rockin' Robots", "turnLifterToDegrees: " + degrees + " Current position: "+ lifter.getCurrentPosition()/3.9
+                + " LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
     }
 
     public void turnLifterByDegrees(int degrees) {

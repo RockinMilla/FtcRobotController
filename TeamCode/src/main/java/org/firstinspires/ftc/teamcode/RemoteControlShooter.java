@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 // All the things that we use and borrow
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.RobotLog;
 
 @TeleOp(name="Remote Control Shooter", group="Linear OpMode")
@@ -24,7 +23,6 @@ public class RemoteControlShooter extends LinearOpMode {
         double pValue = 10;
         boolean park = false;
         boolean bumperPressed = false;
-        PIDFCoefficients pidf = null;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
@@ -35,7 +33,6 @@ public class RemoteControlShooter extends LinearOpMode {
         r.intakePower(intakeSpeed);
         r.launcherVelocity(launcherSpeed);
         r.lifterPower(lifterPower);
-        r.changePIDF(pValue);
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -85,12 +82,10 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.dpad_down){
-                pValue -= 2;
-                r.changePIDF(pValue);
+                park = true;
             }
             else if(gamepad1.dpad_up){
-                pValue += 2;
-                r.changePIDF(pValue);
+                park = false;
             }
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
 

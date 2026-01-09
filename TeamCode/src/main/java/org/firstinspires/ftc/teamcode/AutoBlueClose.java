@@ -28,22 +28,22 @@ public class AutoBlueClose extends LinearOpMode {
         shootBalls(r); // Shoot preloaded balls
 
         // Pick up 1st set of balls
-        r.driveToPos(-780, -900, 0, 15, 3, 3);
+        r.driveToPos(-780, -900, 0, 16, 3, 3);
         r.intakePower(0.8);
-        r.driveToPos(-780, -600, 0, 15,3,3);
+        r.driveToPos(-780, -600, 0, 16,3,3);
         r.turnLifterToDegrees(0, 600);
-        r.driveToPos(-780, -10, 0, 15, 3, 2);
+        r.driveToPos(-780, -10, 0, 16, 3, 2);
         r.waitForLifter();
         sleep(100);
 
         shootBalls(r);
 
         // Pick up 2nd set of balls
-        r.driveToPos(-1350, -950, 0, 15, 3, 3);
+        r.driveToPos(-1350, -950, 0, 16, 3, 3);
         r.intakePower(0.8);
-        r.driveToPos(-1350, -650, 0, 15,3,3);
-        r.turnLifterToDegrees(0, 500);
-        r.driveToPos(-1350, 190, 0, 15, 3, 1.5);
+        r.driveToPos(-1350, -650, 0, 16,3,3);
+        r.turnLifterToDegrees(0, 600);
+        r.driveToPos(-1350, 190, 0, 16, 3, 1.5);
         r.waitForLifter();
         sleep(100);
 
@@ -52,18 +52,19 @@ public class AutoBlueClose extends LinearOpMode {
         shootBalls(r);
 
         // Pick up 3rd set of balls
-        r.driveToPos(-1950,-950,0,15,3,4);
+        r.driveToPos(-1940,-950,0,16,3,4);
         r.waitForLifter();
+        r.turnLifterToDegrees(0,600);
         r.intakePower(0.8);
-        r.driveToPos(-1950, -650, 0, 15, 3, 3);
-        r.turnLifterToDegrees(0,500);
-        r.driveToPos(-1950,160,0,15,3,1.5);
+        r.driveToPos(-1940, -650, 0, 16, 3, 3);
+        r.driveToPos(-1950,160,0,16,3,1.5);
         r.waitForLifter();
         sleep(100);
         r.driveToPos(-2000, -400, 0); // Get out of the way of the gate
 
+        r.turnLifterByDegrees(-10, 700);
         shootBalls(r);
-
+        sleep(100);
         r.driveToPos(100, -800, -35); // park
         r.launcherVelocity(0);
         r.intakePower(0);
@@ -72,7 +73,7 @@ public class AutoBlueClose extends LinearOpMode {
     private void shootBalls(RockinBot r)
     {
         r.intakePower(0.2);
-        r.driveToPos(-100, -700, -35, 20, 3, 5); // Go to shooting position
+        r.driveToPos(-100, -700, -36, 20, 3, 5); // Go to shooting position
         r.intakePower(0.5); // Propell balls
         r.turnLifterToDegrees(360, 1400); // Shoot
         r.waitForLifter();
