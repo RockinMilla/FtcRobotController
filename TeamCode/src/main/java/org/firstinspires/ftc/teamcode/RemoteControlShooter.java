@@ -21,7 +21,6 @@ public class RemoteControlShooter extends LinearOpMode {
         double launcherSpeed = 810; // figure this out
         double intakeSpeed = 1;
         double lifterPower = 0;
-        double pValue = 10;
         boolean park = false;
         boolean bumperPressed = false;
         PIDFCoefficients pidf = null;
@@ -29,13 +28,12 @@ public class RemoteControlShooter extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
         RobotLog.vv("Rockin' Robots", "Remote Control Ready");
-        telemetry.addData("This code was last updated", "12/3/2025, 5:09 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "1/8/2026, 4:35 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
         r.intakePower(intakeSpeed);
         r.launcherVelocity(launcherSpeed);
         r.lifterPower(lifterPower);
-        r.changePIDF(pValue);
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -85,12 +83,10 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.dpad_down){
-                pValue -= 2;
-                r.changePIDF(pValue);
+                park = true;
             }
             else if(gamepad1.dpad_up){
-                pValue += 2;
-                r.changePIDF(pValue);
+                park = false;
             }
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
 
