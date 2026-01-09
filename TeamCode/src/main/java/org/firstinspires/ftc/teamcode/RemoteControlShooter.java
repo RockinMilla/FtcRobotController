@@ -20,14 +20,13 @@ public class RemoteControlShooter extends LinearOpMode {
         double launcherSpeed = 810; // figure this out
         double intakeSpeed = 1;
         double lifterPower = 0;
-        double pValue = 10;
         boolean park = false;
         boolean bumperPressed = false;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
         RobotLog.vv("Rockin' Robots", "Remote Control Ready");
-        telemetry.addData("This code was last updated", "12/3/2025, 5:09 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "1/8/2026, 4:35 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
         r.intakePower(intakeSpeed);

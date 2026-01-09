@@ -149,6 +149,14 @@ public class RockinBot {
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
+    public void setAllToSame(double power) {
+    // Send calculated power to wheels
+        leftFrontDrive.setPower(-1*power);
+        rightFrontDrive.setPower(power);
+        leftBackDrive.setPower(power);
+        rightBackDrive.setPower(-1*power);
+    }
+
     public void setWheelPower(double left_y, double left_x, double right_x, boolean park){        // Wheel power and speed
         double wheelMultiplier = 1;
 
@@ -288,13 +296,6 @@ public class RockinBot {
         lifter.setTargetPosition(moveToDegrees);
         lifter.setVelocity(velocity);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-    }
-
-    public void changePIDF(double pValue) {
-        pidf.p = pValue;
-        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        RobotLog.vv("Rockin' Robots", "PIDF changed. New value: " + pValue);
     }
 
     public void getPinpointPosition() {     // Finds robot position
