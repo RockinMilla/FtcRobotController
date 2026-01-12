@@ -246,6 +246,8 @@ public class RockinBot {
             sleep(10);
         }
         RobotLog.vv("Rockin' Robots", "Lifter complete");
+        lifter.getCurrentPosition();
+        RobotLog.vv("Rockin' Robots", "lifter.getCurrentPosition()" + lifter.getCurrentPosition());
     }
 
     public void waitForLaunchers(double target) {
