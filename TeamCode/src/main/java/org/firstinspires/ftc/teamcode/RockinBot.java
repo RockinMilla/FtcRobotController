@@ -33,6 +33,8 @@ public class RockinBot {
     private DcMotorEx lifter = null;
     private double leftLauncherVelocity = 0;
     private double rightLauncherVelocity = 0;
+    private double leftLauncherPower = 0;
+    private double rightLauncherPower = 0;
     private double leftFrontPower = 0;
     private double rightFrontPower = 0;
     private double leftBackPower = 0;
@@ -225,6 +227,12 @@ public class RockinBot {
         launcherVelocity = power;
         leftLauncher.setVelocity(launcherVelocity);
         rightLauncher.setVelocity(launcherVelocity);
+    }
+
+    public void setpValue(double pValue){
+        pidf.p += pValue;
+        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
 
     public void intakePower(double speed) {
@@ -421,6 +429,9 @@ public class RockinBot {
     public void printDataOnScreen() {
         leftLauncherVelocity = leftLauncher.getVelocity();
         rightLauncherVelocity = rightLauncher.getVelocity();
+        leftLauncherPower = leftLauncher.getPower();
+        rightLauncherPower = rightLauncher.getPower();
+        intakePower = intake.getPower();
         PIDFCoefficients pidfActual = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
@@ -430,6 +441,9 @@ public class RockinBot {
         o.telemetry.addData("Current Right Launcher", "%.2f", rightLauncherVelocity);
         o.telemetry.addData("Intake Power", "%.2f", intakeSpeed);
         o.telemetry.addData("P value: ", "%.2f", pidfActual.p);
+        o.telemetry.addData("Right Launcher Power: ", "%.2f", rightLauncherPower );
+        o.telemetry.addData("Left Launcher Power: ", "%.2f", leftLauncherPower );
+        o.telemetry.addData( "Intake Power: ", "%.2f", intakePower);
         o.telemetry.update();
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
     }
