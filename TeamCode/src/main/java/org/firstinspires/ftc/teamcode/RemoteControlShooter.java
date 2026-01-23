@@ -19,8 +19,8 @@ public class RemoteControlShooter extends LinearOpMode {
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
         double launcherSpeed = 810; // figure this out
         double closeLauncherSpeed = 810;
-        double mediumLauncherSpeed = 975;
-        double longLauncherSpeed = 1180;
+        double mediumLauncherSpeed = 920;
+        double longLauncherSpeed = 1140;
         double intakeSpeed = 1;
         double lifterPower = 0;
         boolean park = false;

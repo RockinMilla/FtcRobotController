@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
@@ -29,7 +30,7 @@ public class RockinBot {
     private DcMotorEx leftLauncher = null;
     private DcMotorEx rightLauncher = null;
     PIDFCoefficients pidf = null;
-    private DcMotor intake = null;
+    private DcMotorEx intake = null;
     private DcMotorEx lifter = null;
     private double leftLauncherVelocity = 0;
     private double rightLauncherVelocity = 0;
@@ -83,8 +84,8 @@ public class RockinBot {
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
 
-        intake = o.hardwareMap.get(DcMotor.class, "intake");
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake = o.hardwareMap.get(DcMotorEx.class, "intake");
+        intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         //Wheel variables
         leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
@@ -429,9 +430,9 @@ public class RockinBot {
     public void printDataOnScreen() {
         leftLauncherVelocity = leftLauncher.getVelocity();
         rightLauncherVelocity = rightLauncher.getVelocity();
-        leftLauncherPower = leftLauncher.getPower();
-        rightLauncherPower = rightLauncher.getPower();
-        intakePower = intake.getPower();
+        leftLauncherPower = leftLauncher.getCurrent(CurrentUnit.MILLIAMPS);
+        rightLauncherPower = rightLauncher.getCurrent(CurrentUnit.MILLIAMPS);
+        intakePower = intake.getCurrent(CurrentUnit.MILLIAMPS);
         PIDFCoefficients pidfActual = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
