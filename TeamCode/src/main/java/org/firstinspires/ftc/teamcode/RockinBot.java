@@ -385,10 +385,10 @@ public class RockinBot {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            leftFrontPower *= 0.7;
-            rightFrontPower *= 0.7;
-            leftBackPower *= 0.7;
-            rightBackPower *= 0.7;
+            leftFrontPower *= 0.75;
+            rightFrontPower *= 0.75;
+            leftBackPower *= 0.75;
+            rightBackPower *= 0.75;
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
