@@ -65,7 +65,8 @@ public class AutoBlueClose extends LinearOpMode {
         r.driveToPos(-1350, -600, 0); // move to avoid gate
         shootBalls(r); // Shoot 4th set of balls
 
-        r.driveToPos(0, -1000, 0, 20, 5, 2); // Park
+        r.driveToPos(-1200, -400, 0, 30, 3, 2); // Park
+        r.driveToPos(-1200, -400, 0, 20, 3, 1); // Park again
 
         r.launcherVelocity(0);
         r.intakePower(0);
