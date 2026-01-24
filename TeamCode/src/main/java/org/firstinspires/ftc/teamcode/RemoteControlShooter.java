@@ -18,6 +18,9 @@ public class RemoteControlShooter extends LinearOpMode {
         // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
         double launcherSpeed = 810; // figure this out
+        double closeLauncherSpeed = 810;
+        double mediumLauncherSpeed = 975;
+        double longLauncherSpeed = 1180;
         double intakeSpeed = 1;
         double lifterPower = 0;
         boolean park = false;
@@ -36,13 +39,22 @@ public class RemoteControlShooter extends LinearOpMode {
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            if (gamepad1.dpad_right) {
-                launcherSpeed += 5;
-                r.launcherVelocity(launcherSpeed);
+            if (gamepad1.dpadRightWasReleased() && launcherSpeed == closeLauncherSpeed) {
+                launcherSpeed = mediumLauncherSpeed;
+                r.launcherVelocity(mediumLauncherSpeed);
             }
-            else if (gamepad1.dpad_left) {
-                launcherSpeed -= 5;
-                r.launcherVelocity(launcherSpeed);
+            if(gamepad1.dpad_right && launcherSpeed == mediumLauncherSpeed) {
+                launcherSpeed = longLauncherSpeed;
+                r.launcherVelocity(longLauncherSpeed);
+            }
+
+            if (gamepad1.dpadLeftWasReleased() && launcherSpeed == longLauncherSpeed) {
+                launcherSpeed = mediumLauncherSpeed;
+                r.launcherVelocity(mediumLauncherSpeed);
+            }
+            if (gamepad1.dpad_left && launcherSpeed == mediumLauncherSpeed) {
+                launcherSpeed = closeLauncherSpeed;
+                r.launcherVelocity(closeLauncherSpeed);
             }
 
             if(gamepad1.circle){
@@ -81,11 +93,20 @@ public class RemoteControlShooter extends LinearOpMode {
             }
 
             if(gamepad1.dpad_down){
+                r.setpValue(-0.1);
+            }
+            if(gamepad1.dpad_up){
+                r.setpValue(0.1);
+            }
+
+            /*
+            if(gamepad1.dpad_down){
                 park = true;
             }
             else if(gamepad1.dpad_up){
                 park = false;
             }
+            */
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
 
             // Show the elapsed game time and wheel power.
