@@ -231,7 +231,7 @@ public class RockinBot {
     }
 
     public void setpValue(double pValue){
-        pidf.p += pValue;
+        pidf.p = pValue;
         leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }

@@ -84,29 +84,29 @@ public class RemoteControlShooter extends LinearOpMode {
                 lifterPower = 0;
                 r.lifterPower(lifterPower);
             }
-
+            /* We took this out since these aren't useful and we don't want to accidentally trigger them
             if(gamepad1.right_bumper) {
                 r.turnLifterByDegreesRC(90, 1500);
             }
             else if(gamepad1.left_bumper) {
                 r.turnLifterByDegreesRC(-90, 1500);
             }
-
+            */
+            /* This is just test code - We can manually adjust the p values with this
             if(gamepad1.dpad_down){
                 r.setpValue(-0.1);
             }
             if(gamepad1.dpad_up){
                 r.setpValue(0.1);
             }
+            */
 
-            /*
             if(gamepad1.dpad_down){
                 park = true;
             }
             else if(gamepad1.dpad_up){
                 park = false;
             }
-            */
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
 
             // Show the elapsed game time and wheel power.
