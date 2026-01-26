@@ -14,7 +14,7 @@ public class AutoRedClose extends LinearOpMode {
         RockinBot r = new RockinBot(o,"Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "1/24/2026 11:54 am"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "1/26/2026 12:28 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         waitForStart(); // Wait for the game to start (driver presses PLAY)
@@ -42,14 +42,15 @@ public class AutoRedClose extends LinearOpMode {
         r.driveToPos(100, -700, 0, 15, 3, 1); // Turn first
         r.driveToPos(1200, -900, 0, 15, 3, 4);
         r.waitForLifter();
-        r.turnLifterToDegrees(0, 500);
+        r.turnLifterToDegrees(0, 400);
         r.intakePower(0.8);
-        r.driveToPos(1340, 100, 0, 15, 3, 1);
+        r.driveToPos(1340, 150, 0, 15, 3, 1.5);
         r.waitForLifter();
         sleep(100);
 
-        r.driveToPos(1200, -300, 0, 30 ,5, 1); // move to avoid gate
+        r.driveToPos(1200, -250, 0, 30 ,5, 1); // move to avoid gate
         r.driveToPos(1200, -50, 0, 15, 3, 2); // empty gate
+        sleep(100);
         shootBalls(r); // Shoot 3rd set of balls
 
         // Pick up 4th set of balls
@@ -58,7 +59,7 @@ public class AutoRedClose extends LinearOpMode {
         r.intakePower(0.8);
         //sleep(100);
         r.turnLifterToDegrees(0,600);
-        r.driveToPos(1900,100,0,10,2,1.5);
+        r.driveToPos(1900,150,0,10,2,1.5);
         r.waitForLifter();
         sleep(100);
 
@@ -76,6 +77,7 @@ public class AutoRedClose extends LinearOpMode {
     {
         r.intakePower(0.2);
         r.driveToPos(100, -700, 38); // Go to shooting position
+        r.driveToPos(100, -700, 38); // Just in case
         r.intakePower(0.9); // Propell balls
         r.turnLifterToDegrees(360, 1400); // Shoot
         r.waitForLifter();
