@@ -338,9 +338,9 @@ public class RockinBot {
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration) {   // In millimeters
-        if(getPinpointPosition() == false) {
+        if(!getPinpointPosition()) {
             return;
-        };
+        }
 
         // Calculate distance from target
         double xDistance = xTarget - xLoc;
