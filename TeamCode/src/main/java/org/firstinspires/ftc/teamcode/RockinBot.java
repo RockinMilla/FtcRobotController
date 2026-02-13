@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+
 // All the things that we use and borrow
 import static android.os.SystemClock.sleep;
 
@@ -11,6 +13,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
+
+import org.firstinspires.ftc.robotcontroller.external.samples.ConceptTelemetry;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -47,6 +52,9 @@ public class RockinBot {
     double launcherVelocity = 820;
     double intakeSpeed = 1.0;
     public GoBildaPinpointDriver odo = null;
+
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
     final ElapsedTime runtime = new ElapsedTime();
     final ElapsedTime pinpointTime = new ElapsedTime();
@@ -447,5 +455,10 @@ public class RockinBot {
         o.telemetry.addData( "Intake Power: ", "%.2f", intakePower);
         o.telemetry.update();
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
+
+        dashboardTelemetry = dashboard.getTelemetry();
+        dashboardTelemetry.addData("Left Launcher:", leftLauncherVelocity);
+        dashboardTelemetry.addData("Right Launcher:", rightLauncherVelocity);
+        dashboardTelemetry.update();
     }
 }
