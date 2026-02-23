@@ -87,6 +87,7 @@ public class RemoteControlShooter extends LinearOpMode {
 
             if(r.touchSensor.isPressed()){
                 gamepad2.rumble(1000);
+                gamepad2.setLedColor(255, 255, 0, 1000);
             }
             else{
                 gamepad2.stopRumble();
