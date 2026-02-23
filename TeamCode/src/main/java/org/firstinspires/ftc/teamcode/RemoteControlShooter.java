@@ -84,22 +84,20 @@ public class RemoteControlShooter extends LinearOpMode {
                 lifterPower = 0;
                 r.lifterPower(lifterPower);
             }
-            /* We took this out since these aren't useful and we don't want to accidentally trigger them
-            if(gamepad1.right_bumper) {
-                r.turnLifterByDegreesRC(90, 1500);
+
+            if(r.touchSensor.isPressed()){
+                gamepad2.rumble(1000);
             }
-            else if(gamepad1.left_bumper) {
-                r.turnLifterByDegreesRC(-90, 1500);
+            else{
+                gamepad2.stopRumble();
             }
-            */
-            /* This is just test code - We can manually adjust the p values with this
-            if(gamepad1.dpad_down){
+
+            if(gamepad2.dpad_down){
                 r.setpValue(-0.1);
             }
-            if(gamepad1.dpad_up){
+            if(gamepad2.dpad_up){
                 r.setpValue(0.1);
             }
-            */
 
             if(gamepad1.dpad_down){
                 park = true;

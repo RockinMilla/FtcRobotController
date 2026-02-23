@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import static android.os.SystemClock.sleep;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -37,6 +38,7 @@ public class RockinBot {
     PIDFCoefficients pidf = null;
     private DcMotorEx intake = null;
     private DcMotorEx lifter = null;
+    public RevTouchSensor touchSensor = null;
     private double leftLauncherVelocity = 0;
     private double rightLauncherVelocity = 0;
     private double leftLauncherPower = 0;
@@ -91,6 +93,7 @@ public class RockinBot {
         leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
+        touchSensor = o.hardwareMap.get(RevTouchSensor.class, "touch_sensor");
 
         intake = o.hardwareMap.get(DcMotorEx.class, "intake");
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
