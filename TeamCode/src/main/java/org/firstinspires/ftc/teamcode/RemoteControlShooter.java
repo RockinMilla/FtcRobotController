@@ -84,22 +84,6 @@ public class RemoteControlShooter extends LinearOpMode {
                 lifterPower = 0;
                 r.lifterPower(lifterPower);
             }
-            /* We took this out since these aren't useful and we don't want to accidentally trigger them
-            if(gamepad1.right_bumper) {
-                r.turnLifterByDegreesRC(90, 1500);
-            }
-            else if(gamepad1.left_bumper) {
-                r.turnLifterByDegreesRC(-90, 1500);
-            }
-            */
-            /* This is just test code - We can manually adjust the p values with this
-            if(gamepad1.dpad_down){
-                r.setpValue(-0.1);
-            }
-            if(gamepad1.dpad_up){
-                r.setpValue(0.1);
-            }
-            */
 
             if(gamepad1.dpad_down){
                 park = true;
@@ -108,6 +92,25 @@ public class RemoteControlShooter extends LinearOpMode {
                 park = false;
             }
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
+
+            /////////////////////////////////////////////////////////////
+            // This is our test code.
+            if(r.touchSensor.isPressed()){
+                gamepad2.rumble(1000);
+                gamepad2.setLedColor(255, 255, 0, 1000);
+            }
+            else{
+                gamepad2.stopRumble();
+            }
+
+            if(gamepad2.dpad_down){
+                r.setpValue(-0.1);
+            }
+            if(gamepad2.dpad_up){
+                r.setpValue(0.1);
+            }
+            // This code controls our LED light using the right trigger.
+            r.led.setPosition(gamepad2.right_trigger);
 
             // Show the elapsed game time and wheel power.
             r.printDataOnScreen();
