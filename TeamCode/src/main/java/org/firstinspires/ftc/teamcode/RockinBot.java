@@ -245,7 +245,7 @@ public class RockinBot {
     }
 
     public void setpValue(double pValue){
-        pidf.p = pValue;
+        pidf.p += pValue;
         leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
@@ -465,6 +465,11 @@ public class RockinBot {
         dashboardTelemetry = dashboard.getTelemetry();
         dashboardTelemetry.addData("Left Launcher:", leftLauncherVelocity);
         dashboardTelemetry.addData("Right Launcher:", rightLauncherVelocity);
+        dashboardTelemetry.addData("Intake", intakePower);
+        dashboardTelemetry.addData("Left Front Wheel", leftFrontPower);
+        dashboardTelemetry.addData("Right Front Wheel", rightFrontPower);
+        dashboardTelemetry.addData("Left Back Wheel", leftBackPower);
+        dashboardTelemetry.addData("Right Back Wheel", rightBackPower);
         dashboardTelemetry.update();
     }
 }
