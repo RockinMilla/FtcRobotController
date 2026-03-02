@@ -5,12 +5,14 @@ import com.acmerobotics.dashboard.FtcDashboard;
 // All the things that we use and borrow
 import static android.os.SystemClock.sleep;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 //import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -40,6 +42,8 @@ public class RockinBot {
     private DcMotorEx intake = null;
     private DcMotorEx lifter = null;
     public RevTouchSensor touchSensor = null;
+    public RevColorSensorV3 colorSensor = null;
+    public NormalizedRGBA colors = null;
     public Servo led = null;
     private double leftLauncherVelocity = 0;
     private double rightLauncherVelocity = 0;
@@ -96,6 +100,7 @@ public class RockinBot {
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
         touchSensor = o.hardwareMap.get(RevTouchSensor.class, "touch_sensor");
+        colorSensor = o.hardwareMap.get(RevColorSensorV3.class, "color_sensor");
         led = o.hardwareMap.get(Servo.class, "led");
 
         intake = o.hardwareMap.get(DcMotorEx.class, "intake");
@@ -440,6 +445,10 @@ public class RockinBot {
                 runtime.seconds(), Math.round(xLoc), Math.round(xTarget), Math.round(yLoc), Math.round(yTarget), Math.round(hLoc), Math.round(hTarget));
     }
 
+    public void getColor(){
+        colors = colorSensor.getNormalizedColors();
+    }
+
     // Log all (relevant) info about the robot on the hub.
     public void printDataOnScreen() {
         leftLauncherVelocity = leftLauncher.getVelocity();
@@ -459,7 +468,12 @@ public class RockinBot {
         o.telemetry.addData("Right Launcher Power: ", "%.2f", rightLauncherPower );
         o.telemetry.addData("Left Launcher Power: ", "%.2f", leftLauncherPower );
         o.telemetry.addData( "Intake Power: ", "%.2f", intakePower);
+        o.telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue);
         o.telemetry.update();
+
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
 
         dashboardTelemetry = dashboard.getTelemetry();

@@ -103,6 +103,8 @@ public class RemoteControlShooter extends LinearOpMode {
                 gamepad2.stopRumble();
             }
 
+            r.getColor();
+
             if(gamepad2.dpad_down){
                 r.setpValue(-0.1);
             }
