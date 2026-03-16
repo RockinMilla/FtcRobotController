@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -11,6 +14,8 @@ public class RemoteControlShooter extends LinearOpMode {
 
     //Op mode runs when the robot runs. It runs the whole time.
     public void runOpMode() {
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+
         // Create a LinearOpModeVariable and pass it to the RockinBot constructor
         LinearOpMode o = this;
         RockinBot r = new RockinBot(o, "Shooter");
@@ -31,13 +36,31 @@ public class RemoteControlShooter extends LinearOpMode {
         RobotLog.vv("Rockin' Robots", "Remote Control Ready");
         telemetry.addData("This code was last updated", "1/8/2026, 4:35 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
+
         waitForStart();
         r.intakePower(intakeSpeed);
         r.launcherVelocity(launcherSpeed);
         r.lifterPower(lifterPower);
 
+        TelemetryPacket packetField = new TelemetryPacket();
+
+        packetField.fieldOverlay()
+                .drawImage("/Downloads/field.png", 20, 0, 144, 144);
+        dashboard.sendTelemetryPacket(packetField);
+
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
+            //The centering of the robot is wrong for now
+            TelemetryPacket packetRobot = new TelemetryPacket();
+            r.getPinpointPosition();
+            packetRobot.fieldOverlay()
+                    .setTranslation(5, 5)
+                    .setRotation(r.getHLoc())
+                    .setFill("yellow")
+                    .fillRect(r.getXloc(), r.getYloc(), 20, 20);
+
+            dashboard.sendTelemetryPacket(packetRobot);
 
             if (gamepad1.dpadRightWasReleased() && launcherSpeed == closeLauncherSpeed) {
                 launcherSpeed = mediumLauncherSpeed;

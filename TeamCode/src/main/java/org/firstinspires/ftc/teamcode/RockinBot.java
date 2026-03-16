@@ -45,6 +45,7 @@ public class RockinBot {
     public RevColorSensorV3 colorSensor = null;
     public NormalizedRGBA colors = null;
     public Servo led = null;
+    public static double ORIGIN_ZEROHEADING = Math.PI / 2;
     private double leftLauncherVelocity = 0;
     private double rightLauncherVelocity = 0;
     private double leftLauncherPower = 0;
@@ -445,6 +446,19 @@ public class RockinBot {
                 runtime.seconds(), Math.round(xLoc), Math.round(xTarget), Math.round(yLoc), Math.round(yTarget), Math.round(hLoc), Math.round(hTarget));
     }
 
+    public double getXloc()
+    {
+        return pos.getX(DistanceUnit.INCH);
+    }
+    public double getYloc()
+    {
+        return pos.getY(DistanceUnit.INCH);
+    }
+    public double getHLoc()
+    {
+        return pos.getHeading(AngleUnit.RADIANS);
+    }
+
     public void getColor(){
         colors = colorSensor.getNormalizedColors();
     }
@@ -484,6 +498,6 @@ public class RockinBot {
         dashboardTelemetry.addData("Right Front Wheel", rightFrontPower);
         dashboardTelemetry.addData("Left Back Wheel", leftBackPower);
         dashboardTelemetry.addData("Right Back Wheel", rightBackPower);
-        dashboardTelemetry.update();
+        //dashboardTelemetry.update();
     }
 }
