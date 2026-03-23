@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
 // All the things that we use and borrow
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp(name="Remote Control Shooter", group="Linear OpMode")
 public class RemoteControlShooter extends LinearOpMode {
+    private DigitalChannel laserInput;
     @Override
 
     //Op mode runs when the robot runs. It runs the whole time.
@@ -22,14 +23,16 @@ public class RemoteControlShooter extends LinearOpMode {
 
         // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
-        double launcherSpeed = 810; // figure this out
-        double closeLauncherSpeed = 810;
+        double launcherSpeed = 850; // figure this out
+        double closeLauncherSpeed = 850;
         double mediumLauncherSpeed = 920;
         double longLauncherSpeed = 1140;
         double intakeSpeed = 1;
         double lifterPower = 0;
         boolean park = false;
         boolean bumperPressed = false;
+        laserInput = hardwareMap.get(DigitalChannel.class, "laserDigitalInput");
+        laserInput.setMode(DigitalChannel.Mode.INPUT);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
@@ -41,6 +44,20 @@ public class RemoteControlShooter extends LinearOpMode {
         r.intakePower(intakeSpeed);
         r.launcherVelocity(launcherSpeed);
         r.lifterPower(lifterPower);
+
+        // Read the sensor state (true = HIGH, false = LOW)
+        boolean stateHigh = laserInput.getState();
+
+        // Active-HIGH: HIGH means an object is detected
+        boolean detected = stateHigh;
+
+        // Display detection state
+        if (detected) {
+            r.
+        } else {
+            telemetry.addLine("No object detected");
+        }
+
 
         TelemetryPacket packetField = new TelemetryPacket();
 

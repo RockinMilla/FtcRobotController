@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 //import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -461,6 +462,22 @@ public class RockinBot {
 
     public void getColor(){
         colors = colorSensor.getNormalizedColors();
+        colorSensor.getGain();
+        NormalizedColorSensor colorSensor;
+
+        /*
+        public enum detectedColor{
+            RED,
+            BLUE,
+            YELLOW,
+            PURPLE,
+            GREEN,
+        }
+
+        public void init(HardwareMap hwMap) {
+            colorSensor = hwMap.get(NormalizedColorSensor.class "sensor_color_distance")
+        }
+         */
     }
 
     // Log all (relevant) info about the robot on the hub.
@@ -486,6 +503,7 @@ public class RockinBot {
                 .addData("Red", "%.3f", colors.red)
                 .addData("Green", "%.3f", colors.green)
                 .addData("Blue", "%.3f", colors.blue);
+        o.telemetry.addData("Gain", "%.2f", colorSensor.getGain());
         o.telemetry.update();
 
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
