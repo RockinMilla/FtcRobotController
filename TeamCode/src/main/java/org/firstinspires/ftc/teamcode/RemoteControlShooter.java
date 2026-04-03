@@ -17,9 +17,9 @@ public class RemoteControlShooter extends LinearOpMode {
 
         // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
-        double launcherSpeed = 810; // figure this out
-        double closeLauncherSpeed = 810;
-        double mediumLauncherSpeed = 920;
+        double launcherSpeed = 860; // figure this out
+        double closeLauncherSpeed = 860;
+        double mediumLauncherSpeed = 950;
         double longLauncherSpeed = 1140;
         double intakeSpeed = 1;
         double lifterPower = 0;
@@ -94,20 +94,18 @@ public class RemoteControlShooter extends LinearOpMode {
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
 
             /////////////////////////////////////////////////////////////
-            // This is our test code.
-            if(r.touchSensor.isPressed()){
-                gamepad2.rumble(1000);
-                gamepad2.setLedColor(255, 255, 0, 1000);
-            }
-            else{
-                gamepad2.stopRumble();
-            }
 
             if(gamepad2.dpad_down){
                 r.setpValue(-0.1);
             }
             if(gamepad2.dpad_up){
                 r.setpValue(0.1);
+            }
+            if(gamepad2.dpad_right){
+                launcherSpeed += 10;
+            }
+            if(gamepad2.dpad_left){
+                launcherSpeed -= 10;
             }
             // This code controls our LED light using the right trigger.
             r.led.setPosition(gamepad2.right_trigger);

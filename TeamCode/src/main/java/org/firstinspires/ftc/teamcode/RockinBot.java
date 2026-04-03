@@ -6,11 +6,11 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import static android.os.SystemClock.sleep;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 //import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,8 +39,8 @@ public class RockinBot {
     PIDFCoefficients pidf = null;
     private DcMotorEx intake = null;
     private DcMotorEx lifter = null;
-    public RevTouchSensor touchSensor = null;
     public Servo led = null;
+    public static double ORIGIN_ZEROHEADING = Math.PI / 2;
     private double leftLauncherVelocity = 0;
     private double rightLauncherVelocity = 0;
     private double leftLauncherPower = 0;
@@ -50,10 +50,11 @@ public class RockinBot {
     private double leftBackPower = 0;
     private double rightBackPower = 0;
     private double intakePower = 0;
+    private double lifterVelocity = 0;
     private double max = 0;
     // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
     // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
-    double launcherVelocity = 820;
+    double launcherVelocity = 850;
     double intakeSpeed = 1.0;
     public GoBildaPinpointDriver odo = null;
 
@@ -95,7 +96,6 @@ public class RockinBot {
         leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
-        touchSensor = o.hardwareMap.get(RevTouchSensor.class, "touch_sensor");
         led = o.hardwareMap.get(Servo.class, "led");
 
         intake = o.hardwareMap.get(DcMotorEx.class, "intake");
@@ -440,6 +440,19 @@ public class RockinBot {
                 runtime.seconds(), Math.round(xLoc), Math.round(xTarget), Math.round(yLoc), Math.round(yTarget), Math.round(hLoc), Math.round(hTarget));
     }
 
+    public double getXloc()
+    {
+        return pos.getX(DistanceUnit.INCH);
+    }
+    public double getYloc()
+    {
+        return pos.getY(DistanceUnit.INCH);
+    }
+    public double getHLoc()
+    {
+        return pos.getHeading(AngleUnit.RADIANS);
+    }
+
     // Log all (relevant) info about the robot on the hub.
     public void printDataOnScreen() {
         leftLauncherVelocity = leftLauncher.getVelocity();
@@ -447,19 +460,19 @@ public class RockinBot {
         leftLauncherPower = leftLauncher.getCurrent(CurrentUnit.MILLIAMPS);
         rightLauncherPower = rightLauncher.getCurrent(CurrentUnit.MILLIAMPS);
         intakePower = intake.getCurrent(CurrentUnit.MILLIAMPS);
+        lifterVelocity = lifter.getVelocity();
         PIDFCoefficients pidfActual = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-        o.telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+        o.telemetry.addData("Back left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
         o.telemetry.addData("Goal Launcher Velocity", "%.2f", launcherVelocity);
-        o.telemetry.addData("Current Left Launcher", "%.2f", leftLauncherVelocity);
-        o.telemetry.addData("Current Right Launcher", "%.2f", rightLauncherVelocity);
-        o.telemetry.addData("Intake Power", "%.2f", intakeSpeed);
+        o.telemetry.addData("Current Left Launcher Velocity and Power", "%.2f", leftLauncherVelocity, leftLauncherPower);
+        o.telemetry.addData("Current Right Launcher Velocity and Power", "%.2f", rightLauncherVelocity, rightLauncherPower);
+        o.telemetry.addData("Current Lifter Velocity", "%.2f", lifterVelocity);
+        o.telemetry.addData("Intake Speed and Power", "%.2f", intakeSpeed, intakePower);
         o.telemetry.addData("P value: ", "%.2f", pidfActual.p);
-        o.telemetry.addData("Right Launcher Power: ", "%.2f", rightLauncherPower );
-        o.telemetry.addData("Left Launcher Power: ", "%.2f", leftLauncherPower );
-        o.telemetry.addData( "Intake Power: ", "%.2f", intakePower);
         o.telemetry.update();
+
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
 
         dashboardTelemetry = dashboard.getTelemetry();
@@ -470,6 +483,6 @@ public class RockinBot {
         dashboardTelemetry.addData("Right Front Wheel", rightFrontPower);
         dashboardTelemetry.addData("Left Back Wheel", leftBackPower);
         dashboardTelemetry.addData("Right Back Wheel", rightBackPower);
-        dashboardTelemetry.update();
+        //dashboardTelemetry.update();
     }
 }
