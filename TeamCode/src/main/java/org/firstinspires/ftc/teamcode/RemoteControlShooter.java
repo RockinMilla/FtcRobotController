@@ -36,6 +36,7 @@ public class RemoteControlShooter extends LinearOpMode {
         r.launcherVelocity(launcherSpeed);
         r.lifterPower(lifterPower);
 
+
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
@@ -109,6 +110,8 @@ public class RemoteControlShooter extends LinearOpMode {
             }
             // This code controls our LED light using the right trigger.
             r.led.setPosition(gamepad2.right_trigger);
+
+            r.hasBall();
 
             // Show the elapsed game time and wheel power.
             r.printDataOnScreen();

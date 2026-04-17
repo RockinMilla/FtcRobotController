@@ -7,6 +7,7 @@ import static android.os.SystemClock.sleep;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 //import com.qualcomm.robotcore.robot.Robot;
@@ -54,8 +55,12 @@ public class RockinBot {
     private double max = 0;
     // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
     // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
+    private AnalogInput laserAnalog;
+    private static final double MAX_VOLTS = 3.3;
+    private static final double MAX_DISTANCE_MM = 1000.0;
     double launcherVelocity = 850;
     double intakeSpeed = 1.0;
+    double distanceMM = 0;
     public GoBildaPinpointDriver odo = null;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -83,6 +88,7 @@ public class RockinBot {
         //Launcher + intake variables
         leftLauncher = o.hardwareMap.get(DcMotorEx.class, "left_launcher");
         rightLauncher = o.hardwareMap.get(DcMotorEx.class, "right_launcher");
+        laserAnalog = o.hardwareMap.get(AnalogInput.class, "beam");
         leftLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         leftLauncher.setDirection(DcMotorEx.Direction.REVERSE);
@@ -132,7 +138,7 @@ public class RockinBot {
 
         // Robot orientation
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
@@ -337,7 +343,7 @@ public class RockinBot {
         yLoc = pos.getY(DistanceUnit.MM);
         hLoc = pos.getHeading(AngleUnit.DEGREES);
 
-        while((Double.isNaN(xLoc) || Double.isNaN(yLoc) || Double.isNaN(hLoc))  && pinpointTime.seconds() < 1) {
+        while((Double.isNaN(xLoc) || Double.isNaN(yLoc) || Double.isNaN(hLoc)) && pinpointTime.seconds() < 1) {
             RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
             stopMoving();
             sleep(10);
@@ -452,6 +458,16 @@ public class RockinBot {
     {
         return pos.getHeading(AngleUnit.RADIANS);
     }
+    public boolean hasBall() {
+        double volts = laserAnalog.getVoltage();
+        distanceMM = (volts / MAX_VOLTS) * MAX_DISTANCE_MM;
+        boolean hasBall = true;
+
+        if (distanceMM <= 20) {
+            hasBall = false;
+        }
+        return hasBall;
+    }
 
     // Log all (relevant) info about the robot on the hub.
     public void printDataOnScreen() {
@@ -471,6 +487,8 @@ public class RockinBot {
         o.telemetry.addData("Current Lifter Velocity", "%.2f", lifterVelocity);
         o.telemetry.addData("Intake Speed and Power", "%.2f", intakeSpeed, intakePower);
         o.telemetry.addData("P value: ", "%.2f", pidfActual.p);
+        o.telemetry.addData("Has Ball:", "%B", hasBall());
+        o.telemetry.addData("Ball Distance:", "%.2f", distanceMM);
         o.telemetry.update();
 
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
