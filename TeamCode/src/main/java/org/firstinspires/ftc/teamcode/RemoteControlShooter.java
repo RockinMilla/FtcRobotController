@@ -104,9 +104,11 @@ public class RemoteControlShooter extends LinearOpMode {
             }
             if(gamepad2.dpad_right){
                 launcherSpeed += 10;
+                r.launcherVelocity(launcherSpeed);
             }
             if(gamepad2.dpad_left){
                 launcherSpeed -= 10;
+                r.launcherVelocity(launcherSpeed);
             }
             // This code controls our LED light using the right trigger.
             r.led.setPosition(gamepad2.right_trigger);
