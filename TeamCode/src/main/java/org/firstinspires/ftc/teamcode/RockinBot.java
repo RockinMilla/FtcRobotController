@@ -69,6 +69,7 @@ public class RockinBot {
     public GoBildaPinpointDriver odo = null;
     PrismAnimations.Solid red;
     PrismAnimations.Solid green;
+    PrismAnimations.Solid TRANSPARENT;
     boolean hasBall = false;
     boolean lightsGreen = true;
 
@@ -484,7 +485,8 @@ public class RockinBot {
         else {
             hasBall = false;
             if (lightsGreen) {
-                prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, red);
+                //prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, TRANSPARENT);
+                prism.clearAllAnimations();
                 lightsGreen = false;
             }
         }
