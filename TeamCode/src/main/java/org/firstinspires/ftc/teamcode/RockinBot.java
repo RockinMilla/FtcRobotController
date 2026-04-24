@@ -23,6 +23,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
+import org.firstinspires.ftc.teamcode.Prism.Color;
+import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
+import static org.firstinspires.ftc.teamcode.Prism.Direction.Forward;
 
 public class RockinBot {
     // Motors and sensors
@@ -56,12 +60,17 @@ public class RockinBot {
     // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
     // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
     private AnalogInput laserAnalog;
+    private GoBildaPrismDriver prism;
     private static final double MAX_VOLTS = 3.3;
     private static final double MAX_DISTANCE_MM = 1000.0;
     double launcherVelocity = 850;
     double intakeSpeed = 1.0;
     double distanceMM = 0;
     public GoBildaPinpointDriver odo = null;
+    PrismAnimations.Solid red;
+    PrismAnimations.Solid green;
+    boolean hasBall = false;
+    boolean lightsGreen = true;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -89,6 +98,9 @@ public class RockinBot {
         leftLauncher = o.hardwareMap.get(DcMotorEx.class, "left_launcher");
         rightLauncher = o.hardwareMap.get(DcMotorEx.class, "right_launcher");
         laserAnalog = o.hardwareMap.get(AnalogInput.class, "beam");
+        prism = o.hardwareMap.get(GoBildaPrismDriver.class,"prism");
+        red = new PrismAnimations.Solid(Color.RED);
+        green = new PrismAnimations.Solid(Color.GREEN);
         leftLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         leftLauncher.setDirection(DcMotorEx.Direction.REVERSE);
@@ -461,10 +473,20 @@ public class RockinBot {
     public boolean hasBall() {
         double volts = laserAnalog.getVoltage();
         distanceMM = (volts / MAX_VOLTS) * MAX_DISTANCE_MM;
-        boolean hasBall = true;
 
-        if (distanceMM <= 20) {
+        if (distanceMM >= 200) {
+            hasBall = true;
+            if (!lightsGreen) {
+                prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, green);
+                lightsGreen = true;
+            }
+        }
+        else {
             hasBall = false;
+            if (lightsGreen) {
+                prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, red);
+                lightsGreen = false;
+            }
         }
         return hasBall;
     }
