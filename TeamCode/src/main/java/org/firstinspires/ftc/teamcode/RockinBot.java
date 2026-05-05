@@ -365,15 +365,21 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "Position: " + data);
         return true;
     }
-
-    public void driveToPos(double xTarget, double yTarget, double hTarget) {    // Defaults hAccuracy to 3 if no hAccuracy is given
-        driveToPos(xTarget, yTarget, hTarget, 15, 3, 5);
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration) {    // Defaults hAccuracy to 3 if no hAccuracy is given
+        driveToPos(xTarget, yTarget, hTarget, 15, 3, 5, false);
     }
 
-    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration) {   // In millimeters
+    public void driveToPos(double xTarget, double yTarget, double hTarget) {    // Defaults hAccuracy to 3 if no hAccuracy is given
+        driveToPos(xTarget, yTarget, hTarget, 15, 3, 5, false);
+    }
+
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration, boolean detect) {   // In millimeters
         if(!getPinpointPosition()) {
             return;
         }
+
+        boolean SeenBall = false;
+
 
         // Calculate distance from target
         double xDistance = xTarget - xLoc;
@@ -451,6 +457,12 @@ public class RockinBot {
 
             RobotLog.vv("Rockin' Robots", "Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
                     xDistance, yDistance, hDistance);
+
+            if (detect && hasBall() && !SeenBall) {
+                SeenBall = true;
+                RobotLog.vv("Rockin' Robots", "Seen Ball");
+                turnLifterToDegrees(0, 700);
+            }
         }
         // Finish up
         stopMoving();
@@ -527,4 +539,5 @@ public class RockinBot {
         dashboardTelemetry.addData("Right Back Wheel", rightBackPower);
         //dashboardTelemetry.update();
     }
+
 }
