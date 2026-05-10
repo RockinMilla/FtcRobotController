@@ -28,8 +28,8 @@ public class AutoBlueFar extends LinearOpMode {
 
         shootBalls(r); // Shoot preloaded balls
 
-        r.driveToPos(-100, 800, 90, 10, 2, 4);
-        r.driveToPos(-1310, 800, 90, 10,2,4, true);
+        r.driveToPos(-100, 800, 95, 10, 2, 4);
+        r.driveToPos(-1270, 800, 95, 10,2,4, true);
         r.intakePower(0.8);
         //sleep(100);
         //r.driveToPos( -1390, 150, 90, 10, 2, 1.5); // Pick up
@@ -38,6 +38,11 @@ public class AutoBlueFar extends LinearOpMode {
 
         shootBalls(r); // Shoot 2nd set of balls
 
+        r.driveToPos(-1200, 300, 170, 10, 2, 4);
+        r.driveToPos(-1250, 20, 170, 10, 2, 4, true);
+
+        shootBalls(r);
+
         r.driveToPos(-500, 200, 70); // park
         r.launcherVelocity(0);
         r.intakePower(0);
@@ -45,10 +50,10 @@ public class AutoBlueFar extends LinearOpMode {
 
     private void shootBalls(RockinBot r)
     {
-        r.intakePower(0.2);
-        r.driveToPos(50, 150, 28, 10, 1.5 ,5);
+      //  r.intakePower(0.2);
+        r.driveToPos(50, 150, 30, 10, 1.5 ,5);
         r.waitForLaunchers(1200); // Change this when changing launcher velocity
-        sleep(2000);
+        sleep(500);
         r.intakePower(0.5);
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter();

@@ -28,22 +28,34 @@ public class AutoRedFar extends LinearOpMode {
 
         shootBalls(r); // Shoot preloaded balls
 
-        r.driveToPos(400, 200, -45); // park
+        r.driveToPos(100, 750, -95, 10, 2, 4);
+        r.driveToPos(1250, 750, -95, 10,2,4, true);
+        r.intakePower(0.8);
+        //sleep(100);
+        //r.driveToPos( -1390, 150, 90, 10, 2, 1.5); // Pick up
+        r.waitForLifter();
+        sleep(100);
+
+        shootBalls(r); // Shoot 2nd set of balls
+
+        r.driveToPos(1200, 300, -170, 10, 2, 4);
+        r.driveToPos(1250, 20, -170, 10, 2, 4, true);
+
+        shootBalls(r);
+
+        r.driveToPos(500, 200, -70); // park
         r.launcherVelocity(0);
         r.intakePower(0);
     }
 
     private void shootBalls(RockinBot r) {
-        r.intakePower(0.2);
-        r.driveToPos(0, 100, -20, 10, 1.5, 5);
+        r.driveToPos(-50, 150, -18, 10, 1.5 ,5);
         r.waitForLaunchers(1200); // Change this when changing launcher velocity
+        sleep(500);
         r.intakePower(0.5);
-        r.turnLifterToDegrees(90); // Shoot ball 1
-        sleep(500);
-        r.turnLifterToDegrees(180); // Shoot ball 2
-        sleep(500);
-        r.turnLifterToDegrees(270); // Shoot ball 3
+        r.turnLifterToDegrees(360);
         r.waitForLifter();
-        sleep(1000);
+        sleep(400);
+        r.turnLifterToDegrees(-150); // Reset lifter
     }
 }
