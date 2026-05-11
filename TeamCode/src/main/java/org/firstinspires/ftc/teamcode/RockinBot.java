@@ -90,7 +90,6 @@ public class RockinBot {
         rightLauncher = o.hardwareMap.get(DcMotorEx.class, "right_launcher");
         laserAnalog = o.hardwareMap.get(AnalogInput.class, "beam");
         prism = o.hardwareMap.get(GoBildaPrismDriver.class,"prism");
-        red = new PrismAnimations.Solid(Color.RED);
         green = new PrismAnimations.Solid(Color.GREEN);
         leftLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -373,7 +372,7 @@ public class RockinBot {
             // KP_XY:  1.0 power at 200 mm of translation error.
             // KP_H:   1.0 power at ~33 degrees of heading error.
             // Tune these (raise = more aggressive, lower = gentler/less overshoot).
-            final double KP_XY = 0.005; // if it overshoots, lower this value. If it is too slow, raise this value.
+            final double KP_XY = 0.003; // if it overshoots, lower this value. If it is too slow, raise this value. Originally 0.005
             final double KP_H  = 0.03;
             double xCmd = xRotatedDistance * KP_XY;
             double yCmd = yRotatedDistance * KP_XY;
@@ -457,7 +456,7 @@ public class RockinBot {
                 SeenBall = true;
                 RobotLog.vv("Rockin' Robots", "driveToPos: ball detected at t=%.2fs pose=(%.0f, %.0f, %.1f)",
                         runtime.seconds(), xLoc, yLoc, hLoc);
-                turnLifterToDegrees(0, 700);
+                turnLifterToDegrees(0, 800);
             }
             sleep(10); // Don't hog the CPU
         }
