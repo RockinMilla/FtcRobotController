@@ -79,7 +79,7 @@ public class AutoBlueClose extends LinearOpMode {
         r.driveToPos(-100, -700, -33, 15, 1, 1); // Intentionally repeated
         r.intakePower(0.9); // Propell balls
         r.turnLifterToDegrees(360, 1400); // Shoot
-        r.turnLifterByDegrees(-10, 1400);
+        r.turnLifterByDegrees(-10);
         r.turnLifterToDegrees(360, 1400);
         r.waitForLifter();
         sleep(100); // Necessary to ensure that all balls are shot
