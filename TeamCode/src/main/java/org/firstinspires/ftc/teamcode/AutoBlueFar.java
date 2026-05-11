@@ -6,7 +6,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Blue Far", group="Robot")
 public class AutoBlueFar extends LinearOpMode {
-    final ElapsedTime runtime = new ElapsedTime();
+    //final ElapsedTime runtime = new ElapsedTime();
+    private double launcherVelocity = 1130; // Change this when changing launcher velocity
 
     @Override
     public void runOpMode() {
@@ -15,46 +16,42 @@ public class AutoBlueFar extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "5/10/2026, 5:50 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "5/11/2026, 12:31 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         r.getPinpointPosition();
+        r.intakePower(0.2);
+        r.launcherVelocity(launcherVelocity);
 
-        r.intakePower(0.5);
-        r.launcherVelocity(1140); // Change this when changing launcher velocity
-
-        shootBalls(r); // Shoot preloaded balls
-
-        r.driveToPos(-100, 800, 95, 10, 2, 4);
-        r.driveToPos(-1250, 800, 95, 10,2,4, true);
-        r.intakePower(0.8);
-        //sleep(100);
-        //r.driveToPos( -1390, 150, 90, 10, 2, 1.5); // Pick up
-        r.waitForLifter();
-        sleep(100);
-
-        shootBalls(r); // Shoot 2nd set of balls
-
-        r.driveToPos(-1200, 300, 170, 10, 2, 4);
-        r.driveToPos(-1250, 20, 170, 10, 2, 4, true);
-
+        // 1st set of balls
         shootBalls(r);
 
-        r.driveToPos(-500, 200, 70); // park
+        // 2nd set of balls
+        r.driveToPos(-100, 800, 95, 10, 2, 4);
+        r.driveToPos(-1250, 800, 95, 10,2, 4, true);
+        shootBalls(r);
+
+        // 3rd set of balls
+        r.driveToPos(-1300, 700, 170, 10, 2, 4);
+        r.driveToPos(-1300, 0, 190, 10, 2, 2, true);
+        shootBalls(r);
+
+        // Park
+        r.driveToPos(-500, 200, 70); 
         r.launcherVelocity(0);
         r.intakePower(0);
+        r.lightsOff();
     }
 
     private void shootBalls(RockinBot r)
     {
-      //  r.intakePower(0.2);
-        r.driveToPos(50, 150, 34, 10, 1.5 ,5);
-        r.waitForLaunchers(1200); // Change this when changing launcher velocity
-        sleep(500);
+        r.driveToPos(50, 150, 31, 10, 1.5, 5);
+        r.waitForLaunchers(launcherVelocity);
         r.intakePower(0.5);
+        sleep(500);
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter();
         sleep(400);

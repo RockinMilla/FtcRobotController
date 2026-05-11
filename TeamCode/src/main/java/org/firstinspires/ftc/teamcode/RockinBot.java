@@ -5,19 +5,15 @@ import com.acmerobotics.dashboard.FtcDashboard;
 // All the things that we use and borrow
 import static android.os.SystemClock.sleep;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-//import com.qualcomm.robotcore.robot.Robot;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.ConceptTelemetry;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -26,7 +22,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
 import org.firstinspires.ftc.teamcode.Prism.Color;
 import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
-import static org.firstinspires.ftc.teamcode.Prism.Direction.Forward;
 
 public class RockinBot {
     // Motors and sensors
@@ -45,7 +40,6 @@ public class RockinBot {
     private DcMotorEx intake = null;
     private DcMotorEx lifter = null;
     public Servo led = null;
-    public static double ORIGIN_ZEROHEADING = Math.PI / 2;
     private double leftLauncherVelocity = 0;
     private double rightLauncherVelocity = 0;
     private double leftLauncherPower = 0;
@@ -67,9 +61,7 @@ public class RockinBot {
     double intakeSpeed = 1.0;
     double distanceMM = 0;
     public GoBildaPinpointDriver odo = null;
-    PrismAnimations.Solid red;
     PrismAnimations.Solid green;
-    PrismAnimations.Solid TRANSPARENT;
     boolean hasBall = false;
     boolean lightsGreen = true;
 
@@ -88,8 +80,6 @@ public class RockinBot {
 
         if(robotType.equals("Shooter"))
             initializeShooterVar();
-        else if(robotType.equals("Driver"))
-            initializeDriverVar();
     }
 
     // Allow driving and braking
@@ -100,7 +90,6 @@ public class RockinBot {
         rightLauncher = o.hardwareMap.get(DcMotorEx.class, "right_launcher");
         laserAnalog = o.hardwareMap.get(AnalogInput.class, "beam");
         prism = o.hardwareMap.get(GoBildaPrismDriver.class,"prism");
-        red = new PrismAnimations.Solid(Color.RED);
         green = new PrismAnimations.Solid(Color.GREEN);
         leftLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -148,53 +137,10 @@ public class RockinBot {
         odo.update();
 
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
-
-        // Robot orientation
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     }
 
-    // Allow driving and braking
-    public void initializeDriverVar() {
-        //Wheel variables
-        leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
-         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
-         rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
-         rightBackDrive = o.hardwareMap.get(DcMotor.class, "right_back_drive");
-
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-
-        RobotLog.vv("Rockin' Robots", "Hardware Initialized");
-
-        // Initializes the pinpoint
-        odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        odo.resetPosAndIMU();
-        odo.update();
-        RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
-
-        // Robot orientation
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-    }
-
-    public void setAllToSame(double power) {
-    // Send calculated power to wheels
-        leftFrontDrive.setPower(-1*power);
-        rightFrontDrive.setPower(power);
-        leftBackDrive.setPower(power);
-        rightBackDrive.setPower(-1*power);
-    }
-
-    public void setWheelPower(double left_y, double left_x, double right_x, boolean park){        // Wheel power and speed
+    // Remote control driving functions
+    public void setWheelPower(double left_y, double left_x, double right_x, boolean park) {
         double wheelMultiplier = 1;
 
         if(park){
@@ -252,12 +198,21 @@ public class RockinBot {
         leftFrontDrive.setPower(0.5); // clock
         rightFrontDrive.setPower(0.5); // clock
         leftBackDrive.setPower(-0.5); // clock
-        rightBackDrive.setPower(-0.5); // clocksetVelocity
+        rightBackDrive.setPower(-0.5); // clock
         sleep(ms);
         stopMoving();
     }
 
+    // Intake functions
+    public void intakePower(double speed) {
+        RobotLog.vv("Rockin' Robots", "intakePower(%.2f)", speed);
+        intakeSpeed = speed;
+        intake.setPower(speed);
+    }
+
+    // Launcher functions
     public void launcherVelocity(double power) {
+        RobotLog.vv("Rockin' Robots", "launcherVelocity(%.2f)", power);
         launcherVelocity = power;
         leftLauncher.setVelocity(launcherVelocity);
         rightLauncher.setVelocity(launcherVelocity);
@@ -269,11 +224,16 @@ public class RockinBot {
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
 
-    public void intakePower(double speed) {
-        intakeSpeed = speed;
-        intake.setPower(speed);
+    public void waitForLaunchers(double target) {
+        runtime.reset();
+        RobotLog.vv("Rockin' Robots", "waitForLaunchers start: LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+        while((leftLauncher.getVelocity() < target*0.97 || rightLauncher.getVelocity() < target*0.95) && runtime.seconds() < 1) {
+            sleep(10);
+        }
+        RobotLog.vv("Rockin' Robots", "waitForLaunchers end LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
     }
 
+    // Lifter functions
     public void lifterPower(double power) {
         if(!lifter.isBusy()) {
             lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -292,23 +252,6 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "waitForLifter: " + lifter.getCurrentPosition());
     }
 
-    public void waitForLaunchers(double target) {
-        runtime.reset();
-        RobotLog.vv("Rockin' Robots", "waitForLaunchers start: LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
-        while((leftLauncher.getVelocity() < target*0.97 || rightLauncher.getVelocity() < target*0.95) && runtime.seconds() < 1) {
-            sleep(10);
-        }
-        RobotLog.vv("Rockin' Robots", "waitForLaunchers end LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
-    }
-
-    public void turnLifterByDegreesRC(int degrees, int velocity) {
-        if(!lifter.isBusy())
-        {
-            lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            turnLifterByDegrees(degrees, 2000, 5);
-        }
-    }
-
     public void turnLifterToDegrees(int degrees) {
         turnLifterToDegrees(degrees, 1500);
     }
@@ -322,51 +265,54 @@ public class RockinBot {
     }
 
     public void turnLifterByDegrees(int degrees) {
-        turnLifterByDegrees(degrees, 2000, 5);
-    }
-
-    public void turnLifterByDegrees(int degrees, int velocity) {
-        turnLifterByDegrees(degrees, velocity, 5);
-    }
-
-    public void turnLifterByDegrees(int degrees, int velocity, int maxDuration) {
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         RobotLog.vv("Rockin' Robots", "turnLifterByDegrees: Lifter position: "+ lifter.getCurrentPosition()
                 + " LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         int moveToDegrees = (int)(lifter.getCurrentPosition()+(degrees*3.9));
         lifter.setTargetPosition(moveToDegrees);
-        lifter.setVelocity(velocity);
+        lifter.setVelocity(1500);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
 
+    // Driving functions
     public boolean getPinpointPosition() {     // Finds robot position
         pinpointTime.reset();
-        while(odo.getDeviceStatus() == GoBildaPinpointDriver.DeviceStatus.NOT_READY && pinpointTime.seconds() < 1) {
-            RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
+
+        // Wait until Pinpoint is ready (up to 1s total).
+        while (odo.getDeviceStatus() == GoBildaPinpointDriver.DeviceStatus.NOT_READY
+                && pinpointTime.seconds() < 1) {
+            RobotLog.vv("Rockin' Robots", "Pinpoint NOT_READY, status=" + odo.getDeviceStatus());
             stopMoving();
             sleep(10);
         }
-        if(pinpointTime.seconds() > 1)
-        {
+        if (odo.getDeviceStatus() == GoBildaPinpointDriver.DeviceStatus.NOT_READY) {
+            RobotLog.vv("Rockin' Robots", "getPinpointPosition: timed out waiting for READY");
             return false;
         }
-        odo.update();
-        pos = odo.getPosition();
-        xLoc = pos.getX(DistanceUnit.MM);
-        yLoc = pos.getY(DistanceUnit.MM);
-        hLoc = pos.getHeading(AngleUnit.DEGREES);
 
-        while((Double.isNaN(xLoc) || Double.isNaN(yLoc) || Double.isNaN(hLoc)) && pinpointTime.seconds() < 1) {
-            RobotLog.vv("Rockin' Robots", "Device Status: " + odo.getDeviceStatus());
+        // Read until we get non-NaN values, sharing the same 1s budget.
+        do {
+            odo.update();
+            pos = odo.getPosition();
+            xLoc = pos.getX(DistanceUnit.MM);
+            yLoc = pos.getY(DistanceUnit.MM);
+            hLoc = pos.getHeading(AngleUnit.DEGREES);
+            if (!Double.isNaN(xLoc) && !Double.isNaN(yLoc) && !Double.isNaN(hLoc)) {
+                RobotLog.vv("Rockin' Robots",
+                        "Position: {X: %.1f, Y: %.1f, H: %.1f}", xLoc, yLoc, hLoc);
+                return true;
+            }
+            RobotLog.vv("Rockin' Robots", "Pinpoint returned NaN, status=" + odo.getDeviceStatus());
             stopMoving();
             sleep(10);
-        }
-        String data = String.format("{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
-        RobotLog.vv("Rockin' Robots", "Position: " + data);
-        return true;
+        } while (pinpointTime.seconds() < 1);
+
+        RobotLog.vv("Rockin' Robots", "getPinpointPosition: timed out with NaN values");
+        return false;
     }
+
     public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration) {    // Defaults hAccuracy to 3 if no hAccuracy is given
-        driveToPos(xTarget, yTarget, hTarget, 15, 3, 5, false);
+        driveToPos(xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, false);
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget) {    // Defaults hAccuracy to 3 if no hAccuracy is given
@@ -375,11 +321,11 @@ public class RockinBot {
 
     public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration, boolean detect) {   // In millimeters
         if(!getPinpointPosition()) {
+            RobotLog.vv("Rockin' Robots", "driveToPos ABORT: initial Pinpoint read failed");
             return;
         }
 
         boolean SeenBall = false;
-
 
         // Calculate distance from target
         double xDistance = xTarget - xLoc;
@@ -388,32 +334,56 @@ public class RockinBot {
         // Prevent heading errors
         if (hDistance > 180) hDistance -= 360;
         if (hDistance < -180) hDistance += 360;
-        double angleRadians = Math.toRadians(hLoc);
-        double xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
-        double yRotatedDistance = xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
+        double angleRadians;
+        double xRotatedDistance;
+        double yRotatedDistance;
 
-        //RobotLog.vv("Rockin' Robots", "driveToPos() xTarget: %.2f, yTarget: %.2f, hTarget: %.2f, xyAccuracy: %.2f, hAccuracy: %.2f",
-        //        xTarget, yTarget, hTarget, xyAccuracy, hAccuracy);
+        // ENTRY log: one line, all the parameters and the starting pose.
+        RobotLog.vv("Rockin' Robots",
+                "driveToPos START: target=(%.0f, %.0f, %.1f) accuracy=(xy=%.1f, h=%.1f) maxDur=%.2fs detect=%s | start=(%.0f, %.0f, %.1f) err=(%.0f, %.0f, %.1f)",
+                xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, detect,
+                xLoc, yLoc, hLoc, xDistance, yDistance, hDistance);
 
         runtime.reset();
+        // Stall detection: if we don't get measurably closer for STALL_TIMEOUT
+        // seconds, give up so the rest of autonomous can keep running.
+        final double STALL_TIMEOUT = 0.75;       // seconds
+        final double STALL_PROGRESS_MM = 5.0;    // must close at least this much to count as progress
+        double bestDistSq = xDistance*xDistance + yDistance*yDistance;
+        double lastProgressTime = 0;
+        // Per-loop log throttling: avoid spamming logs every ~10ms.
+        final double LOG_INTERVAL = 0.25;        // seconds between iteration logs
+        double lastLogTime = -LOG_INTERVAL;      // force log on first iteration
+        int iterations = 0;
+        String exitReason = "reached target";
         // While the program is running
         while (o.opModeIsActive()
                 && runtime.seconds() < maxDuration
                 && (Math.abs(xDistance) > xyAccuracy
                 || Math.abs(yDistance) > xyAccuracy
                 || Math.abs(hDistance) > hAccuracy)) {
+            iterations++;
 
+            angleRadians = Math.toRadians(hLoc);
             xRotatedDistance = xDistance * Math.cos(angleRadians) + yDistance * Math.sin(angleRadians);
             yRotatedDistance = -xDistance * Math.sin(angleRadians) + yDistance * Math.cos(angleRadians);
-            angleRadians = Math.toRadians(hLoc);
 
-            // Set wheel power
-            leftFrontPower = (yRotatedDistance + xRotatedDistance - hDistance*3);
-            rightFrontPower = (yRotatedDistance - xRotatedDistance + hDistance*3);
-            leftBackPower = (yRotatedDistance - xRotatedDistance - hDistance*3);
-            rightBackPower = (yRotatedDistance + xRotatedDistance + hDistance*3);
+            // Proportional control: power = error * gain.
+            // KP_XY:  1.0 power at 200 mm of translation error.
+            // KP_H:   1.0 power at ~33 degrees of heading error.
+            // Tune these (raise = more aggressive, lower = gentler/less overshoot).
+            final double KP_XY = 0.003; // if it overshoots, lower this value. If it is too slow, raise this value. Originally 0.005
+            final double KP_H  = 0.03;
+            double xCmd = xRotatedDistance * KP_XY;
+            double yCmd = yRotatedDistance * KP_XY;
+            double hCmd = hDistance        * KP_H;
 
-            //RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
+            // Mecanum mixing
+            leftFrontPower  = yCmd + xCmd - hCmd;
+            rightFrontPower = yCmd - xCmd + hCmd;
+            leftBackPower   = yCmd - xCmd - hCmd;
+            rightBackPower  = yCmd + xCmd + hCmd;
+
             // Normalize the values so wheel power does not exceed 100%
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
@@ -424,18 +394,22 @@ public class RockinBot {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            leftFrontPower *= 0.75;
-            rightFrontPower *= 0.75;
-            leftBackPower *= 0.75;
-            rightBackPower *= 0.75;
+
+            // If the largest commanded wheel power is below the motor's
+            // stiction threshold, scale all four wheels up proportionally
+            // so the largest equals MIN_DRIVE_POWER. This preserves the
+            // direction/ratio of motion while making sure the robot
+            // actually moves.
+            final double MIN_DRIVE_POWER = 0.15; // if the robot is slow, raise this
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
-            if (max < 0.05) {
-                leftFrontPower *= 1.5;
-                rightFrontPower *= 1.5;
-                leftBackPower *= 1.5;
-                rightBackPower *= 1.5;
+            if (max > 0.001 && max < MIN_DRIVE_POWER) {
+                double boost = MIN_DRIVE_POWER / max;
+                leftFrontPower *= boost;
+                rightFrontPower *= boost;
+                leftBackPower *= boost;
+                rightBackPower *= boost;
             }
 
             // Move wheels
@@ -445,7 +419,9 @@ public class RockinBot {
             rightBackDrive.setPower(rightBackPower);
 
             // Recalibrate position
-            if(getPinpointPosition() == false) {
+            if(!getPinpointPosition()) {
+                RobotLog.vv("Rockin' Robots", "driveToPos ABORT: Pinpoint read failed mid-move at t=%.2fs iter=%d",
+                        runtime.seconds(), iterations);
                 stopMoving();
                 return;
             }
@@ -455,34 +431,52 @@ public class RockinBot {
             if (hDistance > 180) hDistance -= 360;
             if (hDistance < -180) hDistance += 360;
 
-            RobotLog.vv("Rockin' Robots", "Moving: xDist: %.2f, yDist: %.2f, hDist: %.2f",
-                    xDistance, yDistance, hDistance);
+            // Throttled per-iteration log (~4 Hz). One line with everything
+            // useful for debugging: time, current pose, remaining error, wheel powers.
+            if (runtime.seconds() - lastLogTime >= LOG_INTERVAL) {
+                lastLogTime = runtime.seconds();
+                RobotLog.vv("Rockin' Robots",
+                        "driveToPos t=%.2fs pose=(%.0f, %.0f, %.1f) err=(%.0f, %.0f, %.1f) pwr=(LF=%.2f RF=%.2f LB=%.2f RB=%.2f)",
+                        runtime.seconds(), xLoc, yLoc, hLoc, xDistance, yDistance, hDistance,
+                        leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
+            }
+
+            // Stall check: did we get meaningfully closer to the target?
+            double distSq = xDistance*xDistance + yDistance*yDistance;
+            double progressThresholdSq = bestDistSq - STALL_PROGRESS_MM*STALL_PROGRESS_MM;
+            if (distSq < progressThresholdSq) {
+                bestDistSq = distSq;
+                lastProgressTime = runtime.seconds();
+            } else if (runtime.seconds() - lastProgressTime > STALL_TIMEOUT) {
+                exitReason = String.format("STALLED (no progress for %.2fs)", runtime.seconds() - lastProgressTime);
+                break;
+            }
 
             if (detect && hasBall() && !SeenBall) {
                 SeenBall = true;
-                RobotLog.vv("Rockin' Robots", "Seen Ball");
-                turnLifterToDegrees(0, 700);
+                RobotLog.vv("Rockin' Robots", "driveToPos: ball detected at t=%.2fs pose=(%.0f, %.0f, %.1f)",
+                        runtime.seconds(), xLoc, yLoc, hLoc);
+                turnLifterToDegrees(0, 800);
             }
+            sleep(10); // Don't hog the CPU
         }
         // Finish up
         stopMoving();
         getPinpointPosition();
-        RobotLog.vv("Rockin' Robots", "Done Moving: duration: %.2f, xLoc: %d/%d, yLoc: %d/%d, hLoc:  %d/%d",
-                runtime.seconds(), Math.round(xLoc), Math.round(xTarget), Math.round(yLoc), Math.round(yTarget), Math.round(hLoc), Math.round(hTarget));
+        if (!o.opModeIsActive()) {
+            exitReason = "opMode stopped";
+        } else if (runtime.seconds() >= maxDuration && exitReason.equals("reached target")) {
+            exitReason = "TIMEOUT (maxDuration exceeded)";
+        }
+        // EXIT log: outcome, duration, iterations, final pose vs target.
+        RobotLog.vv("Rockin' Robots",
+                "driveToPos END: %s | duration=%.2fs iters=%d | final=(%.0f, %.0f, %.1f) target=(%.0f, %.0f, %.1f) err=(%.0f, %.0f, %.1f)",
+                exitReason, runtime.seconds(), iterations,
+                xLoc, yLoc, hLoc, xTarget, yTarget, hTarget,
+                xTarget - xLoc, yTarget - yLoc, hTarget - hLoc);
     }
 
-    public double getXloc()
-    {
-        return pos.getX(DistanceUnit.INCH);
-    }
-    public double getYloc()
-    {
-        return pos.getY(DistanceUnit.INCH);
-    }
-    public double getHLoc()
-    {
-        return pos.getHeading(AngleUnit.RADIANS);
-    }
+    // Ball detection functions
     public boolean hasBall() {
         double volts = laserAnalog.getVoltage();
         distanceMM = (volts / MAX_VOLTS) * MAX_DISTANCE_MM;
@@ -503,6 +497,14 @@ public class RockinBot {
             }
         }
         return hasBall;
+    }
+
+    // Turns off the Prism LED strip
+    public void lightsOff() {
+        if (prism != null) {
+            prism.clearAllAnimations();
+        }
+        lightsGreen = false;
     }
 
     // Log all (relevant) info about the robot on the hub.
@@ -529,7 +531,7 @@ public class RockinBot {
 
         RobotLog.vv("Rockin' Robots", "Launcher Velocity (l/r): %.2f, %.2f", leftLauncherVelocity, rightLauncherVelocity);
 
-        dashboardTelemetry = dashboard.getTelemetry();
+        /*dashboardTelemetry = dashboard.getTelemetry();
         dashboardTelemetry.addData("Left Launcher:", leftLauncherVelocity);
         dashboardTelemetry.addData("Right Launcher:", rightLauncherVelocity);
         dashboardTelemetry.addData("Intake", intakePower);
@@ -537,7 +539,6 @@ public class RockinBot {
         dashboardTelemetry.addData("Right Front Wheel", rightFrontPower);
         dashboardTelemetry.addData("Left Back Wheel", leftBackPower);
         dashboardTelemetry.addData("Right Back Wheel", rightBackPower);
-        //dashboardTelemetry.update();
+        dashboardTelemetry.update();*/
     }
-
 }
