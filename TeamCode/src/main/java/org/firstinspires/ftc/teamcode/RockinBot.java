@@ -310,7 +310,7 @@ public class RockinBot {
     }
 
     public void turnLifterToDegrees(int degrees) {
-        turnLifterToDegrees(degrees, 2000);
+        turnLifterToDegrees(degrees, 1500);
     }
 
     public void turnLifterToDegrees(int degrees, int velocity) {
