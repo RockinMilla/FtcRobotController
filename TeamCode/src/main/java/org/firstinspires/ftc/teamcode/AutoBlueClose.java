@@ -2,12 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Blue Close", group="Robot")
 public class AutoBlueClose extends LinearOpMode {
 
-    private double launcherVelocity = 820; // Change this when changing launcher velocity
+    private double launcherVelocity = 820;
 
     @Override
     public void runOpMode() {
@@ -30,25 +29,27 @@ public class AutoBlueClose extends LinearOpMode {
         shootBalls(r);
 
         // 2nd set of balls
-        r.driveToPos(-100, -700, 0, 15, 3, 4); 
-        r.driveToPos(-780, -100, 0, 10, 2, 2, true); // Pick up
+        r.driveToPos(-780, -700, 0, 10, 2, 3);
+        r.driveToPos(-780,  -50, 0, 10, 2, 2, true); // Pick up
         shootBalls(r);
 
         // 3rd set of balls
-        r.driveToPos(-100, -800, 0, 10, 2, 4);
-        r.driveToPos(-1390, 150, 0, 10, 2, 1.5, true); // Pick up
+        r.driveToPos(-1400, -700, 0, 20, 2, 3);
+        r.driveToPos(-1400,  150, 0, 20, 2, 2, true); // Pick up
+        sleep(500);
         r.driveToPos(-1200, -300, 0); // move to avoid gate
-        r.driveToPos(-1200, -100, 0); // empty gate
+        r.driveToPos(-1200,    0, 0); // empty gate
         shootBalls(r);
 
         // 4th set of balls
-        r.driveToPos(-100, -800, 0, 10, 2, 3);
-        r.driveToPos(-1920,150,0,10,2,1.5, true); // Pick up
-        r.driveToPos(-1350, -600, 0); // move to avoid gate
+        r.driveToPos(-1900, -700, 0, 20, 2, 4);
+        r.driveToPos(-1920,  150, 0, 20, 2, 2, true); // Pick up
+        sleep(500);
+        r.driveToPos(-1350, -400, 10); // move to avoid gate
         shootBalls(r);
 
         // Park
-        r.driveToPos(-1200, -400, 0, 30, 3, 2);
+        r.driveToPos(-1200, -400, 0, 30, 5, 2);
         r.launcherVelocity(0);
         r.intakePower(0);
         r.lightsOff();
@@ -56,7 +57,7 @@ public class AutoBlueClose extends LinearOpMode {
 
     private void shootBalls(RockinBot r)
     {
-        r.driveToPos(-100, -700, -33, 20, 2, 5); // Go to shooting position
+        r.driveToPos(-440, -700, -29, 23, 1, 5); // Go to shooting position
         r.waitForLaunchers(launcherVelocity);
         r.intakePower(0.5);
         sleep(500);
