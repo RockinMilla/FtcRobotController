@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Blue Far", group="Robot")
 public class AutoBlueFar extends LinearOpMode {
-    //final ElapsedTime runtime = new ElapsedTime();
+    
     private double launcherVelocity = 1130; // Change this when changing launcher velocity
 
     @Override
