@@ -237,7 +237,13 @@ public class RockinBot {
     }
 
     public void setpValue(double pValue){
-        pidf.p += pValue;
+        pidf.p = pValue;
+        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+    }
+
+    public void adjustpValue(double delta){
+        pidf.p += delta;
         leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
@@ -492,7 +498,7 @@ public class RockinBot {
                 SeenBall = true;
                 RobotLog.vv("Rockin' Robots", "driveToPos: ball detected at t=%.2fs pose=(%.0f, %.0f, %.1f)",
                         runtime.seconds(), xLoc, yLoc, hLoc);
-                turnLifterToDegrees(0, 800);
+                turnLifterToDegrees(0, 1000);
             }
             sleep(10); // Don't hog the CPU
         }
