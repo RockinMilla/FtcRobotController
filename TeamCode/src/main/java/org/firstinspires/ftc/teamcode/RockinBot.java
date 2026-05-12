@@ -213,7 +213,25 @@ public class RockinBot {
     // Launcher functions
     public void launcherVelocity(double power) {
         RobotLog.vv("Rockin' Robots", "launcherVelocity(%.2f)", power);
-        launcherVelocity = power;
+
+        // Ramp the velocity up (or down) gradually instead of stepping instantly.
+        // Stepping straight from 0 to full velocity makes the motor controllers
+        // dump max current to accelerate as fast as possible, which causes a
+        // big battery voltage sag at the start of the match. Ramping spreads
+        // that current draw over ~500ms so the battery stays healthy.
+        double startVelocity = launcherVelocity;
+        double targetVelocity = power;
+        int rampSteps = 10;       // number of increments
+        int rampStepMs = 50;      // total ramp time = rampSteps * rampStepMs (~500ms)
+
+        for (int i = 1; i <= rampSteps; i++) {
+            double v = startVelocity + (targetVelocity - startVelocity) * i / rampSteps;
+            leftLauncher.setVelocity(v);
+            rightLauncher.setVelocity(v);
+            sleep(rampStepMs);
+        }
+
+        launcherVelocity = targetVelocity;
         leftLauncher.setVelocity(launcherVelocity);
         rightLauncher.setVelocity(launcherVelocity);
     }
@@ -225,12 +243,30 @@ public class RockinBot {
     }
 
     public void waitForLaunchers(double target) {
-        runtime.reset();
+        // Wait until both launcher motors are within a tolerance band around
+        // the target velocity. Using a band (instead of just "actual >= 97% of
+        // target") means we also wait out PID overshoot -- if a motor blows
+        // past the target on spin-up, we hold off shooting until it settles
+        // back down into the band.
+        final double TOLERANCE = 0.03;          // +/- 3% of target
+        final double TIMEOUT_SECONDS = 1.0;     // hard cap so we never hang
+
+        double lowerBound = target * (1.0 - TOLERANCE);
+        double upperBound = target * (1.0 + TOLERANCE);
+
+        ElapsedTime timer = new ElapsedTime();
         RobotLog.vv("Rockin' Robots", "waitForLaunchers start: LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
-        while((leftLauncher.getVelocity() < target*0.97 || rightLauncher.getVelocity() < target*0.95) && runtime.seconds() < 1) {
+        while (o.opModeIsActive()
+                && (!inBand(leftLauncher.getVelocity(), lowerBound, upperBound)
+                    || !inBand(rightLauncher.getVelocity(), lowerBound, upperBound))
+                && timer.seconds() < TIMEOUT_SECONDS) {
             sleep(10);
         }
         RobotLog.vv("Rockin' Robots", "waitForLaunchers end LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+    }
+
+    private boolean inBand(double actual, double lower, double upper) {
+        return actual >= lower && actual <= upper;
     }
 
     // Lifter functions
@@ -242,7 +278,7 @@ public class RockinBot {
     }
 
     public void waitForLifter() {
-        RobotLog.vv("Rockin' Robots", "waitForLifter LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+        RobotLog.vv("Rockin' Robots", "waitForLifter start: LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
         runtime.reset();
         while(lifter.isBusy() && runtime.seconds() < 2.5)
         {
