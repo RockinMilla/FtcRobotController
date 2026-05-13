@@ -97,10 +97,10 @@ public class RemoteControlShooter extends LinearOpMode {
             /////////////////////////////////////////////////////////////
 
             if(gamepad2.dpad_down){
-                r.setpValue(-0.1);
+                r.adjustpValue(-0.1);
             }
             if(gamepad2.dpad_up){
-                r.setpValue(0.1);
+                r.adjustpValue(0.1);
             }
             if(gamepad2.dpad_right){
                 launcherSpeed += 10;
