@@ -22,6 +22,7 @@ public class AutoBlueClose extends LinearOpMode {
         waitForStart();
 
         r.getPinpointPosition();
+        r.setpValue(50);
         r.intakePower(0.3);
         r.launcherVelocity(launcherVelocity);
         
@@ -29,25 +30,25 @@ public class AutoBlueClose extends LinearOpMode {
         shootBalls(r);
 
         // 2nd set of balls
-        r.driveToPos(-780, -700, 0, 10, 2, 3);
+        r.driveToPos(-780, -700, 0, 10, 2, 3, false, true);
         r.driveToPos(-780,  -50, 0, 10, 2, 2, true); // Pick up
         sleep(200);
         shootBalls(r);
 
         // 3rd set of balls
-        r.driveToPos(-1400, -700, 0, 20, 2, 3);
+        r.driveToPos(-1400, -700, 0, 20, 2, 3, false, true);
         r.driveToPos(-1400,  150, 0, 20, 2, 2, true); // Pick up
         sleep(200);
         r.driveToPos(-1230, -300, 0); // move to avoid gate
-        r.driveToPos(-1230,    0, 0); // empty gate
+        r.driveToPos(-1230,    0, 0, 10, 1, 2); // empty gate
         sleep(100);
         shootBalls(r);
 
         // 4th set of balls
-        r.driveToPos(-1900, -700, 0, 20, 2, 4);
+        r.driveToPos(-1900, -700, 0, 20, 2, 4, false, true);
         r.driveToPos(-1920,  150, 0, 20, 2, 2, true); // Pick up
         sleep(200);
-        r.driveToPos(-1350, -400, 10); // move to avoid gate
+        r.driveToPos(-1350, -400, 10, 15, 3, 5, false, true); // move to avoid gate
         shootBalls(r);
 
         // Park
@@ -59,13 +60,13 @@ public class AutoBlueClose extends LinearOpMode {
 
     private void shootBalls(RockinBot r)
     {
-        r.driveToPos(-440, -700, -34, 23, 1, 5); // Go to shooting position
+        r.driveToPos(-440, -700, -34, 10, 1, 3); // Go to shooting position
         r.waitForLaunchers(launcherVelocity);
         r.intakePower(0.5);
         sleep(300);
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter();
         sleep(200);
-        r.turnLifterToDegrees(-150); // Reset lifter
+        r.turnLifterToDegrees(-150, 3000); // Reset lifter
     }
 }
