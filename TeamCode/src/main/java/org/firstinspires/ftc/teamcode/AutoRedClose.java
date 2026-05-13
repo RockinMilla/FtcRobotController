@@ -22,28 +22,29 @@ public class AutoRedClose extends LinearOpMode {
 
         r.getPinpointPosition();
         r.intakePower(0.2);
+        r.setpValue(50);
         r.launcherVelocity(launcherVelocity);
 
         // 1st set of balls
         shootBalls(r);
 
         // 2nd set of balls
-        r.driveToPos(720, -700, 0, 20, 2, 2);
+        r.driveToPos(720, -700, 0, 20, 2, 2, false, true);
         //waitForLifter(); goes here :P teehee todo for whoever happens to be coding this next (oh wait that's prolly me)
         r.driveToPos(720,  -40, 0, 20, 2, 2, true);
         sleep(300);
         shootBalls(r);
 
         // 3rd set of balls
-        r.driveToPos(1280, -700, 0, 10, 2, 3);
-        r.driveToPos(1280,  110, 0, 10, 2, 2, true);
+        r.driveToPos(1300, -700, 0, 10, 2, 3, false, true);
+        r.driveToPos(1300,  110, 0, 10, 2, 2, true);
         sleep(200);
-        r.driveToPos(1280, -250, 0, 50, 5, 1); // move to avoid gate
+        r.driveToPos(1300, -250, 0, 50, 5, 1); // move to avoid gate
         r.driveToPos(1200,  -50, 0, 10, 2, 2); // empty gate
         shootBalls(r);
 
         // 4th set of balls
-        r.driveToPos(1900, -800, 0, 20, 2, 3);
+        r.driveToPos(1900, -800, 0, 20, 2, 3, false, true);
         r.driveToPos(1900,  110, 0, 20, 2, 2, true);
         sleep(200);
         r.driveToPos(1350, -600, 0, 40, 5, 1); // move to avoid gate
@@ -58,13 +59,13 @@ public class AutoRedClose extends LinearOpMode {
 
     private void shootBalls(RockinBot r)
     {
-        r.driveToPos(500, -700, 47); // Go to shooting position
+        r.driveToPos(500, -700, 47, 10, 1, 3); // Go to shooting position
         r.waitForLaunchers(launcherVelocity);
         r.intakePower(0.5);
         sleep(300);
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter();
         sleep(200);
-        r.turnLifterToDegrees(-150); // Reset lifter
+        r.turnLifterToDegrees(-150, 3000); // Reset lifter
     }
 }
