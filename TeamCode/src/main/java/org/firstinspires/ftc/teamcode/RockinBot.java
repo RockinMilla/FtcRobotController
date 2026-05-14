@@ -354,14 +354,14 @@ public class RockinBot {
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration) {    // Defaults hAccuracy to 3 if no hAccuracy is given
-        driveToPos(xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, false);
+        driveToPos(xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, false, true);
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget) {    // Defaults hAccuracy to 3 if no hAccuracy is given
-        driveToPos(xTarget, yTarget, hTarget, 15, 3, 5, false);
+        driveToPos(xTarget, yTarget, hTarget, 15, 3, 5, false, true);
     }
 
-    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration, boolean detect) {   // In millimeters
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration, boolean detect, boolean stop) {   // In millimeters
         if(!getPinpointPosition()) {
             RobotLog.vv("Rockin' Robots", "driveToPos ABORT: initial Pinpoint read failed");
             return;
@@ -503,7 +503,9 @@ public class RockinBot {
             sleep(10); // Don't hog the CPU
         }
         // Finish up
-        stopMoving();
+        if (stop) {
+            stopMoving();
+        }
         getPinpointPosition();
         if (!o.opModeIsActive()) {
             exitReason = "opMode stopped";

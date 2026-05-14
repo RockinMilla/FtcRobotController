@@ -10,7 +10,6 @@ public class AutoBlueClose extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
         LinearOpMode o = this;
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
@@ -29,13 +28,13 @@ public class AutoBlueClose extends LinearOpMode {
         shootBalls(r);
 
         // 2nd set of balls
-        r.driveToPos(-780, -700, 0, 10, 2, 3);
+        r.driveToPos(-780, -700, 0, 10, 2, 3, false, false);
         r.driveToPos(-780,  -50, 0, 10, 2, 2, true); // Pick up
         sleep(200);
         shootBalls(r);
 
         // 3rd set of balls
-        r.driveToPos(-1400, -700, 0, 20, 2, 3);
+        r.driveToPos(-1400, -700, 0, 20, 2, 3, false, false);
         r.driveToPos(-1400,  150, 0, 20, 2, 2, true); // Pick up
         sleep(200);
         r.driveToPos(-1230, -300, 0); // move to avoid gate
@@ -44,10 +43,10 @@ public class AutoBlueClose extends LinearOpMode {
         shootBalls(r);
 
         // 4th set of balls
-        r.driveToPos(-1900, -700, 0, 20, 2, 4);
+        r.driveToPos(-1900, -700, 0, 20, 2, 4, false, false);
         r.driveToPos(-1920,  150, 0, 20, 2, 2, true); // Pick up
         sleep(200);
-        r.driveToPos(-1350, -400, 10); // move to avoid gate
+        r.driveToPos(-1350, -400, 10, 30, 5, 2, false, false); // move to avoid gate
         shootBalls(r);
 
         // Park
@@ -62,10 +61,10 @@ public class AutoBlueClose extends LinearOpMode {
         r.driveToPos(-440, -700, -34, 23, 1, 5); // Go to shooting position
         r.waitForLaunchers(launcherVelocity);
         r.intakePower(0.5);
-        sleep(300);
+        // sleep(300);
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter();
-        sleep(200);
+        // sleep(200);
         r.turnLifterToDegrees(-150); // Reset lifter
     }
 }
