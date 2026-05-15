@@ -354,18 +354,21 @@ public class RockinBot {
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration) {    // Defaults hAccuracy to 3 if no hAccuracy is given
-        driveToPos(xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, false, true);
-    }
-
-    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration, boolean detect) {    // Defaults hAccuracy to 3 if no hAccuracy is given
-        driveToPos(xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, detect, true);
+        driveToPos(xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, false, false);
     }
 
     public void driveToPos(double xTarget, double yTarget, double hTarget) {    // Defaults hAccuracy to 3 if no hAccuracy is given
-        driveToPos(xTarget, yTarget, hTarget, 15, 3, 5, false, true);
+        driveToPos(xTarget, yTarget, hTarget, 15, 3, 5, false, false);
     }
 
-    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration, boolean detect, boolean stop) {   // In millimeters
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration, boolean detect) {
+        driveToPos(xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, detect, false);
+    }
+
+    // noStop=true skips the stopMoving() call at the end so the robot rolls
+    // straight into the next driveToPos without braking (saves time when
+    // chaining moves). Heading/accuracy still need to be reached (or maxDuration/stall).
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration, boolean detect, boolean noStop) {   // In millimeters
         if(!getPinpointPosition()) {
             RobotLog.vv("Rockin' Robots", "driveToPos ABORT: initial Pinpoint read failed");
             return;
@@ -386,8 +389,8 @@ public class RockinBot {
 
         // ENTRY log: one line, all the parameters and the starting pose.
         RobotLog.vv("Rockin' Robots",
-                "driveToPos START: target=(%.0f, %.0f, %.1f) accuracy=(xy=%.1f, h=%.1f) maxDur=%.2fs detect=%s | start=(%.0f, %.0f, %.1f) err=(%.0f, %.0f, %.1f)",
-                xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, detect,
+                "driveToPos START: target=(%.0f, %.0f, %.1f) accuracy=(xy=%.1f, h=%.1f) maxDur=%.2fs detect=%s noStop=%s | start=(%.0f, %.0f, %.1f) err=(%.0f, %.0f, %.1f)",
+                xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, detect, noStop,
                 xLoc, yLoc, hLoc, xDistance, yDistance, hDistance);
 
         runtime.reset();
@@ -507,7 +510,7 @@ public class RockinBot {
             sleep(10); // Don't hog the CPU
         }
         // Finish up
-        if (stop) {
+        if (!noStop) {
             stopMoving();
         }
         getPinpointPosition();
