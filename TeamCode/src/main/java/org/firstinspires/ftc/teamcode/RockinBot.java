@@ -357,6 +357,10 @@ public class RockinBot {
         driveToPos(xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, false, true);
     }
 
+    public void driveToPos(double xTarget, double yTarget, double hTarget, double xyAccuracy, double hAccuracy, double maxDuration, boolean detect) {    // Defaults hAccuracy to 3 if no hAccuracy is given
+        driveToPos(xTarget, yTarget, hTarget, xyAccuracy, hAccuracy, maxDuration, detect, true);
+    }
+
     public void driveToPos(double xTarget, double yTarget, double hTarget) {    // Defaults hAccuracy to 3 if no hAccuracy is given
         driveToPos(xTarget, yTarget, hTarget, 15, 3, 5, false, true);
     }
