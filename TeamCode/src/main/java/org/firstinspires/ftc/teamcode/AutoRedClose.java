@@ -31,7 +31,7 @@ public class AutoRedClose extends LinearOpMode {
         // 2nd set of balls
         r.driveToPos(720, -700, 0, 20, 2, 2, false, true);
         //waitForLifter(); goes here :P teehee todo for whoever happens to be coding this next (oh wait that's prolly me)
-        r.driveToPos(720,  -40, 0, 20, 2, 2, true);
+        r.driveToPos(720,  -40, 0, 20, 2, 2, true, false);
         sleep(300);
         shootBalls(r);
 
@@ -47,7 +47,7 @@ public class AutoRedClose extends LinearOpMode {
         r.driveToPos(1900, -800, 0, 20, 2, 3, false, true);
         r.driveToPos(1900,  110, 0, 20, 2, 2, true);
         sleep(200);
-        r.driveToPos(1350, -600, 0, 40, 5, 1); // move to avoid gate
+        r.driveToPos(1350, -600, 0, 40, 5, 1, false, false); // move to avoid gate
         shootBalls(r);
 
         // Park
@@ -62,10 +62,8 @@ public class AutoRedClose extends LinearOpMode {
         r.driveToPos(500, -700, 50, 10, 1, 3); // Go to shooting position
         r.waitForLaunchers(launcherVelocity);
         r.intakePower(0.5);
-        //sleep(300);
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter();
-        //sleep(200);
         r.turnLifterToDegrees(-150, 3000); // Reset lifter
     }
 }

@@ -10,7 +10,6 @@ public class AutoBlueClose extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
         LinearOpMode o = this;
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
@@ -48,7 +47,6 @@ public class AutoBlueClose extends LinearOpMode {
         r.driveToPos(-1900, -700, 0, 20, 2, 4, false, true);
         r.driveToPos(-1920,  150, 0, 20, 2, 2, true); // Pick up
         sleep(200);
-        //r.driveToPos(-1350, -400, 20, 15, 3, 5, false, true); // move to avoid gate
         shootBalls(r);
 
         // Park
@@ -63,10 +61,8 @@ public class AutoBlueClose extends LinearOpMode {
         r.driveToPos(-440, -700, -37, 10, 1, 3); // Go to shooting position
         r.waitForLaunchers(launcherVelocity);
         r.intakePower(0.5);
-        //sleep(300);
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter();
-        //sleep(200);
         r.turnLifterToDegrees(-150, 3000); // Reset lifter
     }
 }
