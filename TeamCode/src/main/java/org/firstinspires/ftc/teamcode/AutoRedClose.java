@@ -30,13 +30,13 @@ public class AutoRedClose extends LinearOpMode {
         // 2nd set of balls
         r.driveToPos(720, -700, 0, 20, 2, 2, false, false);
         //waitForLifter(); goes here :P teehee todo for whoever happens to be coding this next (oh wait that's prolly me)
-        r.driveToPos(720,  -40, 0, 20, 2, 2, true);
+        r.driveToPos(720,  -40, 0, 20, 2, 2, true, false);
         sleep(300);
         shootBalls(r);
 
         // 3rd set of balls
         r.driveToPos(1280, -700, 0, 10, 2, 3, false, false);
-        r.driveToPos(1280,  110, 0, 10, 2, 2, true);
+        r.driveToPos(1280,  110, 0, 10, 2, 2, true, false);
         sleep(200);
         r.driveToPos(1280, -250, 0, 50, 5, 1); // move to avoid gate
         r.driveToPos(1200,  -50, 0, 10, 2, 2); // empty gate
@@ -44,7 +44,7 @@ public class AutoRedClose extends LinearOpMode {
 
         // 4th set of balls
         r.driveToPos(1900, -800, 0, 20, 2, 3, false, false);
-        r.driveToPos(1900,  110, 0, 20, 2, 2, true);
+        r.driveToPos(1900,  110, 0, 20, 2, 2, true, false);
         sleep(200);
         r.driveToPos(1350, -600, 0, 40, 5, 1, false, false); // move to avoid gate
         shootBalls(r);
