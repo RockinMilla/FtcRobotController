@@ -44,7 +44,7 @@ public class AutoBlueClose extends LinearOpMode {
         shootBalls(r);
 
         // 4th set of balls
-        r.driveToPos(-1900, -700, 0, 20, 2, 4, false, true);
+        r.driveToPos(-1900, -700, 0, 20, 2, 4, false, false);
         r.driveToPos(-1920,  150, 0, 20, 2, 2, true); // Pick up
         sleep(200);
         shootBalls(r);
