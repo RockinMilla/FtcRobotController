@@ -39,20 +39,20 @@ public class RemoteControlShooter extends LinearOpMode {
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            if (gamepad1.dpadRightWasReleased() && launcherSpeed == closeLauncherSpeed) {
+            if (launcherSpeed == closeLauncherSpeed && gamepad1.dpadRightWasReleased()) {
                 launcherSpeed = mediumLauncherSpeed;
                 r.launcherVelocity(mediumLauncherSpeed);
             }
-            if(gamepad1.dpad_right && launcherSpeed == mediumLauncherSpeed) {
+            if (launcherSpeed == mediumLauncherSpeed && gamepad1.dpad_right) {
                 launcherSpeed = longLauncherSpeed;
                 r.launcherVelocity(longLauncherSpeed);
             }
 
-            if (gamepad1.dpadLeftWasReleased() && launcherSpeed == longLauncherSpeed) {
+            if (launcherSpeed == longLauncherSpeed && gamepad1.dpadLeftWasReleased()) {
                 launcherSpeed = mediumLauncherSpeed;
                 r.launcherVelocity(mediumLauncherSpeed);
             }
-            if (gamepad1.dpad_left && launcherSpeed == mediumLauncherSpeed) {
+            if (launcherSpeed == mediumLauncherSpeed && gamepad1.dpad_left) {
                 launcherSpeed = closeLauncherSpeed;
                 r.launcherVelocity(closeLauncherSpeed);
             }
@@ -99,7 +99,7 @@ public class RemoteControlShooter extends LinearOpMode {
                 launcherSpeed -= 10;
                 r.launcherVelocity(launcherSpeed);
             }
-            
+
             //r.hasBall();
 
             // Show the elapsed game time and wheel power.
