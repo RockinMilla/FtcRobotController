@@ -17,14 +17,13 @@ public class RemoteControlShooter extends LinearOpMode {
 
         // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs
-        double launcherSpeed = 860; // figure this out
+        double launcherSpeed = 860;
         double closeLauncherSpeed = 860;
         double mediumLauncherSpeed = 950;
         double longLauncherSpeed = 1140;
         double intakeSpeed = 1;
         double lifterPower = 0;
         boolean park = false;
-        boolean bumperPressed = false;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
@@ -35,7 +34,6 @@ public class RemoteControlShooter extends LinearOpMode {
         r.intakePower(intakeSpeed);
         r.launcherVelocity(launcherSpeed);
         r.lifterPower(lifterPower);
-
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -58,62 +56,50 @@ public class RemoteControlShooter extends LinearOpMode {
                 r.launcherVelocity(closeLauncherSpeed);
             }
 
-            if(gamepad1.circle){
+            if(gamepad1.circle) {
                 intakeSpeed = 1;
                 r.intakePower(intakeSpeed);
-            }
-            else if(gamepad1.square){
+            } else if(gamepad1.square) {
                 intakeSpeed = -1;
                 r.intakePower(intakeSpeed);
-            }
-            else if(gamepad1.cross){
+            } else if(gamepad1.cross) {
                 intakeSpeed = 0;
                 r.intakePower(intakeSpeed);
             }
 
-            if(gamepad1.right_trigger > 0){
+            if(gamepad1.right_trigger > 0) {
                 lifterPower = 1500;
                 r.lifterPower(lifterPower);
-            }
-
-            if (gamepad1.left_trigger > 0){
+            } else if(gamepad1.left_trigger > 0) {
                 lifterPower = -1500;
                 r.lifterPower(lifterPower);
-            }
-
-            if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
+            } else if(lifterPower != 0) {
                 lifterPower = 0;
                 r.lifterPower(lifterPower);
             }
 
-            if(gamepad1.dpad_down){
+            if(gamepad1.dpad_down) {
                 park = true;
-            }
-            else if(gamepad1.dpad_up){
+            } else if(gamepad1.dpad_up) {
                 park = false;
             }
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
 
             /////////////////////////////////////////////////////////////
 
-            if(gamepad2.dpad_down){
+            if(gamepad2.dpad_down) {
                 r.adjustpValue(-0.1);
-            }
-            if(gamepad2.dpad_up){
+            } else if(gamepad2.dpad_up) {
                 r.adjustpValue(0.1);
-            }
-            if(gamepad2.dpad_right){
+            } else if(gamepad2.dpad_right) {
                 launcherSpeed += 10;
                 r.launcherVelocity(launcherSpeed);
-            }
-            if(gamepad2.dpad_left){
+            } else if(gamepad2.dpad_left) {
                 launcherSpeed -= 10;
                 r.launcherVelocity(launcherSpeed);
             }
-            // This code controls our LED light using the right trigger.
-            r.led.setPosition(gamepad2.right_trigger);
-
-            r.hasBall();
+            
+            //r.hasBall();
 
             // Show the elapsed game time and wheel power.
             r.printDataOnScreen();
