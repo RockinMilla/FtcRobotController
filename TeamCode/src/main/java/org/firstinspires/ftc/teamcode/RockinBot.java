@@ -83,8 +83,7 @@ public class RockinBot {
     }
 
     // Allow driving and braking
-    public void initializeShooterVar()
-    {
+    public void initializeShooterVar() {
         //Launcher + intake variables
         leftLauncher = o.hardwareMap.get(DcMotorEx.class, "left_launcher");
         rightLauncher = o.hardwareMap.get(DcMotorEx.class, "right_launcher");
@@ -140,6 +139,10 @@ public class RockinBot {
         odo.update();
 
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
+    }
+
+    public void setLifterModeToRunUsingEncoder() {
+        lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
     // Remote control driving functions
@@ -282,21 +285,17 @@ public class RockinBot {
 
     // Lifter functions
     public void lifterPower(double power) {
-        if(!lifter.isBusy()) {
-            lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            lifter.setVelocity(power);
-        }
+        lifter.setVelocity(power);
     }
 
     public void waitForLifter() {
-        RobotLog.vv("Rockin' Robots", "waitForLifter start: LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+        RobotLog.vv("Rockin' Robots", "waitForLifter() start");
         runtime.reset();
-        while(lifter.isBusy() && runtime.seconds() < 2.5)
-        {
-            RobotLog.vv("Rockin' Robots", "waitForLifter: lifter is busy:" + lifter.getCurrentPosition());
+        int currentLifterPos = lifter.getCurrentPosition();
+        while(lifter.isBusy() && runtime.seconds() < 1.5 && currentLifterPos < 320) {
             sleep(10);
         }
-        RobotLog.vv("Rockin' Robots", "waitForLifter: " + lifter.getCurrentPosition());
+        RobotLog.vv("Rockin' Robots", "waitForLifter() end: " + currentLifterPos);
     }
 
     public void turnLifterToDegrees(int degrees) {
@@ -304,17 +303,14 @@ public class RockinBot {
     }
 
     public void turnLifterToDegrees(int degrees, int velocity) {
+        RobotLog.vv("Rockin' Robots", "turnLifterToDegrees(" + degrees + ")");
         lifter.setTargetPosition((int) (degrees*3.9));
         lifter.setVelocity(velocity);
         lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "turnLifterToDegrees: " + degrees + " Current position: "+ lifter.getCurrentPosition()/3.9
-                + " LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
     }
 
     public void turnLifterByDegrees(int degrees) {
-        lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        RobotLog.vv("Rockin' Robots", "turnLifterByDegrees: Lifter position: "+ lifter.getCurrentPosition()
-                + " LauncherVelocity(): " + leftLauncher.getVelocity() + "/" + rightLauncher.getVelocity());
+        RobotLog.vv("Rockin' Robots", "turnLifterByDegrees(" + degrees + ")");
         int moveToDegrees = (int)(lifter.getCurrentPosition()+(degrees*3.9));
         lifter.setTargetPosition(moveToDegrees);
         lifter.setVelocity(1500);
@@ -487,13 +483,13 @@ public class RockinBot {
 
             // Throttled per-iteration log (~4 Hz). One line with everything
             // useful for debugging: time, current pose, remaining error, wheel powers.
-            if (runtime.seconds() - lastLogTime >= LOG_INTERVAL) {
-                lastLogTime = runtime.seconds();
-                RobotLog.vv("Rockin' Robots",
-                        "driveToPos t=%.2fs pose=(%.0f, %.0f, %.1f) err=(%.0f, %.0f, %.1f) pwr=(LF=%.2f RF=%.2f LB=%.2f RB=%.2f)",
-                        runtime.seconds(), xLoc, yLoc, hLoc, xDistance, yDistance, hDistance,
-                        leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
-            }
+            // if (runtime.seconds() - lastLogTime >= LOG_INTERVAL) {
+            //     lastLogTime = runtime.seconds();
+            //     RobotLog.vv("Rockin' Robots",
+            //             "driveToPos t=%.2fs pose=(%.0f, %.0f, %.1f) err=(%.0f, %.0f, %.1f) pwr=(LF=%.2f RF=%.2f LB=%.2f RB=%.2f)",
+            //             runtime.seconds(), xLoc, yLoc, hLoc, xDistance, yDistance, hDistance,
+            //             leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
+            // }
 
             // Stall check: did we get meaningfully closer to the target?
             double distSq = xDistance*xDistance + yDistance*yDistance;
@@ -543,11 +539,10 @@ public class RockinBot {
                 prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, green);
                 lightsGreen = true;
             }
-        }
+        } 
         else {
             hasBall = false;
             if (lightsGreen) {
-                //prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, TRANSPARENT);
                 prism.clearAllAnimations();
                 lightsGreen = false;
             }
@@ -581,7 +576,7 @@ public class RockinBot {
         o.telemetry.addData("Current Lifter Velocity", "%.2f", lifterVelocity);
         o.telemetry.addData("Intake Speed and Power", "%.2f", intakeSpeed, intakePower);
         o.telemetry.addData("P value: ", "%.2f", pidfActual.p);
-        o.telemetry.addData("Has Ball:", "%B", hasBall());
+        o.telemetry.addData("Has Ball:", "%B", hasBall);
         o.telemetry.addData("Ball Distance:", "%.2f", distanceMM);
         o.telemetry.update();
 

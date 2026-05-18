@@ -33,6 +33,7 @@ public class RemoteControlShooter extends LinearOpMode {
         waitForStart();
         r.intakePower(intakeSpeed);
         r.launcherVelocity(launcherSpeed);
+        r.setLifterModeToRunUsingEncoder();
         r.lifterPower(lifterPower);
 
         // Run until the end of the match (driver presses STOP)
