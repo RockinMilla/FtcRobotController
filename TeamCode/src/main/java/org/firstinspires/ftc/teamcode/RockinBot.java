@@ -97,13 +97,16 @@ public class RockinBot {
         rightLauncher.setDirection(DcMotorEx.Direction.FORWARD);
         leftLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+       // lifter.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        //lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         pidf = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         pidf.p = 40;
         leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
+        //lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        RobotLog.vv("Rockin' Robots", "Launcher PIDF changed. New p value: " + pidf.p);
         led = o.hardwareMap.get(Servo.class, "led");
 
         intake = o.hardwareMap.get(DcMotorEx.class, "intake");
@@ -240,12 +243,14 @@ public class RockinBot {
         pidf.p = pValue;
         leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        //lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
 
     public void adjustpValue(double delta){
         pidf.p += delta;
         leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+     //   lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
 
     public void waitForLaunchers(double target) {
@@ -295,7 +300,7 @@ public class RockinBot {
     }
 
     public void turnLifterToDegrees(int degrees) {
-        turnLifterToDegrees(degrees, 1500);
+        turnLifterToDegrees(degrees, 1500); //Change this when changing shooting
     }
 
     public void turnLifterToDegrees(int degrees, int velocity) {

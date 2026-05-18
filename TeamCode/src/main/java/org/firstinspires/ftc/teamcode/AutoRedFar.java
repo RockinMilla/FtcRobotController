@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name="Red Far", group="Robot")
 public class AutoRedFar extends LinearOpMode {
     //final ElapsedTime runtime = new ElapsedTime();
-    private double launcherVelocity = 1150; // Change this when changing launcher velocity
+    private double launcherVelocity = 1230; // Change this when changing launcher velocity
 
     @Override
     public void runOpMode() {
@@ -16,7 +16,7 @@ public class AutoRedFar extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "5/11/2026, 1:12 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "5/17/2026, 2:57 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -31,13 +31,15 @@ public class AutoRedFar extends LinearOpMode {
         shootBalls(r);
 
         // 2nd set of balls
-        r.driveToPos(0, 700, -95, 10, 2, 4);
-        r.driveToPos(1150, 700, -95, 10,2,4, true);
+        r.driveToPos(0, 700, -95, 10, 2, 2);
+        r.driveToPos(1150, 700, -95, 10,2,2, true);
+        sleep(500);
         shootBalls(r);
 
         // 3rd set of balls
-        r.driveToPos(1100, 700, -175, 10, 2, 4);
-        r.driveToPos(1200, 20, -185, 10, 2, 4, true);
+        r.driveToPos(1075, 700, -160, 10, 2, 2);
+        r.driveToPos(1175, 20, -170, 10, 2, 2, true);
+        sleep(100);
         shootBalls(r);
 
         // park
@@ -53,9 +55,12 @@ public class AutoRedFar extends LinearOpMode {
         r.waitForLaunchers(launcherVelocity); // Change this when changing launcher velocity
         r.intakePower(0.5);
         sleep(500);
-        r.turnLifterToDegrees(360);
+        r.turnLifterToDegrees(360, 2000);
         r.waitForLifter();
-        sleep(400);
+        sleep(100);
+        r.turnLifterByDegrees(-10);
+        r.turnLifterToDegrees(360, 2000);
+        sleep(200);
         r.turnLifterToDegrees(-150); // Reset lifter
     }
 }
