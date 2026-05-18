@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Red Far", group="Robot")
 public class AutoRedFar extends LinearOpMode {
-    //final ElapsedTime runtime = new ElapsedTime();
     private double launcherVelocity = 1230; // Change this when changing launcher velocity
 
     @Override
@@ -25,20 +24,19 @@ public class AutoRedFar extends LinearOpMode {
         r.getPinpointPosition();
         r.intakePower(0.2);
         r.launcherVelocity(launcherVelocity);
-        r.setpValue(10);
 
         // 1st set of balls
         shootBalls(r);
 
         // 2nd set of balls
-        r.driveToPos(0, 700, -95, 10, 2, 2);
-        r.driveToPos(1150, 700, -95, 10,2,2, true);
+        r.driveToPos(   0, 700, -95, 10, 2, 2);
+        r.driveToPos(1150, 700, -95, 10, 2, 2, true);
         sleep(500);
         shootBalls(r);
 
         // 3rd set of balls
         r.driveToPos(1075, 700, -160, 10, 2, 2);
-        r.driveToPos(1175, 20, -170, 10, 2, 2, true);
+        r.driveToPos(1175,  20, -170, 10, 2, 2, true);
         sleep(100);
         shootBalls(r);
 
@@ -47,11 +45,10 @@ public class AutoRedFar extends LinearOpMode {
         r.launcherVelocity(0);
         r.intakePower(0);        
         r.lightsOff();
-        r.setpValue(-10);
     }
 
     private void shootBalls(RockinBot r) {
-        r.driveToPos(-50, 150, -15, 10, 1.5 ,5);
+        r.driveToPos(-50, 150, -15, 10, 1.5, 5);
         r.waitForLaunchers(launcherVelocity); // Change this when changing launcher velocity
         r.intakePower(0.5);
         sleep(500);

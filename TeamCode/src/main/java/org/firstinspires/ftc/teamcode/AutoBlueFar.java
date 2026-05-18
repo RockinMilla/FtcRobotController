@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Blue Far", group="Robot")
 public class AutoBlueFar extends LinearOpMode {
-    
     private double launcherVelocity = 1160; // Change this when changing launcher velocity
 
     @Override
@@ -30,14 +29,14 @@ public class AutoBlueFar extends LinearOpMode {
         shootBalls(r);
 
         // 2nd set of balls
-        r.driveToPos(-100, 800, 95, 10, 2, 4);
-        r.driveToPos(-1250, 800, 95, 10,2, 4, true);
+        r.driveToPos( -100, 800, 95, 10, 2, 4);
+        r.driveToPos(-1250, 800, 95, 10, 2, 4, true);
         sleep(400);
         shootBalls(r);
 
         // 3rd set of balls
         r.driveToPos(-1150, 700, 160, 10, 2, 4);
-        r.driveToPos(-1250, 0, 180, 10, 2, 2, true);
+        r.driveToPos(-1250,   0, 180, 10, 2, 2, true);
         sleep(700);
         shootBalls(r);
 
@@ -48,8 +47,7 @@ public class AutoBlueFar extends LinearOpMode {
         r.lightsOff();
     }
 
-    private void shootBalls(RockinBot r)
-    {
+    private void shootBalls(RockinBot r) {
         r.driveToPos(50, 150, 30, 10, 1.5, 5);
         r.waitForLaunchers(launcherVelocity);
         r.intakePower(0.5);
