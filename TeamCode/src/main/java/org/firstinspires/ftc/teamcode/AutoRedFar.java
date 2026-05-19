@@ -25,6 +25,7 @@ public class AutoRedFar extends LinearOpMode {
         r.getPinpointPosition();
         r.intakePower(defaultIntakePower);
         r.launcherVelocity(launcherVelocity);
+        r.setpValueLifter(40);
 
         // 1st set of balls
         shootBalls(r);
@@ -50,6 +51,7 @@ public class AutoRedFar extends LinearOpMode {
         r.launcherVelocity(0);
         r.intakePower(0);        
         r.lightsOff();
+        r.setpValueLifter(10);
     }
 
     private void shootBalls(RockinBot r) {

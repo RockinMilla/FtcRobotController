@@ -36,7 +36,8 @@ public class RockinBot {
     private DcMotor rightBackDrive = null;
     private DcMotorEx leftLauncher = null;
     private DcMotorEx rightLauncher = null;
-    PIDFCoefficients pidf = null;
+    PIDFCoefficients pidfLauncher = null;
+    PIDFCoefficients pidfLifter = null;
     private DcMotorEx intake = null;
     private DcMotorEx lifter = null;
     public Servo led = null;
@@ -87,27 +88,26 @@ public class RockinBot {
         //Launcher + intake variables
         leftLauncher = o.hardwareMap.get(DcMotorEx.class, "left_launcher");
         rightLauncher = o.hardwareMap.get(DcMotorEx.class, "right_launcher");
-        laserAnalog = o.hardwareMap.get(AnalogInput.class, "beam");
-        prism = o.hardwareMap.get(GoBildaPrismDriver.class,"prism");
-        green = new PrismAnimations.Solid(Color.GREEN);
         leftLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         leftLauncher.setDirection(DcMotorEx.Direction.REVERSE);
         rightLauncher.setDirection(DcMotorEx.Direction.FORWARD);
         leftLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-       // lifter.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        //lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        pidf = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        pidf.p = 40;
-        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        //lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        RobotLog.vv("Rockin' Robots", "Launcher PIDF changed. New p value: " + pidf.p);
-        led = o.hardwareMap.get(Servo.class, "led");
+        pidfLauncher = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        pidfLauncher.p = 40;
+        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
 
+        //Lifter Variables
+        lifter = o.hardwareMap.get(DcMotorEx.class, "lifter");
+        lifter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        lifter.setDirection(DcMotorEx.Direction.REVERSE);
+        lifter.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        lifter.setTargetPosition(0);
+        lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
+        // Intake
         intake = o.hardwareMap.get(DcMotorEx.class, "intake");
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
@@ -125,13 +125,12 @@ public class RockinBot {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        //Lifter Variables
-        lifter = o.hardwareMap.get(DcMotorEx.class, "lifter");
-        lifter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        lifter.setDirection(DcMotorEx.Direction.REVERSE);
-        lifter.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        lifter.setTargetPosition(0);
-        lifter.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        // Beam break
+        laserAnalog = o.hardwareMap.get(AnalogInput.class, "beam");
+
+        // LEDs
+        prism = o.hardwareMap.get(GoBildaPrismDriver.class,"prism");
+        green = new PrismAnimations.Solid(Color.GREEN);
 
         // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -242,18 +241,21 @@ public class RockinBot {
         rightLauncher.setVelocity(launcherVelocity);
     }
 
-    public void setpValue(double pValue){
-        pidf.p = pValue;
-        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        //lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+    public void setpValueLauncher(double pValue){
+        pidfLauncher.p = pValue;
+        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
+    }
+
+    public void setpValueLifter(double pValue){
+        pidfLifter.p = pValue;
+        lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLifter);
     }
 
     public void adjustpValue(double delta){
-        pidf.p += delta;
-        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-     //   lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        pidfLauncher.p += delta;
+        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
     }
 
     public void waitForLaunchers(double target) {
