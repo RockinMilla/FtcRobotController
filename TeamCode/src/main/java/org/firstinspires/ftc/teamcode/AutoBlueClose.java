@@ -21,7 +21,6 @@ public class AutoBlueClose extends LinearOpMode {
         waitForStart();
 
         r.getPinpointPosition();
-        r.setpValue(50);
         r.intakePower(0.3);
         r.launcherVelocity(launcherVelocity);
         

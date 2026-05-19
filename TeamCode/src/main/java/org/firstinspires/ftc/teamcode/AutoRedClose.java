@@ -22,7 +22,6 @@ public class AutoRedClose extends LinearOpMode {
 
         r.getPinpointPosition();
         r.intakePower(0.2);
-        r.setpValue(50);
         r.launcherVelocity(launcherVelocity);
 
         // 1st set of balls
@@ -30,7 +29,6 @@ public class AutoRedClose extends LinearOpMode {
 
         // 2nd set of balls
         r.driveToPos(720, -700, 0, 20, 2, 2, false, true);
-        //waitForLifter(); goes here :P teehee todo for whoever happens to be coding this next (oh wait that's prolly me)
         r.driveToPos(720,  -40, 0, 20, 2, 2, true, false);
         sleep(300);
         shootBalls(r);

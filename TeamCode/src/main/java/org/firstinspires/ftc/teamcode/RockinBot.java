@@ -85,7 +85,7 @@ public class RockinBot {
 
     // Allow driving and braking
     public void initializeShooterVar() {
-        //Launcher + intake variables
+        // Launcher
         leftLauncher = o.hardwareMap.get(DcMotorEx.class, "left_launcher");
         rightLauncher = o.hardwareMap.get(DcMotorEx.class, "right_launcher");
         leftLauncher.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -94,12 +94,9 @@ public class RockinBot {
         rightLauncher.setDirection(DcMotorEx.Direction.FORWARD);
         leftLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightLauncher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        pidfLauncher = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        pidfLauncher.p = 40;
-        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
-        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        setpValueLauncher(40);
 
-        //Lifter Variables
+        // Lifter
         lifter = o.hardwareMap.get(DcMotorEx.class, "lifter");
         lifter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         lifter.setDirection(DcMotorEx.Direction.REVERSE);
@@ -111,7 +108,7 @@ public class RockinBot {
         intake = o.hardwareMap.get(DcMotorEx.class, "intake");
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        //Wheel variables
+        // Wheel variables
         leftFrontDrive = o.hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = o.hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = o.hardwareMap.get(DcMotor.class, "right_front_drive");
@@ -142,6 +139,24 @@ public class RockinBot {
 
     public void setLifterModeToRunUsingEncoder() {
         lifter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void setpValueLauncher(double pValue){
+        pidfLauncher = leftLauncher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        pidfLauncher.p = pValue;
+        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
+    }
+
+    public void setpValueLifter(double pValue){
+        pidfLifter.p = pValue;
+        lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLifter);
+    }
+
+    public void adjustpValue(double delta){
+        pidfLauncher.p += delta;
+        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
+        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
     }
 
     // Remote control driving functions
@@ -239,23 +254,6 @@ public class RockinBot {
         launcherVelocity = targetVelocity;
         leftLauncher.setVelocity(launcherVelocity);
         rightLauncher.setVelocity(launcherVelocity);
-    }
-
-    public void setpValueLauncher(double pValue){
-        pidfLauncher.p = pValue;
-        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
-        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
-    }
-
-    public void setpValueLifter(double pValue){
-        pidfLifter.p = pValue;
-        lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLifter);
-    }
-
-    public void adjustpValue(double delta){
-        pidfLauncher.p += delta;
-        leftLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
-        rightLauncher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLauncher);
     }
 
     public void waitForLaunchers(double target) {
