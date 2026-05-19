@@ -100,7 +100,7 @@ public class RemoteControlShooter extends LinearOpMode {
                 r.launcherVelocity(launcherSpeed);
             }
 
-            //r.hasBall();
+            r.hasBall();
 
             // Show the elapsed game time and wheel power.
             r.printDataOnScreen();
