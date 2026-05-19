@@ -149,8 +149,9 @@ public class RockinBot {
     }
 
     public void setpValueLifter(double pValue){
+        pidfLifter = lifter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         pidfLifter.p = pValue;
-        lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfLifter);
+        lifter.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidfLifter);
     }
 
     public void adjustpValue(double delta){

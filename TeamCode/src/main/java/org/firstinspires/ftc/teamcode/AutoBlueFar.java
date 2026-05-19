@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Blue Far", group="Robot")
 public class AutoBlueFar extends LinearOpMode {
-    private double launcherVelocity = 1140; // Change this when changing launcher velocity
+    private double launcherVelocity = 1150; // Change this when changing launcher velocity
     private double defaultIntakePower = 1; // Change this when changing pickup intake power
 
     @Override
@@ -16,7 +16,7 @@ public class AutoBlueFar extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "5/18/2026, 3:54 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "5/19/2026, 11:43 am"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -25,7 +25,7 @@ public class AutoBlueFar extends LinearOpMode {
         r.getPinpointPosition();
         r.intakePower(defaultIntakePower);
         r.launcherVelocity(launcherVelocity);
-        r.setpValueLifter(40);
+        r.setpValueLifter(20);
 
         // 1st set of balls
         shootBalls(r);
@@ -61,6 +61,6 @@ public class AutoBlueFar extends LinearOpMode {
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter();
         sleep(400);
-        r.turnLifterToDegrees(-150); // Reset lifter
+        r.turnLifterToDegrees(-150, 2000); // Reset lifter
     }
 }
