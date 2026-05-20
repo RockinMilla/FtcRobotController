@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 // All the things that we use and borrow
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 @TeleOp(name="Remote Control Shooter", group="Linear OpMode")
@@ -35,6 +36,9 @@ public class RemoteControlShooter extends LinearOpMode {
         r.launcherVelocity(launcherSpeed);
         r.setLifterModeToRunUsingEncoder();
         r.lifterPower(lifterPower);
+
+        // Timer used to throttle telemetry updates to every half-second
+        ElapsedTime telemetryTimer = new ElapsedTime();
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -102,8 +106,11 @@ public class RemoteControlShooter extends LinearOpMode {
 
             r.hasBall();
 
-            // Show the elapsed game time and wheel power.
-            r.printDataOnScreen();
+            // Show the elapsed game time and wheel power, but only every half-second.
+            if (telemetryTimer.seconds() >= 0.5) {
+                r.printDataOnScreen();
+                telemetryTimer.reset();
+            }
         }
     }
 }
