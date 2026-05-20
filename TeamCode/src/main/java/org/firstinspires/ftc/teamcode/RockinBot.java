@@ -507,7 +507,7 @@ public class RockinBot {
                 SeenBall = true;
                 RobotLog.vv("Rockin' Robots", "driveToPos: ball detected at t=%.2fs pose=(%.0f, %.0f, %.1f)",
                         runtime.seconds(), xLoc, yLoc, hLoc);
-                turnLifterToDegrees(0, 1200);
+                turnLifterToDegrees(0, 1400);
             }
             sleep(10); // Don't hog the CPU
         }

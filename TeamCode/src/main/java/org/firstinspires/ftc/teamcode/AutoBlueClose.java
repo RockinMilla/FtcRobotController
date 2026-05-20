@@ -61,7 +61,7 @@ public class AutoBlueClose extends LinearOpMode {
     {
         r.driveToPos(-440, -700, -37, 10, 1, 3); // Go to shooting position
         r.waitForLaunchers(launcherVelocity);
-        r.intakePower(0.5);
+        r.intakePower(1);
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter();
         r.turnLifterToDegrees(-150, 3000); // Reset lifter
