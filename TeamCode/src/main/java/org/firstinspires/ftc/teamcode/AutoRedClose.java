@@ -21,7 +21,7 @@ public class AutoRedClose extends LinearOpMode {
         waitForStart();
 
         r.getPinpointPosition();
-        r.intakePower(0.2);
+        r.intakePower(0.3);
         r.launcherVelocity(launcherVelocity);
         r.setpValueLifter(20);
 
