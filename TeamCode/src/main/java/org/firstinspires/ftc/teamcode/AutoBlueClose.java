@@ -14,7 +14,7 @@ public class AutoBlueClose extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "5/17/2026, 5:30 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "5/20/2026, 11:10 am"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -23,6 +23,7 @@ public class AutoBlueClose extends LinearOpMode {
         r.getPinpointPosition();
         r.intakePower(0.3);
         r.launcherVelocity(launcherVelocity);
+        r.setpValueLifter(20);
         
         // 1st set of balls
         shootBalls(r);
@@ -53,6 +54,7 @@ public class AutoBlueClose extends LinearOpMode {
         r.launcherVelocity(0);
         r.intakePower(0);
         r.lightsOff();
+        r.setpValueLifter(10);
     }
 
     private void shootBalls(RockinBot r)

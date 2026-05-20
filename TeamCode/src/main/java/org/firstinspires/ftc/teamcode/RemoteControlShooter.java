@@ -36,6 +36,7 @@ public class RemoteControlShooter extends LinearOpMode {
         r.launcherVelocity(launcherSpeed);
         r.setLifterModeToRunUsingEncoder();
         r.lifterPower(lifterPower);
+        r.setpValueLifter(20);
 
         // Timer used to throttle telemetry updates to every half-second
         ElapsedTime telemetryTimer = new ElapsedTime();
