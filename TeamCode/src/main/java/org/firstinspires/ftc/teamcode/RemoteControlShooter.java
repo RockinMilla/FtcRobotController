@@ -93,7 +93,7 @@ public class RemoteControlShooter extends LinearOpMode {
 
             /////////////////////////////////////////////////////////////
 
-            if(gamepad2.dpad_down) {
+            /*if(gamepad2.dpad_down) {
                 r.adjustpValue(-0.1);
             } else if(gamepad2.dpad_up) {
                 r.adjustpValue(0.1);
@@ -103,9 +103,7 @@ public class RemoteControlShooter extends LinearOpMode {
             } else if(gamepad2.dpad_left) {
                 launcherSpeed -= 10;
                 r.launcherVelocity(launcherSpeed);
-            }
-
-            r.hasBall();
+            }*/
 
             // Show the elapsed game time and wheel power, but only every half-second.
             if (telemetryTimer.seconds() >= 0.5) {

@@ -53,7 +53,6 @@ public class AutoBlueClose extends LinearOpMode {
         r.driveToPos(-1200, -300, 0, 30, 5, 2);
         r.launcherVelocity(0);
         r.intakePower(0);
-        r.lightsOff();
         r.setpValueLifter(10);
     }
 

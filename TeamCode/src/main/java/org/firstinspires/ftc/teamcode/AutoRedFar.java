@@ -49,8 +49,7 @@ public class AutoRedFar extends LinearOpMode {
         // park
         r.driveToPos(500, 200, -70);
         r.launcherVelocity(0);
-        r.intakePower(0);        
-        r.lightsOff();
+        r.intakePower(0);
         r.setpValueLifter(10);
     }
 

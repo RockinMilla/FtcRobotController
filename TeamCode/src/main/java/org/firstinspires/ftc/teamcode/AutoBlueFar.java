@@ -50,7 +50,6 @@ public class AutoBlueFar extends LinearOpMode {
         r.driveToPos(-500, 200, 70); 
         r.launcherVelocity(0);
         r.intakePower(0);
-        r.lightsOff();
         r.setpValueLifter(10);
     }
 

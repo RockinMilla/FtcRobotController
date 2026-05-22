@@ -19,9 +19,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
-import org.firstinspires.ftc.teamcode.Prism.Color;
-import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
 
 public class RockinBot {
     // Motors and sensors
@@ -40,7 +37,6 @@ public class RockinBot {
     PIDFCoefficients pidfLifter = null;
     private DcMotorEx intake = null;
     private DcMotorEx lifter = null;
-    public Servo led = null;
     private double leftLauncherVelocity = 0;
     private double rightLauncherVelocity = 0;
     private double leftLauncherPower = 0;
@@ -55,16 +51,13 @@ public class RockinBot {
     // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
     // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
     private AnalogInput laserAnalog;
-    private GoBildaPrismDriver prism;
     private static final double MAX_VOLTS = 3.3;
     private static final double MAX_DISTANCE_MM = 1000.0;
     double launcherVelocity = 850;
     double intakeSpeed = 1.0;
     double distanceMM = 0;
     public GoBildaPinpointDriver odo = null;
-    PrismAnimations.Solid green;
     boolean hasBall = false;
-    boolean lightsGreen = true;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -125,10 +118,6 @@ public class RockinBot {
         // Beam break
         laserAnalog = o.hardwareMap.get(AnalogInput.class, "beam");
 
-        // LEDs
-        prism = o.hardwareMap.get(GoBildaPrismDriver.class,"prism");
-        green = new PrismAnimations.Solid(Color.GREEN);
-
         // Initializes the pinpoint
         odo = o.hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         odo.resetPosAndIMU();
@@ -180,6 +169,11 @@ public class RockinBot {
             rightFrontPower /= max;
             leftBackPower /= max;
             rightBackPower /= max;
+        } else if (max <= 0.05) {
+            leftFrontPower = 0;
+            rightFrontPower = 0;
+            leftBackPower = 0;
+            rightBackPower = 0;
         }
 
         // Send calculated power to wheels
@@ -187,6 +181,9 @@ public class RockinBot {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
+
+        RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f",
+                leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
     }
 
     public void stopMoving() {
@@ -536,27 +533,11 @@ public class RockinBot {
 
         if (distanceMM >= 200) {
             hasBall = true;
-            if (!lightsGreen) {
-                prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, green);
-                lightsGreen = true;
-            }
-        } 
+        }
         else {
             hasBall = false;
-            if (lightsGreen) {
-                prism.clearAllAnimations();
-                lightsGreen = false;
-            }
         }
         return hasBall;
-    }
-
-    // Turns off the Prism LED strip
-    public void lightsOff() {
-        if (prism != null) {
-            prism.clearAllAnimations();
-        }
-        lightsGreen = false;
     }
 
     // Log all (relevant) info about the robot on the hub.

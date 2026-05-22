@@ -53,7 +53,6 @@ public class AutoRedClose extends LinearOpMode {
         r.driveToPos(1150, -250, 0, 50, 5, 2);
         r.launcherVelocity(0);
         r.intakePower(0);
-        r.lightsOff();
         r.setpValueLifter(10);
     }
 
