@@ -63,11 +63,9 @@ public class AutoRedClose extends LinearOpMode {
         r.intakePower(1);
         r.turnLifterToDegrees(360); // Shoot the balls
         r.waitForLifter(1);
-        //sleep(100);
         r.turnLifterByDegrees(-10);
         r.turnLifterToDegrees(360);
         r.waitForLifter(1);
-        //sleep(200);
         r.turnLifterToDegrees(-150, 3000); // Reset lifter
     }
 }

@@ -16,14 +16,14 @@ public class AutoRedFar extends LinearOpMode {
         RockinBot r = new RockinBot(o, "Shooter");     // Passing in code from RockinBot
 
         telemetry.addData("Autonomous Ready", "You can press start now");
-        telemetry.addData("This code was last updated", "5/19/2026, 11:43 am"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "5/26/2026, 11:43 am"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         r.getPinpointPosition();
-        r.intakePower(defaultIntakePower);
+        r.intakePower(0.3);
         r.launcherVelocity(launcherVelocity);
         r.setpValueLifter(20);
 
@@ -55,14 +55,13 @@ public class AutoRedFar extends LinearOpMode {
 
     private void shootBalls(RockinBot r) {
         r.driveToPos(-50, 150, -15, 10, 1.5, 3);
-        r.waitForLaunchers(launcherVelocity); // Change this when changing launcher velocity
+        r.waitForLaunchers(launcherVelocity);
+        r.intakePower(defaultIntakePower);
         sleep(500);
-        r.turnLifterToDegrees(360, 2000);
+        r.turnLifterToDegrees(360, 2000); // Shoot the balls
         r.waitForLifter();
-        sleep(100);
         r.turnLifterByDegrees(-10);
         r.turnLifterToDegrees(360, 2000);
-        sleep(200);
         r.turnLifterToDegrees(-150, 2000); // Reset lifter
     }
 }
