@@ -286,14 +286,18 @@ public class RockinBot {
         lifter.setVelocity(power);
     }
 
-    public void waitForLifter() {
+    public void waitForLifter(double maxDuration) {
         RobotLog.vv("Rockin' Robots", "waitForLifter() start");
         runtime.reset();
         int currentLifterPos = lifter.getCurrentPosition();
-        while(lifter.isBusy() && runtime.seconds() < 1.5 && currentLifterPos < 320) {
+        while(lifter.isBusy() && runtime.seconds() < maxDuration && currentLifterPos < 320) {
             sleep(10);
         }
         RobotLog.vv("Rockin' Robots", "waitForLifter() end: " + currentLifterPos);
+    }
+
+    public void waitForLifter() {
+        waitForLifter(1.5);
     }
 
     public void turnLifterToDegrees(int degrees) {
