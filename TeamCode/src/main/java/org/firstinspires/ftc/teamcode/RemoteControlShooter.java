@@ -12,19 +12,15 @@ public class RemoteControlShooter extends LinearOpMode {
 
     //Op mode runs when the robot runs. It runs the whole time.
     public void runOpMode() {
+
         // Create a LinearOpModeVariable and pass it to the RockinBot constructor
         LinearOpMode o = this;
         RockinBot r = new RockinBot(o, "Shooter");
 
         // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
-        // These are the defaults that run when the program starts. Their values can be modified by RC inputs
-        double launcherSpeed = 860;
-        double closeLauncherSpeed = 860;
-        double mediumLauncherSpeed = 950;
-        double longLauncherSpeed = 1140;
-        double intakeSpeed = 1;
-        double lifterPower = 0;
+        // These are the defaults that run when the program starts. Their values can be modified by RC inputs\
         boolean park = false;
+        double intakeSpeed = 1;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
@@ -33,56 +29,13 @@ public class RemoteControlShooter extends LinearOpMode {
         telemetry.update();
         waitForStart();
         r.intakePower(intakeSpeed);
-        r.launcherVelocity(launcherSpeed);
-        r.setLifterModeToRunUsingEncoder();
-        r.lifterPower(lifterPower);
-        r.setpValueLifter(20);
 
         // Timer used to throttle telemetry updates to every half-second
         ElapsedTime telemetryTimer = new ElapsedTime();
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            if (launcherSpeed == closeLauncherSpeed && gamepad1.dpadRightWasReleased()) {
-                launcherSpeed = mediumLauncherSpeed;
-                r.launcherVelocity(mediumLauncherSpeed);
-            }
-            if (launcherSpeed == mediumLauncherSpeed && gamepad1.dpad_right) {
-                launcherSpeed = longLauncherSpeed;
-                r.launcherVelocity(longLauncherSpeed);
-            }
-
-            if (launcherSpeed == longLauncherSpeed && gamepad1.dpadLeftWasReleased()) {
-                launcherSpeed = mediumLauncherSpeed;
-                r.launcherVelocity(mediumLauncherSpeed);
-            }
-            if (launcherSpeed == mediumLauncherSpeed && gamepad1.dpad_left) {
-                launcherSpeed = closeLauncherSpeed;
-                r.launcherVelocity(closeLauncherSpeed);
-            }
-
-            if(gamepad1.circle) {
-                intakeSpeed = 1;
-                r.intakePower(intakeSpeed);
-            } else if(gamepad1.square) {
-                intakeSpeed = -1;
-                r.intakePower(intakeSpeed);
-            } else if(gamepad1.cross) {
-                intakeSpeed = 0;
-                r.intakePower(intakeSpeed);
-            }
-
-            if(gamepad1.right_trigger > 0) {
-                lifterPower = 1500;
-                r.lifterPower(lifterPower);
-            } else if(gamepad1.left_trigger > 0) {
-                lifterPower = -1500;
-                r.lifterPower(lifterPower);
-            } else if(lifterPower != 0) {
-                lifterPower = 0;
-                r.lifterPower(lifterPower);
-            }
+            r.start();
 
             if(gamepad1.dpad_down) {
                 park = true;
@@ -90,6 +43,19 @@ public class RemoteControlShooter extends LinearOpMode {
                 park = false;
             }
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
+
+            if(gamepad1.circle){
+                intakeSpeed = 1;
+                r.intakePower(intakeSpeed);
+            }
+            else if(gamepad1.square){
+                intakeSpeed = -1;
+                r.intakePower(intakeSpeed);
+            }
+            else if(gamepad1.cross){
+                intakeSpeed = 0;
+                r.intakePower(intakeSpeed);
+            }
 
             /////////////////////////////////////////////////////////////
 
