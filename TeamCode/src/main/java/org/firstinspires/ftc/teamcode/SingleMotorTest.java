@@ -17,9 +17,6 @@ public class SingleMotorTest extends LinearOpMode {
         LinearOpMode o = this;
         RockinBotTest r = new RockinBotTest(o);
 
-        // THESE ARE THE VARIABLES THAT ARE RUNNING DURING RC, NOT THE ONES IN ROCKINBOT!!
-        // These are the defaults that run when the program starts. Their values can be modified by RC inputs\
-        boolean park = false;
         double motorSpeed = 1;
 
         // Wait for the game to start (driver presses PLAY)
