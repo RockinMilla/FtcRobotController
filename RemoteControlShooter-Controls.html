@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remote Control Shooter - Controller Buttons</title>
+<style>
+  body { font-family: Segoe UI, Arial, sans-serif; margin: 0; padding: 16px; background: #f4f6f8; color: #1b1f24; }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  p.sub { margin: 0 0 12px; color: #555; }
+  svg { width: 100%; height: auto; background: #fff; border: 1px solid #d0d7de; border-radius: 8px; }
+  .box { fill: #eef5ff; stroke: #1f6feb; stroke-width: 3; }
+  .box.shooter { fill: #fff4e5; stroke: #d97706; }
+  .box.intake { fill: #e8f8ee; stroke: #1a7f37; }
+  .box.drive { fill: #f1ebff; stroke: #7c3aed; }
+  .box.tune { fill: #ffeef0; stroke: #cf222e; }
+  .title { font-size: 30px; font-weight: 700; fill: #1b1f24; }
+  .desc { font-size: 24px; fill: #333; }
+  .group { fill: none; stroke: #1a7f37; stroke-width: 5; stroke-dasharray: 18 10; }
+  .grouptitle { font-size: 34px; font-weight: 800; fill: #1a7f37; letter-spacing: 2px; }
+  .group.trig { stroke: #1f6feb; }
+  .grouptitle.trig { fill: #1f6feb; }
+  .group.bump { stroke: #d97706; }
+  .box.park { fill: #e0f7fa; stroke: #0891b2; }
+  .group.park { stroke: #0891b2; }
+  .group.wheels { stroke: #7c3aed; }
+  .group.tune { stroke: #cf222e; }
+  .grouptitle.tune { fill: #cf222e; }
+  .grouptitle.wheels { fill: #7c3aed; }
+  .grouptitle.park { fill: #0891b2; }
+  .grouptitle.bump { fill: #d97706; }
+  .line { stroke: #444; stroke-width: 3; }
+  .dot { fill: #e11d48; stroke: #fff; stroke-width: 3; }
+</style>
+</head>
+<body>
+<h1>Remote Control Shooter &mdash; Controller Buttons</h1>
+
+<svg id="pad" viewBox="-420 -395 2349 1480" role="img" aria-label="Controller with labeled buttons"></svg>
+
+<script>
+  // x,y = point on the controller image (1509x1085). side: L/R column, or "free" with explicit box position.
+  const labels = [
+    { t: "Left Trigger",  d: "Trigger motor reverse",           x: 340,  y: 118, side: "F", bx: 385, by: -85, bw: 350, cls: "", down: true },
+    { t: "Left Bumper",   d: "Shooter speed \u2212 5%",          x: 285,  y: 152, side: "F", bx: 120, by: -315, bw: 350, cls: "shooter", down: true },
+    { t: "D-pad Up",      d: "Park OFF",                         x: 338,  y: 262, side: "L", by: 295, bw: 360, cls: "park" },
+    { t: "D-pad Left",    d: "Shooter P value \u2212 2",         x: 252,  y: 342, side: "L", by: 590, bw: 360, cls: "tune", via: [[252, 640]] },
+    { t: "D-pad Down",    d: "Park ON (lock wheels)",            x: 338,  y: 412, side: "L", by: 400, bw: 360, cls: "park" },
+    { t: "Left Stick",    d: "Drive forward/back + strafe",      x: 545,  y: 530, side: "F", bx: 350, by: 940, bw: 390, cls: "drive" },
+    { t: "D-pad Right",   d: "Shooter P value + 2",              x: 420,  y: 342, side: "L", by: 695, bw: 360, cls: "tune", via: [[440, 745]] },
+
+    { t: "Right Trigger", d: "Trigger motor forward",            x: 1195, y: 118, side: "F", bx: 775, by: -85, bw: 350, cls: "", down: true },
+    { t: "Right Bumper",  d: "Shooter speed + 5%",               x: 1225, y: 152, side: "F", bx: 1040, by: -315, bw: 350, cls: "shooter", down: true },
+    { t: "Triangle",      d: "Reverse shooter direction",        x: 1194, y: 243, side: "R", by: 300, bw: 360, cls: "shooter" },
+    { t: "Circle",        d: "Intake forward",                   x: 1295, y: 343, side: "R", by: 460, bw: 360, cls: "intake" },
+    { t: "Cross (X)",     d: "Intake stop",                      x: 1194, y: 443, side: "R", by: 565, bw: 360, cls: "intake" },
+    { t: "Square",        d: "Intake reverse",                   x: 1093, y: 343, side: "R", by: 670, bw: 360, cls: "intake", via: [[1093, 720]] },
+    { t: "Right Stick",   d: "Turn (X) \u2022 Press: shooter speed 0", x: 985, y: 530, side: "F", bx: 750, by: 940, bw: 390, cls: "drive" }
+  ];
+
+  const H = 100, W = 470, NS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById("pad");
+
+  function el(name, attrs, text) {
+    const e = document.createElementNS(NS, name);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  const img = el("image", { x: 0, y: 0, width: 1509, height: 1085 });
+  img.setAttribute("href", "Screenshot%202026-10-01%20203257.png");
+  svg.appendChild(img);
+
+  // Group box around the three intake labels
+  svg.appendChild(el("rect", { class: "group", x: 1529, y: 410, width: 390, height: 375, rx: 18 }));
+  svg.appendChild(el("text", { class: "grouptitle", x: 1549, y: 445 }, "INTAKE"));
+
+  // Group box around the two park labels
+  svg.appendChild(el("rect", { class: "group park", x: -410, y: 245, width: 390, height: 265, rx: 18 }));
+  svg.appendChild(el("text", { class: "grouptitle park", x: -390, y: 280 }, "PARK"));
+
+  // Group box around the two stick labels, below the controller
+  svg.appendChild(el("rect", { class: "group wheels", x: 330, y: 885, width: 830, height: 170, rx: 18 }));
+  svg.appendChild(el("text", { class: "grouptitle wheels", x: 350, y: 927 }, "WHEELS"));
+
+  // Group box around the two D-pad P-value labels, under the park box
+  svg.appendChild(el("rect", { class: "group tune", x: -410, y: 540, width: 390, height: 275, rx: 18 }));
+  svg.appendChild(el("text", { class: "grouptitle tune", x: -390, y: 575 }, "P-VALUE TUNING"));
+
+  // Group box around the two trigger labels, above the controller
+  svg.appendChild(el("rect", { class: "group trig", x: 365, y: -145, width: 780, height: 180, rx: 18 }));
+  svg.appendChild(el("text", { class: "grouptitle trig", x: 385, y: -108 }, "TRIGGER"));
+
+  // Group box around the two bumper labels, above the trigger box
+  svg.appendChild(el("rect", { class: "group bump", x: 95, y: -375, width: 1320, height: 180, rx: 18 }));
+  svg.appendChild(el("text", { class: "grouptitle bump", x: 120, y: -338 }, "SHOOTER"));
+
+  const lines = el("g", {}), boxes = el("g", {});
+  svg.appendChild(lines);
+  svg.appendChild(boxes);
+
+  for (const l of labels) {
+    let bx, bw = l.bw || W;
+    if (l.side === "L") bx = -400;
+    else if (l.side === "R") bx = 1539;
+    else { bx = l.bx; bw = l.bw; }
+
+    let ax, ay;
+    if (l.side === "L") { ax = bx + bw; ay = l.by + H / 2; }
+    else if (l.side === "R") { ax = bx; ay = l.by + H / 2; }
+    else { ax = bx + bw / 2; ay = l.down ? l.by + H : l.by; }
+
+    const pts = [[ax, ay]].concat(l.via || [], [[l.x, l.y]]);
+    lines.appendChild(el("polyline", { class: "line", fill: "none", points: pts.map(p => p.join(",")).join(" ") }));
+    lines.appendChild(el("circle", { class: "dot", cx: l.x, cy: l.y, r: 11 }));
+
+    boxes.appendChild(el("rect", { class: "box " + l.cls, x: bx, y: l.by, width: bw, height: H, rx: 14 }));
+    boxes.appendChild(el("text", { class: "title", x: bx + 18, y: l.by + 38 }, l.t));
+    boxes.appendChild(el("text", { class: "desc", x: bx + 18, y: l.by + 76 }, l.d));
+  }
+</script>
+</body>
+</html>
