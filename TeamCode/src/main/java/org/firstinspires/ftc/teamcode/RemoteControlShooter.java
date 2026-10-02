@@ -21,6 +21,13 @@ public class RemoteControlShooter extends LinearOpMode {
         // These are the defaults that run when the program starts. Their values can be modified by RC inputs\
         boolean park = false;
         double intakeSpeed = 1;
+        double shooterSpeed = 0.66;
+        int shooterDirection = 1;
+        boolean previousRightBumper = false;
+        boolean previousLeftBumper = false;
+        boolean previousTriangle = false;
+        boolean previousDpadRight = false;
+        boolean previousDpadLeft = false;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
@@ -29,13 +36,15 @@ public class RemoteControlShooter extends LinearOpMode {
         telemetry.update();
         waitForStart();
         r.intakePower(intakeSpeed);
+        r.shooterPower(shooterSpeed * shooterDirection);
 
         // Timer used to throttle telemetry updates to every half-second
         ElapsedTime telemetryTimer = new ElapsedTime();
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            r.start();
+            // r.start();
+            boolean speedChanged = false;
 
             if(gamepad1.dpad_down) {
                 park = true;
@@ -43,6 +52,12 @@ public class RemoteControlShooter extends LinearOpMode {
                 park = false;
             }
             r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, park);
+
+            double triggerPower = gamepad1.right_trigger - gamepad1.left_trigger;
+            if (Math.abs(triggerPower) < 0.05) {
+                triggerPower = 0;
+            }
+            r.triggerPower(triggerPower);
 
             if(gamepad1.circle){
                 intakeSpeed = 1;
@@ -57,6 +72,39 @@ public class RemoteControlShooter extends LinearOpMode {
                 r.intakePower(intakeSpeed);
             }
 
+            if (gamepad1.right_bumper && !previousRightBumper) {
+                shooterSpeed = Math.min(1.0, shooterSpeed + 0.05);
+                speedChanged = true;
+            }
+            if (gamepad1.left_bumper && !previousLeftBumper) {
+                shooterSpeed = Math.max(0.0, shooterSpeed - 0.05);
+                speedChanged = true;
+            }
+            if (gamepad1.triangle && !previousTriangle) {
+                shooterDirection *= -1;
+                speedChanged = true;
+            }
+            if (gamepad1.right_stick_button) {
+                shooterSpeed = 0.0;
+                speedChanged = true;
+            }
+
+            if (gamepad1.dpad_right && !previousDpadRight) {
+                r.adjustpValue(2);
+            }
+            if (gamepad1.dpad_left && !previousDpadLeft) {
+                r.adjustpValue(-2);
+            }
+
+            if (speedChanged) {
+                r.shooterPower(shooterSpeed * shooterDirection);
+            }
+
+            previousRightBumper = gamepad1.right_bumper;
+            previousLeftBumper = gamepad1.left_bumper;
+            previousTriangle = gamepad1.triangle;
+            previousDpadRight = gamepad1.dpad_right;
+            previousDpadLeft = gamepad1.dpad_left;
             /////////////////////////////////////////////////////////////
 
             /*if(gamepad2.dpad_down) {

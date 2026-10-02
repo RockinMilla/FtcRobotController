@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 // All the things that we use and borrow
 import static android.os.SystemClock.sleep;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+// import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -22,13 +22,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+// import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+// import com.qualcomm.hardware.limelightvision.LLResult;
+// import com.qualcomm.hardware.limelightvision.LLResultTypes;
+// import com.qualcomm.hardware.limelightvision.LLStatus;
+// import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.IMU;
 
 public class RockinBot {
@@ -36,22 +36,28 @@ public class RockinBot {
     private LinearOpMode o;
     private DcMotorEx intake = null;
     private Pose2D pos;
-    private Pose3D botPose;
+    // private Pose3D botPose;
     private double xLoc = 0;
     private double yLoc = 0;
     private double hLoc = 0;
+    private DcMotorEx shooter = null;
+    private PIDFCoefficients pidf = null;
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private Limelight3A limelight;
+    private DcMotor trigger = null;
+    // private Limelight3A limelight;
     public GoBildaPinpointDriver odo = null;
     private double leftFrontPower = 0;
     private double rightFrontPower = 0;
     private double leftBackPower = 0;
     private double rightBackPower = 0;
     private double intakePower = 0;
+    private double shooterPower = 0;
     private double max = 0;
+    private double triggerPower = 0;
+    double shooterSpeed = 1.0;
     double intakeSpeed = 1.0;
     // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
     // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
@@ -93,36 +99,48 @@ public class RockinBot {
         odo.resetPosAndIMU();
         odo.update();
 
-        limelight = o.hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-        RevHubOrientationOnRobot revHubOrientationOnRobot = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.RIGHT);
+        // limelight = o.hardwareMap.get(Limelight3A.class, "limelight");
+        // limelight.pipelineSwitch(0);
+        // RevHubOrientationOnRobot revHubOrientationOnRobot = new RevHubOrientationOnRobot(
+        //         RevHubOrientationOnRobot.LogoFacingDirection.UP,
+        //         RevHubOrientationOnRobot.UsbFacingDirection.RIGHT);
 
         intake = o.hardwareMap.get(DcMotorEx.class, "intake");
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         RobotLog.vv("Rockin' Robots", "Hardware Initialized");
-    }
 
-    public void start()
-    {
-        limelight.start();
-    }
+        shooter = o.hardwareMap.get(DcMotorEx.class, "shooter");
+        shooter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        // The velocity PIDF only takes effect when the shooter runs with its encoder
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        pidf = shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
-    public void loop(){
-        odo.update();
-        limelight.updateRobotOrientation(odo.getHeading());
-        LLResult result = limelight.getLatestResult();
-        if(result != null && result.isValid())
-        {
-            o.telemetry.addData("X", result.getTx());
-            o.telemetry.addData("Y", result.getTy());
-            o.telemetry.addData("A", result.getTa());
-            o.telemetry.addData("BotPose", botPose);
-            o.telemetry.addData("Yaw", botPose.getOrientation().getYaw());
-            getPinpointPosition();
-        }
+        trigger = o.hardwareMap.get(DcMotorEx.class, "trigger");
+        trigger.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        trigger.setDirection(DcMotor.Direction.REVERSE);
 
     }
+
+    // public void start()
+    // {
+    //     limelight.start();
+    // }
+
+    // public void loop(){
+    //     odo.update();
+    //     limelight.updateRobotOrientation(odo.getHeading());
+    //     LLResult result = limelight.getLatestResult();
+    //     if(result != null && result.isValid())
+    //     {
+    //         o.telemetry.addData("X", result.getTx());
+    //         o.telemetry.addData("Y", result.getTy());
+    //         o.telemetry.addData("A", result.getTa());
+    //         o.telemetry.addData("BotPose", botPose);
+    //         o.telemetry.addData("Yaw", botPose.getOrientation().getYaw());
+    //         getPinpointPosition();
+    //     }
+    // }
     // Remote control driving functions
     public void setWheelPower(double left_y, double left_x, double right_x, boolean park) {
         double wheelMultiplier = 1;
@@ -158,6 +176,18 @@ public class RockinBot {
 
         RobotLog.vv("Rockin' Robots", "Wheel power: %.2f, %.2f, %.2f, %.2f",
                 leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
+    }
+
+    public void adjustpValue(double delta) {
+        pidf.p = Math.max(0.0, pidf.p + delta);
+        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
+    }
+
+    public void shooterPower(double speed) {
+        RobotLog.vv("Rockin' Robots", "shooterPower(%.2f)", speed);
+        shooterSpeed = speed;
+        shooter.setPower(speed);
     }
 
     public boolean getPinpointPosition() {     // Finds robot position
@@ -237,6 +267,11 @@ public class RockinBot {
         intake.setPower(speed);
     }
 
+    public void triggerPower(double speed) {
+        triggerPower = speed;
+        trigger.setPower(speed);
+    }
+
     private boolean inBand(double actual, double lower, double upper) {
         return actual >= lower && actual <= upper;
     }
@@ -251,10 +286,14 @@ public class RockinBot {
 
         intakePower = intake.getCurrent(CurrentUnit.MILLIAMPS);
 
+        shooterPower = shooter.getCurrent(CurrentUnit.MILLIAMPS);
+        o.telemetry.addData("shooter Speed and Power", "%.2f", shooterSpeed, shooterPower);
         o.telemetry.addData("Intake Speed and Power", "%.2f", intakeSpeed, intakePower);
+        o.telemetry.addData("Trigger Power", "%.2f", triggerPower);
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         o.telemetry.addData("Back left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        loop();
+        o.telemetry.addData("P value", "%.2f", shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER).p);
+        // loop();
 
         o.telemetry.update();
 
