@@ -5,31 +5,23 @@ import com.acmerobotics.dashboard.FtcDashboard;
 // All the things that we use and borrow
 import static android.os.SystemClock.sleep;
 
-// import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-// import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
-// import com.qualcomm.hardware.limelightvision.LLResult;
-// import com.qualcomm.hardware.limelightvision.LLResultTypes;
-// import com.qualcomm.hardware.limelightvision.LLStatus;
-// import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.hardware.IMU;
+//These are for FTC Dashboard. However, we may be missing an import or two
+// import com.qualcomm.robotcore.hardware.IMU;
+// import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+// import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+// import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class RockinBot {
     // Motors and sensors
@@ -66,15 +58,11 @@ public class RockinBot {
 
     // During runtime
 
-    public RockinBot(LinearOpMode opMode, String robotType) {
+    public RockinBot(LinearOpMode opMode) {
         o = opMode;
         o.telemetry.addData("This code was last updated", "8/18/2025, 2:45 pm"); // Todo: Update this date when the code is updated
         o.telemetry.update();
-
-        if(robotType.equals("Shooter"))
-        {
-            initializeDrivingVar();
-        }
+        initializeDrivingVar();
     }
 
     // Allow driving and braking
@@ -108,26 +96,25 @@ public class RockinBot {
         intake = o.hardwareMap.get(DcMotorEx.class, "intake");
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        RobotLog.vv("Rockin' Robots", "Hardware Initialized");
-
         shooter = o.hardwareMap.get(DcMotorEx.class, "shooter");
         shooter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        // The velocity PIDF only takes effect when the shooter runs with its encoder
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         pidf = shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        setpValue(50);
 
         trigger = o.hardwareMap.get(DcMotorEx.class, "trigger");
         trigger.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         trigger.setDirection(DcMotor.Direction.REVERSE);
 
+        RobotLog.vv("Rockin' Robots", "Hardware Initialized");
     }
 
-    // public void start()
+    // public void startLimelight()
     // {
     //     limelight.start();
     // }
 
-    // public void loop(){
+    // public void loopLimelight(){
     //     odo.update();
     //     limelight.updateRobotOrientation(odo.getHeading());
     //     LLResult result = limelight.getLatestResult();
@@ -142,12 +129,9 @@ public class RockinBot {
     //     }
     // }
     // Remote control driving functions
-    public void setWheelPower(double left_y, double left_x, double right_x, boolean park) {
+    public void setWheelPower(double left_y, double left_x, double right_x) {
         double wheelMultiplier = 1;
 
-        if(park){
-            wheelMultiplier = 0.25;
-        }
         leftFrontPower = (left_y + left_x + right_x) * wheelMultiplier;
         rightFrontPower = (left_y - left_x - right_x) * wheelMultiplier;
         leftBackPower = (left_y - left_x + right_x) * wheelMultiplier;
@@ -180,6 +164,12 @@ public class RockinBot {
 
     public void adjustpValue(double delta) {
         pidf.p = Math.max(0.0, pidf.p + delta);
+        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
+    }
+
+    public void setpValue(double pValue) {
+        pidf.p = Math.max(0.0, pValue);
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
     }
@@ -276,12 +266,6 @@ public class RockinBot {
         return actual >= lower && actual <= upper;
     }
 
-    // Driving functions
-
-    // noStop=true skips the stopMoving() call at the end so the robot rolls
-    // straight into the next driveToPos without braking (saves time when
-    // chaining moves). Heading/accuracy still need to be reached (or maxDuration/stall).
-    // Log all (relevant) info about the robot on the hub.
     public void printDataOnScreen() {
 
         intakePower = intake.getCurrent(CurrentUnit.MILLIAMPS);
@@ -297,7 +281,9 @@ public class RockinBot {
 
         o.telemetry.update();
 
-        /*dashboardTelemetry = dashboard.getTelemetry();
+        /*
+        These are also for FTC Dashboard
+        dashboardTelemetry = dashboard.getTelemetry();
         dashboardTelemetry.addData("Left Launcher:", leftLauncherVelocity);
         dashboardTelemetry.addData("Right Launcher:", rightLauncherVelocity);
         dashboardTelemetry.addData("Intake", intakePower);
