@@ -60,7 +60,7 @@ public class RockinBot {
 
     public RockinBot(LinearOpMode opMode) {
         o = opMode;
-        o.telemetry.addData("This code was last updated", "8/18/2025, 2:45 pm"); // Todo: Update this date when the code is updated
+        o.telemetry.addData("This code was last updated", "10/8/2026, 4:55 pm"); // Todo: Update this date when the code is updated
         o.telemetry.update();
         initializeDrivingVar();
     }
@@ -129,13 +129,15 @@ public class RockinBot {
     //     }
     // }
     // Remote control driving functions
-    public void setWheelPower(double left_y, double left_x, double right_x) {
-        double wheelMultiplier = 1;
+    public void setWheelPower(double leftStickY, double leftStickX, double rightStickX) {
+        double wheelMultiplier = 0.85;
+        double forward = leftStickY;
+        double strafe = -leftStickX;
 
-        leftFrontPower = (left_y + left_x + right_x) * wheelMultiplier;
-        rightFrontPower = (left_y - left_x - right_x) * wheelMultiplier;
-        leftBackPower = (left_y - left_x + right_x) * wheelMultiplier;
-        rightBackPower = (left_y + left_x - right_x) * wheelMultiplier;
+        leftFrontPower = (forward + strafe + rightStickX) * wheelMultiplier;
+        rightFrontPower = (forward - strafe - rightStickX) * wheelMultiplier;
+        leftBackPower = (forward - strafe + rightStickX) * wheelMultiplier;
+        rightBackPower = (forward + strafe - rightStickX) * wheelMultiplier;
 
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
@@ -225,19 +227,19 @@ public class RockinBot {
     }
 
     public void driveForward(int ms) {
-        leftFrontDrive.setPower(0.5); // counter
-        rightFrontDrive.setPower(0.5); // clock
-        leftBackDrive.setPower(0.5); // clock
-        rightBackDrive.setPower(0.5); // counter
+        leftFrontDrive.setPower(-0.5); // clock
+        rightFrontDrive.setPower(-0.5); // counter
+        leftBackDrive.setPower(-0.5); // counter
+        rightBackDrive.setPower(-0.5); // clock
         sleep(ms);
         stopMoving();
     }
 
     public void driveBack(int ms) {
-        leftFrontDrive.setPower(-0.5); // counter
-        rightFrontDrive.setPower(-0.5); // clock
-        leftBackDrive.setPower(-0.5); // clock
-        rightBackDrive.setPower(-0.5); // counter
+        leftFrontDrive.setPower(0.5); // counter
+        rightFrontDrive.setPower(0.5); // clock
+        leftBackDrive.setPower(0.5); // clock
+        rightBackDrive.setPower(0.5); // counter
         sleep(ms);
         stopMoving();
     }

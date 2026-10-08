@@ -18,7 +18,6 @@ public class RemoteControl extends LinearOpMode {
         RockinBot r = new RockinBot(o);
         r.setpValue(50);
 
-        boolean park = false;
         double intakeSpeed = -1;
         //Starting robot shooter speed. Ideal for shooting. Can be adjusted in-game.
         double shooterSpeed = 0.73;
@@ -33,7 +32,7 @@ public class RemoteControl extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
         RobotLog.vv("Rockin' Robots", "Remote Control Ready");
-        telemetry.addData("This code was last updated", "10/4/2026, 5:06 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "10/8/2026, 4:55 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
         waitForStart();
         r.intakePower(intakeSpeed);
@@ -47,12 +46,11 @@ public class RemoteControl extends LinearOpMode {
             // r.start();
             boolean speedChanged = false;
 
-            if(gamepad1.dpad_down) {
-                park = true;
-            } else if(gamepad1.dpad_up) {
-                park = false;
+            if(gamepad1.dpad_up) {
+                shooterSpeed = 0.0;
+                speedChanged = true;
             }
-            r.setWheelPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            r.setWheelPower(-gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             if(gamepad1.right_trigger > 0)
             {
@@ -94,10 +92,6 @@ public class RemoteControl extends LinearOpMode {
             }
             if (gamepad1.triangle && !previousTriangle) {
                 shooterDirection *= -1;
-                speedChanged = true;
-            }
-            if (gamepad1.right_stick_button) {
-                shooterSpeed = 0.0;
                 speedChanged = true;
             }
 

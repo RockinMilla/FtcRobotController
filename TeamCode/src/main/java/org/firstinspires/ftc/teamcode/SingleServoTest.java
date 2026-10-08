@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 @TeleOp(name="Single Servo Test", group="Linear OpMode")
 public class SingleServoTest extends LinearOpMode {
-    private static final double LUMBERJACK_POWER = 1.0;
+    private static final double POSITION_CHANGE_PER_SECOND = 0.5;
 
     @Override
     public void runOpMode() {
@@ -15,27 +15,36 @@ public class SingleServoTest extends LinearOpMode {
         RockinBotServoTest r = new RockinBotServoTest(o);
 
         telemetry.addData("Lumberjack Test Ready", "press PLAY");
-        telemetry.addData("Controls", "Right bumper: up, left bumper: down");
+        telemetry.addData("Controls", "Hold right bumper: up, hold left bumper: down");
         RobotLog.vv("Rockin' Robots", "Lumberjack Test Ready");
         telemetry.update();
         waitForStart();
         r.start();
 
         ElapsedTime telemetryTimer = new ElapsedTime();
+        ElapsedTime movementTimer = new ElapsedTime();
+        boolean wasMoving = false;
 
         while (opModeIsActive()) {
-            if (gamepad1.right_bumper) {
-                r.setLumberjackPower(LUMBERJACK_POWER);
-            } else if (gamepad1.left_bumper) {
-                r.setLumberjackPower(-LUMBERJACK_POWER);
-            } else {
-                r.setLumberjackPower(0);
-            }
+            double positionChange = POSITION_CHANGE_PER_SECOND * movementTimer.seconds();
+            movementTimer.reset();
+            boolean moving = gamepad1.right_bumper ^ gamepad1.left_bumper;
 
-            if (telemetryTimer.seconds() >= 0.5) {
-                r.printDataOnScreen();
+            if (gamepad1.right_bumper && !gamepad1.left_bumper) {
+                r.adjustLumberjackPosition(positionChange);
+            } else if (gamepad1.left_bumper && !gamepad1.right_bumper) {
+                r.adjustLumberjackPosition(-positionChange);
+            } else if (wasMoving) {
+                r.holdLumberjackPosition();
+            }
+            wasMoving = moving;
+
+            if (telemetryTimer.seconds() >= 0.1) {
+                r.printDataOnScreen(gamepad1.right_bumper, gamepad1.left_bumper);
                 telemetryTimer.reset();
             }
+
+            idle();
         }
     }
 }
