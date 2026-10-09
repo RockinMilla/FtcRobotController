@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Remote Control Button Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --blue: #2457c5;
+      --green: #157347;
+      --orange: #a84f00;
+      --purple: #6f42c1;
+      --border: #cfd7e3;
+      --text: #17212b;
+      --muted: #526170;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background: #f4f7fb;
+      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header,
+    section {
+      margin-bottom: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgb(23 33 43 / 6%);
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+      font-size: clamp(1.65rem, 4vw, 2.3rem);
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: 1.5rem;
+    }
+
+    .subtitle,
+    .note,
+    footer {
+      color: var(--muted);
+    }
+
+    .subtitle,
+    .note {
+      margin-bottom: 0;
+    }
+
+    .diagram-wrap {
+      width: 100%;
+      margin-top: 8px;
+      overflow-x: auto;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      min-width: 900px;
+      height: auto;
+    }
+
+    .callout {
+      fill: #fff;
+      stroke-width: 3;
+    }
+
+    .callout.drive {
+      fill: #edf3ff;
+      stroke: var(--blue);
+    }
+
+    .callout.shooter {
+      fill: #fff3e7;
+      stroke: var(--orange);
+    }
+
+    .callout.mechanism {
+      fill: #eaf7f0;
+      stroke: var(--green);
+    }
+
+    .callout.tuning {
+      fill: #f3edff;
+      stroke: var(--purple);
+    }
+
+    .line {
+      fill: none;
+      stroke: #ffd400;
+      stroke-width: 5;
+      filter: drop-shadow(0 0 1.5px #17212b);
+    }
+
+    .dot {
+      fill: #ff1744;
+      stroke: #fff;
+      stroke-width: 4;
+      filter: drop-shadow(0 0 2px #17212b);
+    }
+
+    .label-title {
+      fill: #101820;
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .label-detail {
+      fill: #17212b;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .legend,
+    .startup,
+    .notes {
+      display: grid;
+      gap: 8px;
+    }
+
+    .legend {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      margin-top: 10px;
+    }
+
+    .legend span,
+    .startup div,
+    .notes div {
+      padding: 7px 9px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .legend span {
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .legend .drive {
+      color: var(--blue);
+      background: #edf3ff;
+    }
+
+    .legend .shooter {
+      color: var(--orange);
+      background: #fff3e7;
+    }
+
+    .legend .mechanism {
+      color: var(--green);
+      background: #eaf7f0;
+    }
+
+    .legend .tuning {
+      color: var(--purple);
+      background: #f3edff;
+    }
+
+    .startup {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .startup div,
+    .notes div {
+      background: #f7f9fc;
+    }
+
+    .notes {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    footer {
+      padding: 2px 4px;
+      text-align: right;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 8px;
+      }
+
+      header,
+      section {
+        padding: 10px;
+      }
+    }
+
+    @media print {
+      @page {
+        size: letter landscape;
+        margin: 0.35in;
+      }
+
+      body {
+        padding: 0;
+        background: #fff;
+      }
+
+      header,
+      section {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+
+      .diagram-wrap {
+        overflow: visible;
+      }
+
+      svg {
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Remote Control Button Guide</h1>
+      <p class="subtitle">Only controls used by <strong>RemoteControl.java</strong> and <strong>RockinBot.java</strong> are shown.</p>
+    </header>
+
+    <section aria-labelledby="diagram-heading">
+      <h2 id="diagram-heading">Gamepad 1 Controls</h2>
+      <p class="note">Each information block connects related functions to the exact controls marked by red dots.</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 1400 820" role="img" aria-labelledby="diagram-title diagram-description">
+          <title id="diagram-title">Remote Control gamepad button map</title>
+          <desc id="diagram-description">The supplied controller picture with callout lines labeling every control used by RemoteControl.</desc>
+
+          <image href="RemoteControlShooter-Controller.png" x="400" y="120" width="600" height="600"></image>
+
+          <g>
+            <polyline class="line" points="620,650 620,520 603,413"></polyline>
+            <polyline class="line" points="780,650 780,520 797,413"></polyline>
+            <circle class="dot" cx="603" cy="413" r="8"></circle>
+            <circle class="dot" cx="797" cy="413" r="8"></circle>
+            <rect class="callout drive" x="500" y="650" width="400" height="105" rx="12"></rect>
+            <text class="label-title" x="514" y="676">Driving</text>
+            <text class="label-detail" x="514" y="701">Left stick: forward/back + strafe</text>
+            <text class="label-detail" x="514" y="729">Right stick: turn left/right</text>
+          </g>
+
+          <g>
+            <polyline class="line" points="330,285 410,285 479,331"></polyline>
+            <polyline class="line" points="330,325 430,325 549,331"></polyline>
+            <circle class="dot" cx="479" cy="331" r="8"></circle>
+            <circle class="dot" cx="549" cy="331" r="8"></circle>
+            <rect class="callout tuning" x="0" y="250" width="330" height="105" rx="12"></rect>
+            <text class="label-title" x="14" y="276">P-Value Tuning</text>
+            <text class="label-detail" x="14" y="301">D-pad Left: decrease by 2</text>
+            <text class="label-detail" x="14" y="329">D-pad Right: increase by 2</text>
+          </g>
+
+          <g>
+            <polyline class="line" points="330,75 420,75 510,230"></polyline>
+            <polyline class="line" points="330,115 370,115 370,180 890,180 890,230"></polyline>
+            <circle class="dot" cx="510" cy="230" r="8"></circle>
+            <circle class="dot" cx="890" cy="230" r="8"></circle>
+            <rect class="callout mechanism" x="0" y="40" width="330" height="105" rx="12"></rect>
+            <text class="label-title" x="14" y="66">Trigger Motor</text>
+            <text class="label-detail" x="14" y="91">Left trigger: reverse while held</text>
+            <text class="label-detail" x="14" y="119">Right trigger: forward while held</text>
+          </g>
+
+          <g>
+            <polyline class="line" points="570,140 570,200 560,260"></polyline>
+            <polyline class="line" points="760,140 760,200 838,260"></polyline>
+            <polyline class="line" points="900,140 900,230 885,288"></polyline>
+            <polyline class="line" points="530,140 530,230 514,296"></polyline>
+            <circle class="dot" cx="560" cy="260" r="8"></circle>
+            <circle class="dot" cx="838" cy="260" r="8"></circle>
+            <circle class="dot" cx="885" cy="288" r="8"></circle>
+            <circle class="dot" cx="514" cy="296" r="8"></circle>
+            <rect class="callout shooter" x="500" y="0" width="500" height="140" rx="12"></rect>
+            <text class="label-title" x="514" y="26">Shooter</text>
+            <text class="label-detail" x="514" y="51">Left bumper: speed -1%</text>
+            <text class="label-detail" x="514" y="79">Right bumper: speed +1%</text>
+            <text class="label-detail" x="754" y="51">Triangle: reverse direction</text>
+            <text class="label-detail" x="754" y="79">D-pad Up: stop</text>
+          </g>
+
+          <g>
+            <polyline class="line" points="1070,285 1000,285 928,331"></polyline>
+            <polyline class="line" points="1070,325 1010,325 842,331"></polyline>
+            <polyline class="line" points="1070,365 1000,365 885,374"></polyline>
+            <circle class="dot" cx="928" cy="331" r="8"></circle>
+            <circle class="dot" cx="842" cy="331" r="8"></circle>
+            <circle class="dot" cx="885" cy="374" r="8"></circle>
+            <rect class="callout mechanism" x="1070" y="250" width="330" height="135" rx="12"></rect>
+            <text class="label-title" x="1084" y="276">Intake</text>
+            <text class="label-detail" x="1084" y="301">Circle: forward</text>
+            <text class="label-detail" x="1084" y="329">Square: reverse</text>
+            <text class="label-detail" x="1084" y="357">Cross (X): stop</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section aria-labelledby="startup-heading">
+      <h2 id="startup-heading">Starting Settings</h2>
+      <div class="startup">
+        <div><strong>Shooter power:</strong> 73%</div>
+        <div><strong>Shooter P value:</strong> 50</div>
+        <div><strong>Intake:</strong> Reverse at full power</div>
+        <div><strong>Trigger motor:</strong> Stopped</div>
+      </div>
+    </section>
+
+    <section aria-labelledby="notes-heading">
+      <h2 id="notes-heading">Important Control Details</h2>
+      <div class="notes">
+        <div><strong>Bumpers, Triangle, and D-pad tuning:</strong> Each action occurs once per press, not continuously while held.</div>
+        <div><strong>Triggers:</strong> The trigger motor runs only while a trigger is held and stops when both are released. If both are held, reverse wins.</div>
+        <div><strong>Drive orientation:</strong> The intake side is the back of the robot; the opposite side is the front.</div>
+        <div><strong>No park mode:</strong> The wheel controls always use their normal full range.</div>
+      </div>
+    </section>
+
+    <footer>v20261007-07</footer>
+  </main>
+</body>
+</html>
