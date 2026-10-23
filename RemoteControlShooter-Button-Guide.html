@@ -279,6 +279,7 @@
   <main>
     <header>
       <h1>Remote Control Button Guide</h1>
+      <p class="subtitle">For the <strong>Remote Control</strong> OpMode. Updated October 21, 2026.</p>
     </header>
 
     <section aria-labelledby="diagram-heading">
@@ -302,7 +303,7 @@
             <text class="label-title" x="524" y="596">Driving</text>
             <text class="label-detail" x="524" y="621">Left stick: drive+strafe</text>
             <text class="label-detail" x="524" y="649">Right stick: turn</text>
-            <text class="label-detail" x="524" y="677">D-pad Down: toggle normal/parking speed</text>
+            <text class="label-detail" x="524" y="677">D-pad Down: toggle normal/half speed</text>
           </g>
 
           <g>
@@ -310,10 +311,10 @@
             <polyline class="line lumberjack" points="330,375 410,375 541,331"></polyline>
             <circle class="dot" cx="479" cy="331" r="8"></circle>
             <circle class="dot" cx="549" cy="331" r="8"></circle>
-            <rect class="callout tuning" x="160" y="300" width="170" height="92" rx="12"></rect>
-            <text class="label-title" x="174" y="326">Lumberjack</text>
-            <text class="label-detail" x="174" y="351">D-pad Left: down</text>
-            <text class="label-detail" x="174" y="379">D-pad right: up</text>
+            <rect class="callout tuning" x="100" y="300" width="230" height="92" rx="12"></rect>
+            <text class="label-title" x="114" y="326">Lumberjack</text>
+            <text class="label-detail" x="114" y="351">D-pad Left: position 0.03</text>
+            <text class="label-detail" x="114" y="379">D-pad Right: position 0.66</text>
           </g>
 
           <g>
@@ -331,19 +332,13 @@
 
           <g>
             <polyline class="line shooter" points="600,95 510,230"></polyline>
-            <polyline class="line shooter" points="790,95 514,296"></polyline>
             <polyline class="line shooter" points="600,95 890,230"></polyline>
-            <polyline class="line shooter" points="790,95 885,288"></polyline>
             <circle class="dot" cx="510" cy="230" r="8"></circle>
             <circle class="dot" cx="890" cy="230" r="8"></circle>
-            <circle class="dot" cx="885" cy="288" r="8"></circle>
-            <circle class="dot" cx="514" cy="296" r="8"></circle>
             <rect class="callout shooter" x="500" y="0" width="360" height="95" rx="12"></rect>
             <text class="label-title" x="514" y="26">Shooter</text>
-            <text class="label-detail" x="514" y="51">Left bumper: slower</text>
-            <text class="label-detail" x="514" y="79">Right bumper: faster</text>
-            <text class="label-detail" x="714" y="51">Triangle: reverse</text>
-            <text class="label-detail" x="714" y="79">D-pad Up: stop</text>
+            <text class="label-detail" x="514" y="51">Left bumper: -5 ticks/second</text>
+            <text class="label-detail" x="514" y="79">Right bumper: +5 ticks/second</text>
           </g>
 
           <g>
@@ -361,15 +356,17 @@
           </g>
         </svg>
       </div>
+      <p class="note">Hold either trigger to run the trigger motor; release both to stop. Right trigger takes priority if both are held. Hold Circle or Square to command intake power; X stops it, and the last command persists when released. Shooter bumpers and the half-speed toggle act once per button release. Triangle and D-pad Up have no assigned action.</p>
     </section>
 
     <section aria-labelledby="startup-heading">
       <h2 id="startup-heading">Starting Settings</h2>
       <ul class="startup">
-        <li><strong>Shooter power:</strong> 76%</li>
-        <li><strong>Shooter P value:</strong> 60</li>
-        <li><strong>Intake:</strong> Forward at +50% power</li>
-        <li><strong>Trigger motor:</strong> Stopped; speed setting 50%</li>
+        <li><strong>Shooter target velocity:</strong> 1675 encoder ticks/second; starts automatically on PLAY</li>
+        <li><strong>Shooter P value:</strong> 90</li>
+        <li><strong>Shooter F value:</strong> 11.7</li>
+        <li><strong>Intake:</strong> Starts automatically on PLAY at +85% power</li>
+        <li><strong>Trigger motor:</strong> Stopped until a trigger is held; power setting +50%</li>
         <li><strong>Drive speed mode:</strong> Normal (half-speed mode off)</li>
       </ul>
     </section>
@@ -378,19 +375,25 @@
       <h2 id="gamepad2-heading">Gamepad 2 Controls</h2>
       <div class="diagram-wrap">
         <svg viewBox="0 0 1400 700" role="img" aria-labelledby="gamepad2-title gamepad2-description">
-          <title id="gamepad2-title">Gamepad 2 speed and shooter tuning controls</title>
-          <desc id="gamepad2-description">D-pad Up and Down adjust trigger speed, Circle and Square adjust signed intake power, and the bumpers adjust shooter P.</desc>
+          <title id="gamepad2-title">Gamepad 2 power and shooter tuning controls</title>
+          <desc id="gamepad2-description">D-pad Up and Down adjust trigger power, D-pad Left and Right adjust intake power, Circle and Square adjust shooter P, and Triangle and X adjust shooter F.</desc>
           <image href="RemoteControlShooter-Controller.png" x="400" y="100" width="600" height="600"></image>
 
           <g>
-            <polyline class="line tuning" points="505,129 505,208"></polyline>
-            <polyline class="line tuning" points="895,129 895,208"></polyline>
-            <circle class="dot" cx="505" cy="208" r="8"></circle>
-            <circle class="dot" cx="895" cy="208" r="8"></circle>
-            <rect class="callout tuning" x="490" y="60" width="420" height="69" rx="12"></rect>
-            <text class="label-title" x="504" y="86">Shooter P Tuning</text>
-            <text class="label-detail" x="504" y="113">Left bumper: P -2</text>
-            <text class="label-detail" x="724" y="113">Right bumper: P +2</text>
+            <polyline class="line tuning" points="1070,345 928,345 928,329"></polyline>
+            <polyline class="line tuning" points="1070,385 842,385 842,329"></polyline>
+            <polyline class="line tuning" points="1070,425 1000,425 885,268"></polyline>
+            <polyline class="line tuning" points="1070,465 1000,465 885,354"></polyline>
+            <circle class="dot button-marker" cx="928" cy="311" r="18"></circle>
+            <circle class="dot button-marker" cx="842" cy="311" r="18"></circle>
+            <circle class="dot button-marker" cx="885" cy="268" r="18"></circle>
+            <circle class="dot button-marker" cx="885" cy="354" r="18"></circle>
+            <rect class="callout tuning" x="1070" y="320" width="250" height="165" rx="12"></rect>
+            <text class="label-title" x="1084" y="346">Shooter P / F Tuning</text>
+            <text class="label-detail" x="1084" y="375">Circle: P +2</text>
+            <text class="label-detail" x="1084" y="405">Square: P -2</text>
+            <text class="label-detail" x="1084" y="435">Triangle: F +1</text>
+            <text class="label-detail" x="1084" y="465">X (Cross): F -1</text>
           </g>
 
           <g>
@@ -399,26 +402,27 @@
             <circle class="dot" cx="514" cy="276" r="8"></circle>
             <circle class="dot" cx="514" cy="346" r="8"></circle>
             <rect class="callout trigger" x="125" y="235" width="205" height="100" rx="12"></rect>
-            <text class="label-title" x="139" y="261">Trigger Speed</text>
+            <text class="label-title" x="139" y="261">Trigger Power</text>
             <text class="label-detail" x="139" y="286">D-pad Up: +0.05</text>
             <text class="label-detail" x="139" y="314">D-pad Down: -0.05</text>
           </g>
 
           <g>
-            <polyline class="line intake" points="1070,345 928,345 928,329"></polyline>
-            <polyline class="line intake" points="1070,385 842,385 842,329"></polyline>
-            <circle class="dot button-marker" cx="928" cy="311" r="18"></circle>
-            <circle class="dot button-marker" cx="842" cy="311" r="18"></circle>
-            <rect class="callout mechanism" x="1070" y="320" width="200" height="95" rx="12"></rect>
-            <text class="label-title" x="1084" y="346">Intake Speed</text>
-            <text class="label-detail" x="1084" y="371">Circle: +0.05</text>
-            <text class="label-detail" x="1084" y="399">Square: -0.05</text>
+            <polyline class="line intake" points="330,440 430,440 479,311"></polyline>
+            <polyline class="line intake" points="330,480 450,480 549,311"></polyline>
+            <circle class="dot" cx="479" cy="311" r="8"></circle>
+            <circle class="dot" cx="549" cy="311" r="8"></circle>
+            <rect class="callout mechanism" x="105" y="400" width="225" height="95" rx="12"></rect>
+            <text class="label-title" x="119" y="426">Intake Power</text>
+            <text class="label-detail" x="119" y="451">D-pad Left: +0.05</text>
+            <text class="label-detail" x="119" y="479">D-pad Right: -0.05</text>
           </g>
         </svg>
       </div>
+      <p class="note">All Gamepad 2 adjustments act once per button release. Power steps of 0.05 equal 5 percentage points, with settings limited to -1.0 through +1.0. Intake adjustments immediately command the new signed power, even if the intake was stopped. Trigger adjustments apply while a Gamepad 1 trigger is held; negative settings reverse its normal direction. Shooter P and F cannot go below zero. Bumpers have no assigned Gamepad 2 action.</p>
     </section>
 
-    <footer>v20261018-25</footer>
+    <footer>Updated 2026-10-21 from <a href="TeamCode/src/main/java/org/firstinspires/ftc/teamcode/RemoteControl.java">RemoteControl.java</a></footer>
   </main>
 </body>
 </html>
