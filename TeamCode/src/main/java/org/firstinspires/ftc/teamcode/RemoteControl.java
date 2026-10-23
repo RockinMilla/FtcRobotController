@@ -15,8 +15,8 @@ public class RemoteControl extends LinearOpMode {
 
         double intakePower = 0.85;
         double triggerPower = 0.5;
-        double shooterVelocity = 1675;
-        double pValue = 90;
+        double shooterVelocity = 1680;
+        double pValue = 250;
         //double iValue = 19.56;
         //double dValue =
         boolean halfWheelSpeed = false;
