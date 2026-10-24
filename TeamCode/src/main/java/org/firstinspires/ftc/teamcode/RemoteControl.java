@@ -13,12 +13,10 @@ public class RemoteControl extends LinearOpMode {
     //Op mode runs when the robot runs. It runs the whole time.
     public void runOpMode() {
 
-        double intakePower = 0.85;
-        double triggerPower = 0.5;
-        double shooterVelocity = 1680;
+        double intakeSpeed = 0.85;
+        double triggerSpeed = 0.5;
+        double shooterVelocity = 1675;
         double pValue = 250;
-        //double iValue = 19.56;
-        //double dValue =
         boolean halfWheelSpeed = false;
         double wheelSpeedMultiplier = 1.0;
 
@@ -34,7 +32,7 @@ public class RemoteControl extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        r.intakePower(intakePower);
+        r.intakePower(intakeSpeed);
         r.shooterVelocity(shooterVelocity);
         ElapsedTime telemetryTimer = new ElapsedTime();
 
@@ -48,10 +46,10 @@ public class RemoteControl extends LinearOpMode {
 
             // Control the trigger
             if(gamepad1.right_trigger > 0) {
-                r.triggerPower(triggerPower);
+                r.triggerPower(triggerSpeed);
             }
             else if(gamepad1.left_trigger > 0) {
-                r.triggerPower(-triggerPower);
+                r.triggerPower(-triggerSpeed);
             }
             else {
                 r.triggerPower(0);
@@ -59,10 +57,10 @@ public class RemoteControl extends LinearOpMode {
 
             // Control the intake
             if(gamepad1.circle) {
-                r.intakePower(intakePower);
+                r.intakePower(intakeSpeed);
             }
             else if(gamepad1.square) {
-                r.intakePower(-intakePower);
+                r.intakePower(-intakeSpeed);
             }
             else if(gamepad1.cross) {
                 r.intakePower(0);
@@ -92,10 +90,10 @@ public class RemoteControl extends LinearOpMode {
 
             // Gamepad2 stuff - find good values for trigger, pValue, and intake
             if (gamepad2.dpadUpWasReleased()) {
-                triggerPower = Math.min(1.0, triggerPower + 0.05);
+                triggerSpeed = Math.min(1.0, triggerSpeed + 0.05);
             }
             if (gamepad2.dpadDownWasReleased()) {
-                triggerPower = Math.max(-1.0, triggerPower - 0.05);
+                triggerSpeed = Math.max(-1.0, triggerSpeed - 0.05);
             }
 
             if (gamepad2.rightBumperWasReleased()) {
@@ -106,18 +104,18 @@ public class RemoteControl extends LinearOpMode {
             }
 
             if (gamepad2.circleWasReleased()) {
-                intakePower = Math.min(1, intakePower + 0.05);
-                r.intakePower(intakePower);
+                intakeSpeed = Math.min(1, intakeSpeed + 0.05);
+                r.intakePower(intakeSpeed);
             }
             if (gamepad2.squareWasReleased()) {
-                intakePower = Math.max(-1, intakePower - 0.05);
-                r.intakePower(intakePower);
+                intakeSpeed = Math.max(-1, intakeSpeed - 0.05);
+                r.intakePower(intakeSpeed);
             }
 
             // Show the elapsed game time and wheel power, but only every half-second.
             if (telemetryTimer.seconds() >= 0.5) {
-                telemetry.addData("Trigger power setting", "%.0f%%", triggerPower * 100);
-                telemetry.addData("Intake power setting", "%.0f%%", intakePower * 100);
+                telemetry.addData("Trigger speed setting", "%.0f%%", triggerSpeed * 100);
+                telemetry.addData("Intake speed setting", "%.0f%%", intakeSpeed * 100);
                 telemetry.addData("Wheel speed multiplier", "%.0f%%", wheelSpeedMultiplier * 100);
                 r.printDataOnScreen();
                 telemetryTimer.reset();
