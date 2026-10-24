@@ -114,8 +114,8 @@ public class RemoteControl extends LinearOpMode {
 
             // Show the elapsed game time and wheel power, but only every half-second.
             if (telemetryTimer.seconds() >= 0.5) {
-                telemetry.addData("Trigger speed setting", "%.0f%%", triggerPower * 100);
-                telemetry.addData("Intake speed setting", "%.0f%%", intakePower * 100);
+                telemetry.addData("Trigger power setting", "%.0f%%", triggerPower * 100);
+                telemetry.addData("Intake power setting", "%.0f%%", intakePower * 100);
                 telemetry.addData("Wheel speed multiplier", "%.0f%%", wheelSpeedMultiplier * 100);
                 r.printDataOnScreen();
                 telemetryTimer.reset();
