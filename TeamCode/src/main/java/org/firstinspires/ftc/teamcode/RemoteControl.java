@@ -97,9 +97,11 @@ public class RemoteControl extends LinearOpMode {
             }
 
             if (gamepad2.rightBumperWasReleased()) {
+                pValue = pValue + 2;
                 r.adjustpValue(2);
             }
             if (gamepad2.leftBumperWasReleased()) {
+                pValue = pValue - 2;
                 r.adjustpValue(-2);
             }
 

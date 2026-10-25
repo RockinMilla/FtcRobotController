@@ -215,6 +215,10 @@ public class RockinBot {
         shooter.setVelocity(vel);
     }
 
+    public double getShooterVelocity() {
+        return shooter.getVelocity();
+    }
+
     public boolean getPinpointPosition() {     // Finds robot position
         pinpointTime.reset();
 
