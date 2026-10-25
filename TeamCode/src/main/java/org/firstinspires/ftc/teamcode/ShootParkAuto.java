@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Autonomous(name="Shoot and Park Auto", group="Robot")
 public class ShootParkAuto extends LinearOpMode {
-    private static final double SHOOTER_VELOCITY = 1800;
+    private static final double SHOOTER_VELOCITY = 1750;
     private static final double TRIGGER_POWER = 1;
     private static final double INTAKE_POWER = 0.8;
 
@@ -19,7 +19,7 @@ public class ShootParkAuto extends LinearOpMode {
         RockinBot robot = new RockinBot(this);
 
         telemetry.addData("Autonomous Ready", "Shoot, then park");
-        telemetry.addData("Version", "v20261023-06");
+        telemetry.addData("Version", "v20261024-02");
         telemetry.update();
         waitForStart();
 
@@ -62,7 +62,7 @@ public class ShootParkAuto extends LinearOpMode {
         //sleep(500);
 
         // Collect balls from flower
-        robot.shooterVelocity(0);
+        robot.shooterVelocity(1000);
         robot.driveToPos(450, -950, -85, 50, 2, 3, 0.7); // make sure the lumberjack doesn't hit the flower
         robot.setLumberjackPosition(0.66);
         sleep(1000);
@@ -71,6 +71,7 @@ public class ShootParkAuto extends LinearOpMode {
         robot.driveToPos(450, -950, -85, 50, 2, 3, 0.7); // make sure the lumberjack doesn't hit the flower
         robot.setLumberjackPosition(0.03);
         sleep(400);
+        robot.shooterVelocity(0);
 
         // Park
         RobotLog.vv("Rockin' Robots", "Drive to the parking box");

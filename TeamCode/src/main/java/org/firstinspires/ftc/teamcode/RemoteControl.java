@@ -13,7 +13,7 @@ public class RemoteControl extends LinearOpMode {
     //Op mode runs when the robot runs. It runs the whole time.
     public void runOpMode() {
 
-        double intakePower = 0.85;
+        double intakePower = 1;
         double triggerPower = 0.5;
         double shooterVelocity = 1675;
         double pValue = 250;
