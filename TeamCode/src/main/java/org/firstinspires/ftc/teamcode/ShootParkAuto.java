@@ -10,8 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Autonomous(name="Shoot and Park Auto", group="Robot")
 public class ShootParkAuto extends LinearOpMode {
-    private static final double LEFT_SHOOTER_VELOCITY = 1750;
-    private static final double RIGHT_SHOOTER_VELOCITY = 1750;
+    private static final double LEFT_SHOOTER_VELOCITY = 1700;
+    private static final double RIGHT_SHOOTER_VELOCITY = 1700;
     private static final double TRIGGER_POWER = 1;
     private static final double INTAKE_POWER = 0.8;
     //Note: the lumberajcjk position stuff is commented out for now pls change to set left and right
@@ -20,15 +20,15 @@ public class ShootParkAuto extends LinearOpMode {
         RockinBot robot = new RockinBot(this);
 
         telemetry.addData("Autonomous Ready", "Shoot, then park");
-        telemetry.addData("Version", "v20261024-02");
+        telemetry.addData("Version", "v20261106-03");
         telemetry.update();
         waitForStart();
 
         // Start motors
-        robot.shooterVelocity(LEFT_SHOOTER_VELOCITY, RIGHT_SHOOTER_VELOCITY); // todo: change these values cuz i will bet you my soul that they aren't right
-        robot.setLeftPValue(250); // todo: same here
+        robot.shooterVelocity(LEFT_SHOOTER_VELOCITY, RIGHT_SHOOTER_VELOCITY);
+        robot.setLeftPValue(250);
         robot.setRightPValue(250);
-        sleep(4000); // let shooters get up to speed
+        sleep(2000); // let shooters get up to speed
 
         // Shoot 1st round: balls 1 & 2
         robot.intakePower(INTAKE_POWER);
@@ -64,14 +64,13 @@ public class ShootParkAuto extends LinearOpMode {
         //sleep(500);
 
         // Collect balls from flower
-        robot.shooterVelocity(1000, 1000); // todo: need to set both shooter velocities, this is going to get very confusing if you don't turn this into a variable, so you should do this now.
         robot.driveToPos(450, -950, -85, 50, 2, 3, 0.7); // make sure the lumberjack doesn't hit the flower
-        //robot.setLumberjackPosition(0.66);
+        robot.setLumberjackPositions(0.1, 0.66);
         sleep(1000);
         robot.driveToPos(830, -930, -85, 20, 2, 1, 0.3); // collect balls
         sleep(1200);
         robot.driveToPos(450, -950, -85, 50, 2, 3, 0.7); // make sure the lumberjack doesn't hit the flower
-        //robot.setLumberjackPosition(0.03); //todo: change this position to whatever you need during auto
+        robot.setLumberjackPositions(0.7, 0.06);
         sleep(400);
         robot.shooterVelocity(0, 0);
 
