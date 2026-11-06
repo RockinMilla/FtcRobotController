@@ -10,8 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Autonomous(name="Shoot and Park Auto", group="Robot")
 public class ShootParkAuto extends LinearOpMode {
-    private static final double LEFT_SHOOTER_VELOCITY = 1700;
-    private static final double RIGHT_SHOOTER_VELOCITY = 1700;
+    private static final double LEFT_SHOOTER_VELOCITY = 1750;
+    private static final double RIGHT_SHOOTER_VELOCITY = 1750;
     private static final double TRIGGER_POWER = 1;
     private static final double INTAKE_POWER = 0.8;
     //Note: the lumberajcjk position stuff is commented out for now pls change to set left and right
@@ -20,7 +20,7 @@ public class ShootParkAuto extends LinearOpMode {
         RockinBot robot = new RockinBot(this);
 
         telemetry.addData("Autonomous Ready", "Shoot, then park");
-        telemetry.addData("Version", "v20261106-03");
+        telemetry.addData("Version", "v20261106-10");
         telemetry.update();
         waitForStart();
 
@@ -28,57 +28,36 @@ public class ShootParkAuto extends LinearOpMode {
         robot.shooterVelocity(LEFT_SHOOTER_VELOCITY, RIGHT_SHOOTER_VELOCITY);
         robot.setLeftPValue(250);
         robot.setRightPValue(250);
-        sleep(2000); // let shooters get up to speed
+        sleep(4000); // let shooters get up to speed
 
-        // Shoot 1st round: balls 1 & 2
+        // Shoot 1st round: balls 1, 2, 3, & 4
         robot.intakePower(INTAKE_POWER);
         robot.triggerPower(TRIGGER_POWER);
-        sleep(400);
+        sleep(1200);
         robot.triggerPower(0);
-        sleep(1000);
-
-        // Shoot 2nd round: balls 3 & 4
-        robot.triggerPower(TRIGGER_POWER);
-        sleep(800);
-        robot.triggerPower(0);
-        //sleep(500);
 
         // Collect balls from corner
-        robot.driveToPos(0, -150, 0, 25, 5, 1, 0.4); // Waypoint to get off the wall
+        robot.driveToPos(0, -150, 0, 25, 5, 1, 0.5); // Waypoint to get off the wall
         robot.driveToPos(400, -20, -85, 50,2, 3, 0.7); // Move to collect balls
-        robot.driveToPos(1100, 0, -85, 50, 2, 2, 0.3); // Collect them
+        robot.driveToPos(1100, 0, -85, 50, 2, 2, 0.5); // Collect them
         sleep(1000);
-        robot.driveToPos(0, 0, 0, 20, 1, 4); // Go back to shooting position
 
-        // Shoot 3rd round: balls 5 & 6
+        // Shoot 3rd round: balls 5, 6, 7, & 8
+        robot.driveToPos(330, -2500, 180, 100, 5, 3); // Waypoint to avoid the hive
+        robot.driveToPos(-550, -2500, 180, 50, 3, 0.7); // Waypoint to avoid the flower
+        robot.driveToPos(-550, -3000, 180, 20, 1, 3, 0.5); // Go to new shooting position
         sleep(100);
         robot.triggerPower(TRIGGER_POWER);
-        sleep(100);
-        robot.triggerPower(0);
         sleep(1000);
-
-        // Shoot 4th round: balls 7 & 8
-        robot.triggerPower(TRIGGER_POWER);
-        sleep(800);
         robot.triggerPower(0);
-        //sleep(500);
+        sleep(500);
 
-        // Collect balls from flower
-        robot.driveToPos(450, -950, -85, 50, 2, 3, 0.7); // make sure the lumberjack doesn't hit the flower
-        robot.setLumberjackPositions(0.1, 0.66);
-        sleep(1000);
-        robot.driveToPos(830, -930, -85, 20, 2, 1, 0.3); // collect balls
-        sleep(1200);
-        robot.driveToPos(450, -950, -85, 50, 2, 3, 0.7); // make sure the lumberjack doesn't hit the flower
-        robot.setLumberjackPositions(0.7, 0.06);
-        sleep(400);
-        robot.shooterVelocity(0, 0);
-
+        /*
         // Park
         RobotLog.vv("Rockin' Robots", "Drive to the parking box");
         robot.driveToPos(1150, -2150, 0, 50, 2, 4, 0.7);
         robot.intakePower(0);
-
+*/
         robot.odo.update();
         Pose2D pose = robot.odo.getPosition();
         telemetry.addData("X (mm)", "%.1f", pose.getX(DistanceUnit.MM));
