@@ -10,10 +10,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Autonomous(name="Shoot and Park Auto", group="Robot")
 public class ShootParkAuto extends LinearOpMode {
-    private static final double SHOOTER_VELOCITY = 1750;
+    private static final double LEFT_SHOOTER_VELOCITY = 1750;
+    private static final double RIGHT_SHOOTER_VELOCITY = 1750;
     private static final double TRIGGER_POWER = 1;
     private static final double INTAKE_POWER = 0.8;
-
+    //Note: the lumberajcjk position stuff is commented out for now pls change to set left and right
     @Override
     public void runOpMode() {
         RockinBot robot = new RockinBot(this);
@@ -24,8 +25,9 @@ public class ShootParkAuto extends LinearOpMode {
         waitForStart();
 
         // Start motors
-        robot.shooterVelocity(SHOOTER_VELOCITY);
-        robot.setpValue(250);
+        robot.shooterVelocity(LEFT_SHOOTER_VELOCITY, RIGHT_SHOOTER_VELOCITY); // todo: change these values cuz i will bet you my soul that they aren't right
+        robot.setLeftPValue(250); // todo: same here
+        robot.setRightPValue(250);
         sleep(4000); // let shooters get up to speed
 
         // Shoot 1st round: balls 1 & 2
@@ -62,16 +64,16 @@ public class ShootParkAuto extends LinearOpMode {
         //sleep(500);
 
         // Collect balls from flower
-        robot.shooterVelocity(1000);
+        robot.shooterVelocity(1000, 1000); // todo: need to set both shooter velocities, this is going to get very confusing if you don't turn this into a variable, so you should do this now.
         robot.driveToPos(450, -950, -85, 50, 2, 3, 0.7); // make sure the lumberjack doesn't hit the flower
-        robot.setLumberjackPosition(0.66);
+        //robot.setLumberjackPosition(0.66);
         sleep(1000);
         robot.driveToPos(830, -930, -85, 20, 2, 1, 0.3); // collect balls
         sleep(1200);
         robot.driveToPos(450, -950, -85, 50, 2, 3, 0.7); // make sure the lumberjack doesn't hit the flower
-        robot.setLumberjackPosition(0.03);
+        //robot.setLumberjackPosition(0.03); //todo: change this position to whatever you need during auto
         sleep(400);
-        robot.shooterVelocity(0);
+        robot.shooterVelocity(0, 0);
 
         // Park
         RobotLog.vv("Rockin' Robots", "Drive to the parking box");

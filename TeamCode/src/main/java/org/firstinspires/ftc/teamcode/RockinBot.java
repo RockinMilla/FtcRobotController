@@ -35,14 +35,17 @@ public class RockinBot {
     private double xLoc = 0;
     private double yLoc = 0;
     private double hLoc = 0;
-    private DcMotorEx shooter = null;
-    private PIDFCoefficients pidf = null;
+    private DcMotorEx leftShooter = null;
+    private DcMotorEx rightShooter = null;
+    private PIDFCoefficients leftPidf = null;
+    private PIDFCoefficients rightPidf = null;
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotor trigger = null;
-    private Servo lumberjack = null;
+    private Servo lumberjackLeft = null;
+    private Servo lumberjackRight = null;
     // private Limelight3A limelight;
     public GoBildaPinpointDriver odo = null;
     private double leftFrontPower = 0;
@@ -50,10 +53,12 @@ public class RockinBot {
     private double leftBackPower = 0;
     private double rightBackPower = 0;
     private double intakeCurrent = 0;
-    private double shooterPower = 0;
+    private double leftShooterPower = 0;
+    private double rightShooterPower = 0;
     private double max = 0;
     private double triggerPower = 0;
-    double shooterSpeed = 1.0;
+    double leftShooterSpeed = 1.0;
+    double rightShooterSpeed = 1.0;
     double intakePower = 1.0;
     // These do NOT affect anything, but leave them as is! See notes in RemoteControlShooter for more information
     // These should be affecting RC, but they do not, and we fear that if we change them, everything will explode
@@ -105,17 +110,28 @@ public class RockinBot {
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         intake.setDirection(DcMotor.Direction.REVERSE);
 
-        shooter = o.hardwareMap.get(DcMotorEx.class, "shooter");
-        shooter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        pidf = shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        setpValue(55); // this often gets overwritten by other programs
+        leftShooter = o.hardwareMap.get(DcMotorEx.class, "leftShooter");
+        leftShooter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        leftShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftShooter.setDirection(DcMotor.Direction.REVERSE);
+
+        rightShooter = o.hardwareMap.get(DcMotorEx.class, "rightShooter"); // todo: this needs to be "rightshooter" then add the hardware stuff for the left shooter
+        rightShooter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rightShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //rightShooter.setDirection(DcMotor.Direction.REVERSE);
+
+        leftPidf = leftShooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightPidf = rightShooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        setLeftPValue(55);
+        setRightPValue(55); // this often gets overwritten by other programs
 
         trigger = o.hardwareMap.get(DcMotorEx.class, "trigger");
         trigger.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         trigger.setDirection(DcMotor.Direction.REVERSE);
 
-        lumberjack = o.hardwareMap.get(Servo.class, "lumberjack");
+        lumberjackLeft = o.hardwareMap.get(Servo.class, "lumberjackLeft");
+        lumberjackRight = o.hardwareMap.get(Servo.class, "lumberjackRight");
 
         // limelight = o.hardwareMap.get(Limelight3A.class, "limelight");
         // limelight.pipelineSwitch(0);
@@ -181,42 +197,70 @@ public class RockinBot {
                 leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
     }
 
-    public void adjustpValue(double delta) {
-        pidf.p = Math.max(0.0, pidf.p + delta);
-        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
+    public void adjustLeftPValue(double delta) {
+        leftPidf.p = Math.max(0.0, leftPidf.p + delta);
+        leftShooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, leftPidf);
+        RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + leftPidf.p);
+    }
+    public void adjustRightPValue(double delta) {
+        rightPidf.p = Math.max(0.0, rightPidf.p + delta);
+        rightShooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, rightPidf);
+        RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + rightPidf.p);
     }
 
-    public void setpValue(double pValue) {
-        pidf.p = Math.max(0.0, pValue);
-        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        RobotLog.vv("Rockin' Robots", "PIDF changed. New p value: " + pidf.p);
+    public void setLeftPValue(double pValue) {
+        leftPidf.p = Math.max(0.0, pValue);
+        leftShooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, leftPidf);
+        RobotLog.vv("Rockin' Robots", "Left PIDF changed. New p value: " + leftPidf.p); // todo: add left into the comment, here and elsewhere
+    }
+    public void setRightPValue(double pValue) {
+        rightPidf.p = Math.max(0.0, pValue);
+        rightShooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, rightPidf);
+        RobotLog.vv("Rockin' Robots", "Right PIDF changed. New p value: " + rightPidf.p);
     }
 
-    public void setLumberjackPosition(double position) {
-        lumberjack.setPosition(position);
-        RobotLog.vv("Rockin' Robots", "Lumberjack position: %.2f", position);
+    public void setLumberjackPositions(double leftPosition, double rightPosition) { // todo: you could combine the two Set Lumberjack functions because you will always set them at the same time.
+        lumberjackLeft.setPosition(leftPosition);
+        lumberjackRight.setPosition(rightPosition);
+
+        RobotLog.vv("Rockin' Robots", "Lumberjack Left position: %.2f", leftPosition);
+        RobotLog.vv("Rockin' Robots", "Lumberjack Right position: %.2f", rightPosition);
     }
 
-    public void releaseLumberjack() {
-        ServoController controller = lumberjack.getController();
-        if (!(controller instanceof ServoControllerEx)) {
+    /*
+    public void releaseLumberjacks() {
+        ServoController rightcontroller = lumberjackRight.getController();
+        ServoController leftcontroller = lumberjackLeft.getController();
+        if (!(rightcontroller instanceof ServoControllerEx)) { // todo: you don't need this AI-slop
+            RobotLog.ee("Rockin' Robots", "Cannot release only the lumberjack: servo controller does not support per-port PWM");
+            return;
+        }
+        if(!(leftcontroller instanceof ServoControllerEx)){
             RobotLog.ee("Rockin' Robots", "Cannot release only the lumberjack: servo controller does not support per-port PWM");
             return;
         }
 
-        ((ServoControllerEx) controller).setServoPwmDisable(lumberjack.getPortNumber());
+        ((ServoControllerEx) rightcontroller).setServoPwmDisable(lumberjackRight.getPortNumber());
+        ((ServoControllerEx) leftcontroller).setServoPwmDisable(lumberjackLeft.getPortNumber());
         RobotLog.vv("Rockin' Robots", "Lumberjack PWM disabled");
     }
+    */
 
-    public void shooterVelocity(double vel) {
-        RobotLog.vv("Rockin' Robots", "shooterPower(%.2f)", vel);
-        shooterSpeed = vel;
-        shooter.setVelocity(vel);
+    public void shooterVelocity(double lVel, double rVel) {
+        RobotLog.vv("Rockin' Robots", "shooterPower(%.2f)", lVel, rVel);
+
+        leftShooterSpeed = lVel;
+        rightShooterSpeed = rVel;
+
+        leftShooter.setVelocity(lVel);
+        rightShooter.setVelocity(rVel);
     }
 
-    public double getShooterVelocity() {
-        return shooter.getVelocity();
+    public double getLeftShooterVelocity() {
+        return leftShooter.getVelocity();
+    }
+    public double getRightShooterVelocity() {
+        return rightShooter.getVelocity();
     }
 
     public boolean getPinpointPosition() {     // Finds robot position
@@ -387,14 +431,18 @@ public class RockinBot {
 
         intakeCurrent = intake.getCurrent(CurrentUnit.MILLIAMPS);
 
-        shooterPower = shooter.getCurrent(CurrentUnit.MILLIAMPS);
-        o.telemetry.addData("Shooter speed and Power", "%.2f, %.0f mA", shooterSpeed, shooterPower);
+        rightShooterPower = rightShooter.getCurrent(CurrentUnit.MILLIAMPS);
+        leftShooterPower = leftShooter.getCurrent(CurrentUnit.MILLIAMPS);
+        o.telemetry.addData("Left shooter speed and Power", "%.2f, %.0f mA", leftShooterSpeed, leftShooterPower);
+        o.telemetry.addData("Right shooter speed and Power", "%.2f, %.0f mA", rightShooterSpeed, rightShooterPower);
         o.telemetry.addData("Intake power and current", "%.2f, %.0f mA", intakePower, intakeCurrent);
         o.telemetry.addData("Trigger Power", "%.2f", triggerPower);
         o.telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
         o.telemetry.addData("Back left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-        o.telemetry.addData("P value", "%.2f", shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER).p);
-        o.telemetry.addData("Lumberjack position", "%.2f", lumberjack.getPosition());
+        o.telemetry.addData("Left P value", "%.2f", leftShooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER).p);
+        o.telemetry.addData("Right P value", "%.2f", rightShooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER).p);
+        o.telemetry.addData("Lumberjack Left position", "%.2f", lumberjackLeft.getPosition());
+        o.telemetry.addData("Lumberjack Right position", "%.2f", lumberjackRight.getPosition());
         // loop();
 
         o.telemetry.update();

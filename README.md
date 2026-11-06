@@ -32,6 +32,32 @@ If you are an Android Studio programmer, there are several ways to download this
 
 Once you have downloaded and uncompressed (if needed) your folder, you can use Android Studio to import the folder  ("Import project (Eclipse ADT, Gradle, etc.)").
 
+## Live Shooter Velocity Graph
+
+After deploying this code, start the **Remote Control** OpMode to run the graph server.
+With the robot connected over USB, run `adb forward tcp:8001 tcp:8001` and open
+http://localhost:8001/ (not port 8000).
+Alternatively, connect to the robot's Wi-Fi and open http://192.168.43.1:8001/.
+The server starts once per OpMode run and stops when the OpMode ends.
+If an older build stops responding, deploy the updated code and restart the Robot
+Controller app before starting the OpMode again.
+
+## Lumberjack Test
+
+Select **Lumberjack Test** for a stationary test of the standard positional servos
+configured as `lumberjackRight` and `lumberjackLeft` in RockinBot.
+Pressing PLAY commands both servos to 0.500; ensure the mechanisms can move safely.
+On gamepad 1, hold the right/left triggers to increase/decrease the right servo
+position, and the right/left bumpers to increase/decrease the left servo position.
+Full input changes position by 0.2 per second, limited to 0.0 through 1.0.
+Releasing the controls holds position; opposite inputs cancel (triggers subtract).
+The test uses the RockinBot constructor to initialize the configured robot hardware
+and its existing lumberjack position setters; no driving commands are issued.
+Driver Station telemetry shows commanded positions and live inputs; the robot log
+records both positions under `Lumberjack Test` at startup, while changing (up to
+10 times per second), and on normal stop.
+These are commanded servo positions, not measured physical feedback.
+
 ## Getting Help
 ### User Documentation and Tutorials
 *FIRST* maintains online documentation with information and tutorials on how to use the *FIRST* Tech Challenge software and robot control system.  You can access this documentation using the following link:

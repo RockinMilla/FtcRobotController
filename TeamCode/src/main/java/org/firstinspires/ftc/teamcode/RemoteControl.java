@@ -8,37 +8,41 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 @TeleOp(name="Remote Control", group="Linear OpMode")
 public class RemoteControl extends LinearOpMode {
+    private final VelocityGraph velocityGraph = new VelocityGraph();
     @Override
 
     //Op mode runs when the robot runs. It runs the whole time.
     public void runOpMode() {
 
         double intakePower = 1;
-        double triggerPower = 0.5;
-        double shooterVelocity = 1675;
-        double pValue = 250;
+        double triggerPower = 0.85;
+        double leftShooterVelocity = 1675;
+        double rightShooterVelocity = 1675;
+        double leftPValue = 250;
+        double rightPValue = 250;
         boolean halfWheelSpeed = false;
         double wheelSpeedMultiplier = 1.0;
 
         // Create a LinearOpModeVariable and pass it to the RockinBot constructor
         LinearOpMode o = this;
         RockinBot r = new RockinBot(o);
-        r.setpValue(pValue);
+        r.setRightPValue(rightPValue);
+        r.setLeftPValue(leftPValue);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Remote Control Ready", "press PLAY");
         RobotLog.vv("Rockin' Robots", "Remote Control Ready");
-        telemetry.addData("This code was last updated", "10/19/2026, 6:05 pm"); // Todo: Update this date when the code is updated
+        telemetry.addData("This code was last updated", "11/5/2026, 6:11 pm"); // Todo: Update this date when the code is updated
         telemetry.update();
 
         waitForStart();
         r.intakePower(intakePower);
-        r.shooterVelocity(shooterVelocity);
+        r.shooterVelocity(leftShooterVelocity, rightShooterVelocity);
         ElapsedTime telemetryTimer = new ElapsedTime();
 
+        velocityGraph.start();
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
             r.setWheelPower(
                 -gamepad1.left_stick_y * wheelSpeedMultiplier,
                 -gamepad1.left_stick_x * wheelSpeedMultiplier,
@@ -66,15 +70,6 @@ public class RemoteControl extends LinearOpMode {
                 r.intakePower(0);
             }
 
-            if (gamepad1.rightBumperWasReleased()) {
-                shooterVelocity = shooterVelocity + 5;
-                r.shooterVelocity(shooterVelocity);
-            }
-            if (gamepad1.leftBumperWasReleased()) {
-                shooterVelocity = shooterVelocity - 5;
-                r.shooterVelocity(shooterVelocity);
-            }
-
             if (gamepad1.dpadDownWasReleased()) {
                 halfWheelSpeed = !halfWheelSpeed;
                 wheelSpeedMultiplier = halfWheelSpeed ? 0.5 : 1;
@@ -82,10 +77,10 @@ public class RemoteControl extends LinearOpMode {
 
             // Control the lumberjack
             if (gamepad1.dpad_right) {
-                r.setLumberjackPosition(0.66);
+                r.setLumberjackPositions(0.1, 0.66);
             }
             if (gamepad1.dpad_left) {
-                r.setLumberjackPosition(0.03);
+                r.setLumberjackPositions(0.73, 0.03); //Needs to be changed once we have wheels
             }
 
             // Gamepad2 stuff - find good values for trigger, pValue, and intake
@@ -96,13 +91,41 @@ public class RemoteControl extends LinearOpMode {
                 triggerPower = Math.max(-1.0, triggerPower - 0.05);
             }
 
-            if (gamepad2.rightBumperWasReleased()) {
-                pValue = pValue + 2;
-                r.adjustpValue(2);
-            }
             if (gamepad2.leftBumperWasReleased()) {
-                pValue = pValue - 2;
-                r.adjustpValue(-2);
+                rightPValue = rightPValue - 2;
+                r.adjustRightPValue(-2);
+            }
+            if (gamepad2.rightBumperWasReleased()) {
+                rightPValue = rightPValue + 2;
+                r.adjustRightPValue(2);
+            }
+
+            if(gamepad2.dpadUpWasReleased())
+            {
+                leftPValue = leftPValue + 2;
+                r.adjustLeftPValue(2);
+            }
+            if(gamepad2.dpadDownWasReleased())
+            {
+                leftPValue = leftPValue - 2;
+                r.adjustLeftPValue(-2);
+            }
+
+            if (gamepad2.triangleWasReleased()) {
+                rightShooterVelocity = rightShooterVelocity + 5;
+                r.shooterVelocity(leftShooterVelocity, rightShooterVelocity);
+            }
+            if (gamepad2.xWasReleased()) {
+                rightShooterVelocity = rightShooterVelocity - 5;
+                r.shooterVelocity(leftShooterVelocity, rightShooterVelocity);
+            }
+            if (gamepad2.dpadRightWasReleased()) {
+                leftShooterVelocity = leftShooterVelocity + 5;
+                r.shooterVelocity(leftShooterVelocity, rightShooterVelocity);
+            }
+            if (gamepad2.dpadLeftWasReleased()) {
+                leftShooterVelocity = leftShooterVelocity - 5;
+                r.shooterVelocity(leftShooterVelocity, rightShooterVelocity);
             }
 
             if (gamepad2.circleWasReleased()) {
@@ -114,6 +137,14 @@ public class RemoteControl extends LinearOpMode {
                 r.intakePower(intakePower);
             }
 
+            // every loop
+            /*
+            velocityGraph.setVelocity(r.getShooterVelocity());   // required // todo: use the right/left values. The velocityGraph tool doesn't accept multiple shooters yet, we'll have to add that.
+            velocityGraph.setTarget(shooterVelocity);         // optional: target line
+            velocityGraph.setPValue(pValue);               // optional: shows P
+            //velocityGraph.setFValue(fvalue);
+             */
+
             // Show the elapsed game time and wheel power, but only every half-second.
             if (telemetryTimer.seconds() >= 0.5) {
                 telemetry.addData("Trigger power setting", "%.0f%%", triggerPower * 100);
@@ -124,6 +155,7 @@ public class RemoteControl extends LinearOpMode {
             }
             idle();
         }
-        r.releaseLumberjack();
+        //r.releaseLumberjacks();
+        //velocityGraph.stop();
     }
 }
