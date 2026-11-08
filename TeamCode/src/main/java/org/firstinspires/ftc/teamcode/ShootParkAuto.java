@@ -43,8 +43,8 @@ public class ShootParkAuto extends LinearOpMode {
         sleep(1000);
 
         // Shoot 3rd round: balls 5, 6, 7, & 8
-        robot.driveToPos(330, -2500, 180, 100, 5, 3); // Waypoint to avoid the hive
-        robot.driveToPos(-550, -2500, 180, 50, 3, 0.7); // Waypoint to avoid the flower
+        robot.driveToPos(330, -2500, 180, 100, 5, 3, 1); // Waypoint to avoid the hive
+        robot.driveToPos(-550, -2500, 180, 50, 3, 2, 0.7); // Waypoint to avoid the flower
         robot.driveToPos(-550, -3000, 180, 20, 1, 3, 0.5); // Go to new shooting position
         sleep(100);
         robot.triggerPower(TRIGGER_POWER);
