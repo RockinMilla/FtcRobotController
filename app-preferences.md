@@ -7,3 +7,4 @@
 - Keep robot control loops responsive by yielding with `idle()`.
 - Validate Java changes with `.\gradlew.bat :TeamCode:compileDebugJavaWithJavac`.
 - Do not commit or push changes without explicit confirmation.
+- Give only USB connection instructions for the velocity graph; never give Wi-Fi instructions.

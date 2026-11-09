@@ -16,10 +16,10 @@ public class RemoteControl extends LinearOpMode {
 
         double intakePower = 1;
         double triggerPower = 0.85;
-        double leftShooterVelocity = 1675;
-        double rightShooterVelocity = 1675;
-        double leftPValue = 250;
-        double rightPValue = 250;
+        double leftShooterVelocity = 1725;
+        double rightShooterVelocity = 1725;
+        double leftPValue = 70;
+        double rightPValue = 100;
         boolean halfWheelSpeed = false;
         double wheelSpeedMultiplier = 1.0;
 
@@ -84,22 +84,14 @@ public class RemoteControl extends LinearOpMode {
             }
 
             // Gamepad2 stuff - find good values for trigger, pValue, and intake
-            if (gamepad2.dpadUpWasReleased()) {
-                triggerPower = Math.min(1.0, triggerPower + 0.05);
-            }
-            if (gamepad2.dpadDownWasReleased()) {
-                triggerPower = Math.max(-1.0, triggerPower - 0.05);
-            }
-
-            if (gamepad2.leftBumperWasReleased()) {
+            if (gamepad2.dpadLeftWasReleased()) {
                 rightPValue = rightPValue - 2;
                 r.adjustRightPValue(-2);
             }
-            if (gamepad2.rightBumperWasReleased()) {
+            if (gamepad2.dpadRightWasReleased()) {
                 rightPValue = rightPValue + 2;
                 r.adjustRightPValue(2);
             }
-
             if(gamepad2.dpadUpWasReleased())
             {
                 leftPValue = leftPValue + 2;
@@ -111,39 +103,39 @@ public class RemoteControl extends LinearOpMode {
                 r.adjustLeftPValue(-2);
             }
 
-            if (gamepad2.triangleWasReleased()) {
+            if (gamepad2.circleWasReleased()) {
                 rightShooterVelocity = rightShooterVelocity + 5;
                 r.shooterVelocity(leftShooterVelocity, rightShooterVelocity);
             }
-            if (gamepad2.xWasReleased()) {
+            if (gamepad2.squareWasReleased()) {
                 rightShooterVelocity = rightShooterVelocity - 5;
                 r.shooterVelocity(leftShooterVelocity, rightShooterVelocity);
             }
-            if (gamepad2.dpadRightWasReleased()) {
+            if (gamepad2.triangleWasReleased()) {
                 leftShooterVelocity = leftShooterVelocity + 5;
                 r.shooterVelocity(leftShooterVelocity, rightShooterVelocity);
             }
-            if (gamepad2.dpadLeftWasReleased()) {
+            if (gamepad2.xWasReleased()) {
                 leftShooterVelocity = leftShooterVelocity - 5;
                 r.shooterVelocity(leftShooterVelocity, rightShooterVelocity);
             }
 
-            if (gamepad2.circleWasReleased()) {
+            if (gamepad2.rightBumperWasReleased()){
                 intakePower = Math.min(1, intakePower + 0.05);
                 r.intakePower(intakePower);
             }
-            if (gamepad2.squareWasReleased()) {
+            if (gamepad2.leftBumperWasReleased()){
                 intakePower = Math.max(-1, intakePower - 0.05);
                 r.intakePower(intakePower);
             }
 
             // every loop
-            /*
-            velocityGraph.setVelocity(r.getShooterVelocity());   // required // todo: use the right/left values. The velocityGraph tool doesn't accept multiple shooters yet, we'll have to add that.
-            velocityGraph.setTarget(shooterVelocity);         // optional: target line
-            velocityGraph.setPValue(pValue);               // optional: shows P
+            
+            velocityGraph.setVelocity(r.getRightShooterVelocity());   // required // todo: use the right/left values. The velocityGraph tool doesn't accept multiple shooters yet, we'll have to add that.
+            velocityGraph.setTarget(rightShooterVelocity);         // optional: target line
+            velocityGraph.setPValue(rightPValue);               // optional: shows P
             //velocityGraph.setFValue(fvalue);
-             */
+            
 
             // Show the elapsed game time and wheel power, but only every half-second.
             if (telemetryTimer.seconds() >= 0.5) {
@@ -156,6 +148,6 @@ public class RemoteControl extends LinearOpMode {
             idle();
         }
         //r.releaseLumberjacks();
-        //velocityGraph.stop();
+        velocityGraph.stop();
     }
 }
