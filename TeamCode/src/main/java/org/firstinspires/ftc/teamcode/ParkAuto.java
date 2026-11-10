@@ -10,11 +10,11 @@ public class ParkAuto extends LinearOpMode {
         RockinBot robot = new RockinBot(this);
 
         telemetry.addData("Autonomous Ready", "Forward and right 20 cm diagonally");
-        telemetry.addData("This code was last updated", "10/11/2026, 6:43 pm");
+        telemetry.addData("This code was last updated", "11/10/2026, 1:39 pm");
         telemetry.update();
         waitForStart();
 
-        robot.driveToPos(200, 150, 0, 10, 2, 4);
+        robot.driveToPos(200, 150, 0, 50, 5, 3);
 
         telemetry.addData("Autonomous", "Complete");
         telemetry.update();

@@ -2,16 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-@Autonomous(name="Shoot and Park Auto", group="Robot")
-public class ShootParkAuto extends LinearOpMode {
-    private static final double LEFT_SHOOTER_VELOCITY = 1750;
-    private static final double RIGHT_SHOOTER_VELOCITY = 1750;
+@Autonomous(name="First and Second Tip Auto", group="Robot")
+public class FirstAndSecondTip extends LinearOpMode {
+    private static final double LEFT_SHOOTER_VELOCITY = 1725;
+    private static final double RIGHT_SHOOTER_VELOCITY = 1725;
     private static final double TRIGGER_POWER = 1;
     private static final double INTAKE_POWER = 0.8;
     //Note: the lumberajcjk position stuff is commented out for now pls change to set left and right
@@ -20,14 +19,14 @@ public class ShootParkAuto extends LinearOpMode {
         RockinBot robot = new RockinBot(this);
 
         telemetry.addData("Autonomous Ready", "Shoot, then park");
-        telemetry.addData("Version", "v20261106-10");
+        telemetry.addData("Version", "v20261110-02");
         telemetry.update();
         waitForStart();
 
         // Start motors
         robot.shooterVelocity(LEFT_SHOOTER_VELOCITY, RIGHT_SHOOTER_VELOCITY);
-        robot.setLeftPValue(250);
-        robot.setRightPValue(250);
+        robot.setLeftPValue(70);
+        robot.setRightPValue(100);
         sleep(4000); // let shooters get up to speed
 
         // Shoot 1st round: balls 1, 2, 3, & 4
