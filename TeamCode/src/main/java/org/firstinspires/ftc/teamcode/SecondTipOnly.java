@@ -20,7 +20,7 @@ public class SecondTipOnly extends LinearOpMode {
         RockinBot robot = new RockinBot(this);
 
         telemetry.addData("Autonomous Ready", "Shoot twice, then park");
-        telemetry.addData("Version", "v20261110-10");
+        telemetry.addData("Version", "v20261110-13");
         telemetry.update();
         waitForStart();
 
@@ -38,12 +38,13 @@ public class SecondTipOnly extends LinearOpMode {
         robot.triggerPower(0);
 
         // Collect balls from flower
-        robot.driveToPos(-390, -500, 0, 25, 5, 1, 0.6); // Waypoint to get off the wall
-        robot.setLumberjackPositions(0.1, 0.70); //down
+        robot.intakePower(1);
+        robot.driveToPos(-400, -500, 0, 25, 5, 1, 0.6); // Waypoint to get off the wall
+        robot.setLumberjackPositions(0.1, 0.67); //down
         sleep(500);
-        robot.driveToPos(-390, -200, 0, 10, 2, 2, 0.4); // Collect them
+        robot.driveToPos(-400, -200, 0, 10, 2, 2, 0.4); // Collect them
         sleep(1000);
-        robot.driveToPos(-390, -500, 0, 25, 5, 1, 0.6); // Waypoint to get off the wall
+        robot.driveToPos(-400, -500, 0, 25, 5, 1, 0.6); // Waypoint to get off the wall
         robot.setLumberjackPositions(0.73, 0.03); //up
 
         // Shoot 2nd round: balls 5, 6, 7, & 8
@@ -52,12 +53,12 @@ public class SecondTipOnly extends LinearOpMode {
         robot.triggerPower(TRIGGER_POWER);
         sleep(1600);
         robot.triggerPower(0);
+        robot.intakePower(0);
 
         // Park
         //RobotLog.vv("Rockin' Robots", "Drive to the parking box");
         robot.driveToPos(0, -300, 0, 50, 5, 1);
         robot.driveToPos(-1100, -300, 0, 50, 2, 4, 0.7);
-        robot.intakePower(0);
 
         robot.odo.update();
         Pose2D pose = robot.odo.getPosition();
