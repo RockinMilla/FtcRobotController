@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 @TeleOp(name="Remote Control", group="Linear OpMode")
 public class RemoteControl extends LinearOpMode {
-    private final VelocityGraph velocityGraph = new VelocityGraph();
+    private final VelocityGraph velocityGraph = VelocityGraph.getInstance();
     @Override
 
     //Op mode runs when the robot runs. It runs the whole time.
@@ -131,10 +131,8 @@ public class RemoteControl extends LinearOpMode {
 
             // every loop
             
-            velocityGraph.setVelocity(r.getRightShooterVelocity());   // required // todo: use the right/left values. The velocityGraph tool doesn't accept multiple shooters yet, we'll have to add that.
-            velocityGraph.setTarget(rightShooterVelocity);         // optional: target line
-            velocityGraph.setPValue(rightPValue);               // optional: shows P
-            //velocityGraph.setFValue(fvalue);
+            velocityGraph.record(r.getLeftShooterVelocity(), r.getRightShooterVelocity(),
+                    leftShooterVelocity, rightShooterVelocity, leftPValue, rightPValue);
             
 
             // Show the elapsed game time and wheel power, but only every half-second.
@@ -148,6 +146,5 @@ public class RemoteControl extends LinearOpMode {
             idle();
         }
         //r.releaseLumberjacks();
-        velocityGraph.stop();
     }
 }

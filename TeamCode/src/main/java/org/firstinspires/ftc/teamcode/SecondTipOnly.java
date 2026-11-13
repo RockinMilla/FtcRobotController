@@ -10,25 +10,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 @Autonomous(name="Second Tip Auto", group="Robot")
 public class SecondTipOnly extends LinearOpMode {
     private static final double LEFT_SHOOTER_VELOCITY = 1775;
-    private static final double RIGHT_SHOOTER_VELOCITY = 1800;
+    private static final double RIGHT_SHOOTER_VELOCITY = 1775;
+    private static final double LEFT_PVALUE = 70;
+    private static final double RIGHT_PVALUE = 70;
     private static final double TRIGGER_POWER = 1;
     private static final double INTAKE_POWER = 0.8;
 
-    //Note: the lumberjack position stuff is commented out for now pls change to set left and right
     @Override
     public void runOpMode() {
         RockinBot robot = new RockinBot(this);
 
         telemetry.addData("Autonomous Ready", "Shoot twice, then park");
-        telemetry.addData("Version", "v20261110-13");
+        telemetry.addData("Version", "v20261112-08");
         telemetry.update();
         waitForStart();
 
+        sleep(5000); // wait for other team
+
         // Start motors
         robot.shooterVelocity(LEFT_SHOOTER_VELOCITY, RIGHT_SHOOTER_VELOCITY);
-        robot.setLeftPValue(70);
-        robot.setRightPValue(100);
-        sleep(4000); // let shooters get up to speed
+        robot.setLeftPValue(LEFT_PVALUE);
+        robot.setRightPValue(RIGHT_PVALUE);
+        sleep(3000); // let shooters get up to speed
 
         // Shoot 1st round: balls 1, 2, 3, & 4
         robot.triggerPower(TRIGGER_POWER);
@@ -51,7 +54,9 @@ public class SecondTipOnly extends LinearOpMode {
         robot.driveToPos(0, -500, 0, 50, 5, 1);
         robot.driveToPos(0, 0, 0, 20, 1, 3, 0.7);
         robot.triggerPower(TRIGGER_POWER);
-        sleep(1600);
+        sleep(800);
+        robot.intakePower(INTAKE_POWER);
+        sleep(800);
         robot.triggerPower(0);
         robot.intakePower(0);
 

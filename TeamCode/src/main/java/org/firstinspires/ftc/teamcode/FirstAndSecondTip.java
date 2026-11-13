@@ -9,30 +9,33 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Autonomous(name="First and Second Tip Auto", group="Robot")
 public class FirstAndSecondTip extends LinearOpMode {
-    private static final double LEFT_SHOOTER_VELOCITY = 1725;
-    private static final double RIGHT_SHOOTER_VELOCITY = 1725;
+    private static final double LEFT_SHOOTER_VELOCITY = 1775;
+    private static final double RIGHT_SHOOTER_VELOCITY = 1775;
+    private static final double LEFT_PVALUE = 70;
+    private static final double RIGHT_PVALUE = 70;
     private static final double TRIGGER_POWER = 1;
     private static final double INTAKE_POWER = 0.8;
-    //Note: the lumberajcjk position stuff is commented out for now pls change to set left and right
+    //Note: the lumberjack position stuff is commented out for now pls change to set left and right
     @Override
     public void runOpMode() {
         RockinBot robot = new RockinBot(this);
 
         telemetry.addData("Autonomous Ready", "Shoot, then park");
-        telemetry.addData("Version", "v20261111-11");
+        telemetry.addData("Version", "v20261112-05");
         telemetry.update();
         waitForStart();
 
         // Start motors
         robot.shooterVelocity(LEFT_SHOOTER_VELOCITY, RIGHT_SHOOTER_VELOCITY);
-        robot.setLeftPValue(70);
-        robot.setRightPValue(100);
-        sleep(2000); // let shooters get up to speed
+        robot.setLeftPValue(LEFT_PVALUE);
+        robot.setRightPValue(RIGHT_PVALUE);
+        sleep(3000); // let shooters get up to speed
 
         // Shoot 1st round: balls 1, 2, 3, & 4
-        robot.intakePower(INTAKE_POWER);
         robot.triggerPower(TRIGGER_POWER);
-        sleep(1200);
+        sleep(800);
+        robot.intakePower(INTAKE_POWER);
+        sleep(800);
         robot.triggerPower(0);
 
         // Collect balls from corner
@@ -72,7 +75,7 @@ public class FirstAndSecondTip extends LinearOpMode {
         // Park
         //RobotLog.vv("Rockin' Robots", "Drive to the parking box");
         robot.driveToPos(-400, -2700, 180, 20, 1, 3, 0.5);
-        robot.driveToPos(700, -2300, 180, 50, 2, 4, 0.7);
+        robot.driveToPos(700, -2350, 180, 50, 2, 4, 0.7);
         robot.intakePower(0);
 
         robot.odo.update();

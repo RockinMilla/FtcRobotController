@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Shooter velocity - v20261111-02</title>
+  <style>
+    body { font: 14px sans-serif; margin: 8px; background: white; color: #222; }
+    h1 { font-size: 20px; margin: 6px 0; }
+    h2 { font-size: 16px; margin: 6px 0; }
+    p { margin: 6px 0; }
+    button { font: inherit; padding: 6px 10px; }
+    .live { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    iframe { width: 100%; height: 440px; border: 1px solid #ccc; box-sizing: border-box; }
+    article { border: 1px solid #ccc; padding: 8px; margin-top: 8px; }
+    canvas { display: block; width: 100%; height: 240px; }
+    .left { color: #1565c0; } .right { color: #bf360c; }
+    #error { color: #b71c1c; }
+    @media (max-width: 700px) { .live { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>Shooter velocity <small>v20261111-02</small></h1>
+  <p>USB: <code>adb forward tcp:8001 tcp:8001</code>, then open <code>http://localhost:8001</code>.</p>
+  <p>Keep this page open while running Second Tip Auto repeatedly. Each completed run automatically downloads a CSV to this PC; allow multiple downloads for this page in your browser.</p>
+  <button id="analyze" type="button">analyze me</button>
+  <button id="reconnect" type="button">Reconnect live graphs</button>
+  <p id="status" role="status">Waiting for robot...</p>
+  <p id="downloads" role="status"></p>
+  <p id="error" role="alert"></p>
+  <div class="live">
+    <iframe title="Left shooter" src="/single?motor=left"></iframe>
+    <iframe title="Right shooter" src="/single?motor=right"></iframe>
+  </div>
+  <section id="analysis" aria-label="Run comparison"></section>
+  <script>
+    'use strict';
+    const attempts = new Map();
+    const downloaded = new Set();
+    const fields = ['t', 'l', 'r', 'lt', 'rt', 'lp', 'rp'];
+    const status = document.getElementById('status');
+    const error = document.getElementById('error');
+    let downloadCount = 0;
+    let chartJobs = [];
+    let polling = false;
+
+    function validate(data) {
+      if (!data || !Array.isArray(data.attempts)) throw new Error('Invalid run data from robot.');
+      for (const run of data.attempts) {
+        if (!run || typeof run.id !== 'string' || typeof run.label !== 'string' ||
+            !Number.isFinite(run.startedAt) || typeof run.complete !== 'boolean' ||
+            !Array.isArray(run.samples)) throw new Error('Invalid shooting run.');
+        for (const sample of run.samples) {
+          if (!sample || !fields.every(field => Number.isFinite(sample[field])) ||
+              sample.t < 0) throw new Error('Invalid shooter-speed sample.');
+        }
+      }
+    }
+
+    function download(run) {
+      const rows = [['time_ms', 'left_ticks_s', 'right_ticks_s', 'left_target_ticks_s',
+        'right_target_ticks_s', 'left_p', 'right_p']];
+      run.samples.forEach(sample => rows.push(fields.map(field => sample[field])));
+      const csv = rows.map(row => row.join(',')).join('\r\n') + '\r\n';
+      const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      const link = document.createElement('a');
+      const date = new Date(run.startedAt).toISOString().replace(/[:.]/g, '-');
+      link.href = url;
+      link.download = 'shooter-' + date + '-' + run.id + '.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      downloaded.add(run.id);
+      downloadCount++;
+      document.getElementById('downloads').textContent =
+        downloadCount + ' CSV download(s) requested. Check your Downloads folder; allow automatic downloads if your browser blocks them.';
+    }
+
+    async function poll() {
+      if (polling) return;
+      polling = true;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4000);
+      try {
+        const response = await fetch('/attempts', { cache: 'no-store', signal: controller.signal });
+        if (!response.ok) throw new Error('Robot returned HTTP ' + response.status);
+        const data = await response.json();
+        validate(data);
+        for (const run of data.attempts) {
+          attempts.set(run.id, run);
+          if (run.complete && !downloaded.has(run.id)) download(run);
+        }
+        status.textContent = 'Connected - ' + attempts.size +
+          ' run(s). Click analyze me to compare all runs.';
+        error.textContent = '';
+      } catch (failure) {
+        status.textContent = 'Disconnected - keeping recorded runs; reconnecting automatically.';
+        error.textContent = failure.message;
+      } finally {
+        clearTimeout(timeout);
+        polling = false;
+      }
+    }
+
+    function draw(job) {
+      const { canvas, run, duration, maximum } = job;
+      const width = Math.max(300, canvas.clientWidth);
+      const height = 240;
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = width * ratio;
+      canvas.height = height * ratio;
+      const g = canvas.getContext('2d');
+      if (!g) {
+        error.textContent = 'Canvas is unavailable; use the downloaded CSV files.';
+        return;
+      }
+      g.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const left = 55, right = width - 18, top = 18, bottom = height - 35;
+      const x = t => left + t / duration * (right - left);
+      const y = v => bottom - v / maximum * (bottom - top);
+      g.font = '12px sans-serif';
+      for (let i = 0; i <= 4; i++) {
+        const speed = maximum * i / 4;
+        g.strokeStyle = '#ddd';
+        g.beginPath(); g.moveTo(left, y(speed)); g.lineTo(right, y(speed)); g.stroke();
+        g.fillStyle = '#555'; g.fillText(Math.round(speed), 3, y(speed) + 4);
+        const time = duration * i / 4;
+        g.fillText((time / 1000).toFixed(2), x(time) - 12, bottom + 16);
+      }
+      g.fillText('ticks/s', 3, 12);
+      g.fillText('Time since run start (s)', Math.max(left, width / 2 - 60), height - 4);
+      [['lt', '#1565c0', true], ['rt', '#bf360c', true],
+        ['l', '#1565c0', false], ['r', '#bf360c', false]].forEach(([field, color, target]) => {
+        g.strokeStyle = color; g.lineWidth = target ? 1 : 2;
+        g.setLineDash(target ? [6, 4] : []);
+        g.beginPath();
+        run.samples.forEach((sample, index) => {
+          if (index === 0) g.moveTo(x(sample.t), y(sample[field]));
+          else g.lineTo(x(sample.t), y(sample[field]));
+        });
+        g.stroke();
+      });
+      g.setLineDash([]);
+    }
+
+    function analyze() {
+      const area = document.getElementById('analysis');
+      area.replaceChildren();
+      chartJobs = [];
+      const runs = [...attempts.values()].sort((a, b) => a.startedAt - b.startedAt);
+      if (!runs.length) { area.textContent = 'No recorded runs yet.'; return; }
+      let duration = 1000, maximum = 100;
+      for (const run of runs) {
+        for (const sample of run.samples) {
+          duration = Math.max(duration, sample.t);
+          maximum = Math.max(maximum, sample.l, sample.r, sample.lt, sample.rt);
+        }
+      }
+      maximum = Math.ceil(maximum / 100) * 100;
+      runs.forEach((run, index) => {
+        const article = document.createElement('article');
+        const title = document.createElement('h2');
+        title.textContent = (index + 1) + '. ' + run.label + ' - ' +
+          new Date(run.startedAt).toLocaleTimeString() +
+          (run.stoppedEarly ? ' (stopped early)' : run.complete ? '' : ' (recording)');
+        const legend = document.createElement('p');
+        const left = document.createElement('span');
+        left.className = 'left'; left.textContent = 'Left shooter';
+        const right = document.createElement('span');
+        right.className = 'right'; right.textContent = 'Right shooter';
+        legend.append(left, ' | ', right, ' | Dashed lines: targets');
+        const canvas = document.createElement('canvas');
+        canvas.setAttribute('role', 'img');
+        canvas.setAttribute('aria-label', 'Both shooter speeds for run ' + (index + 1));
+        article.append(title, legend);
+        if (run.truncated) {
+          const warning = document.createElement('p');
+          warning.textContent = 'Partial recording: only the latest 20,000 samples were retained.';
+          article.append(warning);
+        }
+        article.append(canvas);
+        area.append(article);
+        const job = { canvas, run, duration, maximum };
+        chartJobs.push(job);
+        draw(job);
+      });
+    }
+
+    document.getElementById('analyze').onclick = analyze;
+    document.getElementById('reconnect').onclick = () => {
+      document.querySelectorAll('iframe').forEach(frame => { frame.src = frame.getAttribute('src'); });
+    };
+    window.addEventListener('resize', () => chartJobs.forEach(draw));
+    setInterval(poll, 500);
+    poll();
+  </script>
+</body>
+</html>

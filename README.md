@@ -34,13 +34,53 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 
 ## Live Shooter Velocity Graph
 
-After deploying this code, start the **Remote Control** OpMode to run the graph server.
+After deploying this code, INIT **Second Tip Auto** or PLAY **Remote Control**
+to run the graph server.
 With the robot connected over USB, run `adb forward tcp:8001 tcp:8001` and open
 http://localhost:8001/ (not port 8000).
-Alternatively, connect to the robot's Wi-Fi and open http://192.168.43.1:8001/.
-The server starts once per OpMode run and stops when the OpMode ends.
+The page shows left and right shooter graphs simultaneously, each with its own
+target and P value, and retains the original live-graph controls.
+The shared graph server keeps running between OpModes until the Robot Controller
+app exits or restarts. Starting the next OpMode reuses the same server and history.
 If an older build stops responding, deploy the updated code and restart the Robot
 Controller app before starting the OpMode again.
+
+### Comparing repeated Second Tip shooting attempts
+
+The currently active portion of **Second Tip Auto** is a stationary shooting test;
+the commented-out collection, second round, and parking code stays commented out.
+Each PLAY records a separate attempt: both measured shooter velocities and targets,
+P values, and elapsed time at up to 20 samples/second. Trigger and intake power
+are not logged to the graph.
+The original `sleep(4000)`, `sleep(800)`, and `sleep(800)` calls remain in the
+shooting sequence; velocity sampling runs on a separate thread during those sleeps
+(left target 1775, right target 1800 ticks/sec; P 70 and 100).
+Sampling and thread cleanup are handled by `VelocityGraph`;
+the student-facing shooting sequence uses ordinary straight-line motor commands and sleeps.
+Remote Control displays both motors live but does not create shooting attempts.
+The final `velocityGraph.finishAttempt()` call completes the recording and stops
+its sampling thread; the OpMode then returns normally and the FTC SDK stops the
+motors. The graph server stays available for downloads and the next attempt.
+Both live graphs freeze automatically when the attempt finishes, keeping the
+completed run visible. They resume automatically when the next attempt begins;
+the existing Freeze/Resume buttons still work manually.
+
+For each trial, press STOP, reload balls safely, then INIT/PLAY **Second Tip Auto**
+again. Click **analyze me** to compare graphs from multiple runs, aligned to each
+attempt's start, on matching time and speed scales.
+Keep the page open: when each run completes, it automatically downloads a separate
+`shooter-<timestamp>-<run-id>.csv` to the PC's Downloads folder (or the browser's
+configured download location). Allow multiple automatic downloads for this page;
+disable the browser's "ask where to save each file" option for unattended saving.
+There are no manual result-entry or backup/export steps.
+The CSV columns are elapsed milliseconds, left/right measured ticks/sec,
+left/right target ticks/sec, and left/right P values.
+Track shooting success separately; velocity alone cannot prove a shot scored.
+The robot retains the latest 100 attempts across OpMode runs, but not Robot
+Controller app restarts; the open page keeps runs for comparison without browser
+storage. Reloading the page can download completed runs again. Runs stopped early
+are finalized automatically, so they can be downloaded without restarting the server.
+Long runs retain the latest 20,000 samples per attempt and are marked partial.
 
 ## Lumberjack Test
 

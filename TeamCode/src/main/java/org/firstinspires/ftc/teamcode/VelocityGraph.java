@@ -2,23 +2,62 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
- * Serves a live graph of one value. Connect a laptop or phone to the robot's Wi-Fi and open
- * http://192.168.43.1:8001 in a browser (the Control Hub's default address), or connect by USB
- * and run "adb forward tcp:8001 tcp:8001" and open http://localhost:8001.
+ * Records both shooters and serves live and multi-attempt graphs over USB.
+ * Run "adb forward tcp:8001 tcp:8001" and open http://localhost:8001.
  */
 public class VelocityGraph {
     private static final String TAG = "VelocityGraph";
     public static final int PORT = 8001;
+    private static final String VERSION = "v20261111-02";
+    private static final int RETENTION_LIMIT = 100;
+    private static final int SAMPLE_LIMIT = 20000;
+    private static final Object HISTORY_LOCK = new Object();
+    private static final List<Attempt> HISTORY = new ArrayList<>();
+    private static final VelocityGraph INSTANCE = new VelocityGraph();
+
+    private VelocityGraph() {
+    }
+
+    public static VelocityGraph getInstance() {
+        return INSTANCE;
+    }
+
+    private static final class Attempt {
+        final String id = UUID.randomUUID().toString();
+        final String label;
+        final long startedAt = System.currentTimeMillis();
+        final long startNanos = System.nanoTime();
+        final List<JSONObject> samples = new ArrayList<>();
+        boolean complete;
+        boolean truncated;
+        boolean stoppedEarly;
+
+        Attempt(String label) {
+            this.label = label;
+        }
+    }
 
     private static final String PAGE = "<!DOCTYPE html><html><head><meta charset='utf-8'>"
             + "<meta name='viewport' content='width=device-width, initial-scale=1'>"
@@ -33,7 +72,7 @@ public class VelocityGraph {
             + "<div>Shooter velocity (ticks/sec): <span id='v'>--</span> "
             + "<button id='f'>Freeze</button> <button id='clr'>Clear marks</button> "
             + "<button id='rst'>Reset shots</button> <button id='mm'>Min/Max: off</button> "
-            + "<button id='an'>analyze me</button> "
+            + "<button id='an'>Analyze live settings</button> "
             + "<button id='sv'>save this data to a file</button></div>"
             + "<div>Spin-up time: <span id='res'>--</span></div>"
             + "<div>Shot recovery: <span id='shot'>--</span></div>"
@@ -42,6 +81,7 @@ public class VelocityGraph {
             + "<div id='out' style='display:none'></div>"
             + "<script>"
             + "var WINDOW_MS=15000,KEEP_MS=60000,pts=[],saved=[],frozen=false,frozenAt=0,idle=true,showMM=false,"
+            + "autoFrozen=false,runId=null,ignoredFinish=null,"
             + "startT=null,reachT=null,target=null,pval=null,fval=null,mouseX=null,W=0,H=0,END=0,"
             + "shots=[],inDip=false,dipStart=0,dipBase=0,minV=0,base=null,DIP_FRAC=0.04,"
             + "BAND_MIN_FRAC=0.01,SETTLE_MS=500,inBandSince=null,stableDev=0,baseDev=0,dipBand=0,"
@@ -227,10 +267,17 @@ public class VelocityGraph {
             + "out.innerHTML=h+'<p><button id=\"hide\">Hide</button></p>';"
             + "document.getElementById('hide').onclick=function(){out.style.display='none'};"
             + "out.style.display='block'}"
-            + "function poll(){if(frozen)return;var x=new XMLHttpRequest();x.open('GET','/v');"
+            + "function poll(){if(frozen&&!autoFrozen)return;var x=new XMLHttpRequest();x.open('GET','/v'+window.location.search);"
             + "x.onload=function(){var a=x.responseText.split(',');var v=num(a[0]);"
-            + "if(v===null||frozen)return;target=num(a[1]);pval=num(a[2]);fval=num(a[3]);"
-            + "var t=Date.now();"
+            + "if(frozen&&!autoFrozen)return;"
+            + "var nextRun=a[4]||'';if(nextRun!==runId){runId=nextRun;ignoredFinish=null;"
+            + "if(autoFrozen){autoFrozen=false;frozen=false;document.getElementById('f').textContent='Freeze'}}"
+            + "if(a[5]==='true'&&ignoredFinish!==runId){if(autoFrozen)return;autoFrozen=true;frozen=true;"
+            + "frozenAt=Date.now();document.getElementById('f').textContent='Resume'}"
+            + "else if(autoFrozen){autoFrozen=false;frozen=false;document.getElementById('f').textContent='Freeze'}"
+            + "if(v===null||(frozen&&!autoFrozen)){if(autoFrozen)draw();return;}"
+            + "target=num(a[1]);pval=num(a[2]);fval=num(a[3]);"
+            + "var t=Date.now();if(autoFrozen)frozenAt=t;"
             + "var key=(target===null?'-':Math.round(target))+'|'+(pval===null?'-':pval)"
             + "+'|'+(fval===null?'-':fval);"
             + "if(key!==curKey){curKey=key;"
@@ -241,7 +288,8 @@ public class VelocityGraph {
             + "pts.push({t:t,v:v});"
             + "pts=pts.filter(function(p){return t-p.t<=KEEP_MS});track(t,v);"
             + "document.getElementById('v').textContent=Math.round(v);draw()};x.send()}"
-            + "document.getElementById('f').onclick=function(){frozen=!frozen;"
+            + "document.getElementById('f').onclick=function(){if(autoFrozen)ignoredFinish=runId;"
+            + "autoFrozen=false;frozen=!frozen;"
             + "if(frozen)frozenAt=Date.now();this.textContent=frozen?'Resume':'Freeze';draw()};"
             + "document.getElementById('mm').onclick=function(){showMM=!showMM;"
             + "this.textContent=showMM?'Min/Max: on':'Min/Max: off';draw()};"
@@ -274,18 +322,43 @@ public class VelocityGraph {
     private volatile double target = Double.NaN;
     private volatile double pValue = Double.NaN;
     private volatile double fValue = Double.NaN;
+    private volatile double leftValue = Double.NaN;
+    private volatile double leftTarget = Double.NaN;
+    private volatile double leftPValue = Double.NaN;
+    private Attempt attempt;
+    private long lastSampleNanos;
+    private String dashboardPage;
     private volatile boolean running;
     private ServerSocket serverSocket;
     private Thread thread;
+    private volatile boolean sampling;
+    private Thread sampler;
+    private volatile LinearOpMode recordingOpMode;
+    private long liveRunId;
+    private boolean liveFrozen;
 
-    public void start() {
+    public synchronized void start() {
+        if (running) {
+            return;
+        }
         try {
+            try (InputStream input = AppUtil.getDefContext().getAssets()
+                    .open("velocity-graph.html");
+                 ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[4096];
+                int count;
+                while ((count = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, count);
+                }
+                dashboardPage = new String(output.toByteArray(), StandardCharsets.UTF_8);
+            }
             serverSocket = new ServerSocket();
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(PORT));
         } catch (IOException e) {
             Log.e(TAG, "Could not start graph server on port " + PORT, e);
-            return;
+            stop();
+            throw new IllegalStateException("Could not start velocity graph", e);
         }
         running = true;
         thread = new Thread(this::serve, TAG);
@@ -309,8 +382,183 @@ public class VelocityGraph {
         fValue = newFValue;
     }
 
+    public void beginAttempt(String label) {
+        synchronized (HISTORY_LOCK) {
+            if (attempt != null) {
+                throw new IllegalStateException("Finish the current shooting attempt first");
+            }
+            attempt = new Attempt(label);
+            HISTORY.add(attempt);
+            if (HISTORY.size() > RETENTION_LIMIT) {
+                HISTORY.remove(0);
+                Log.w(TAG, "Graph history reached 100 attempts; oldest attempt removed");
+            }
+            lastSampleNanos = 0;
+            recordingOpMode = null;
+            liveRunId++;
+            liveFrozen = false;
+        }
+    }
+
+    public void beginAttempt(String label, LinearOpMode opMode, RockinBot robot,
+                             double leftSpeed, double rightSpeed, double leftP, double rightP) {
+        if (!opMode.opModeIsActive()) {
+            return;
+        }
+        LinearOpMode previousOpMode = recordingOpMode;
+        if (previousOpMode != null && !previousOpMode.opModeIsActive()) {
+            finishAttempt();
+        }
+        beginAttempt(label);
+        recordingOpMode = opMode;
+        Attempt recordingAttempt = attempt;
+        sampling = true;
+        sampler = new Thread(() -> {
+            try {
+                while (sampling && running && opMode.opModeIsActive()) {
+                    double left = robot.getLeftShooterVelocity();
+                    double right = robot.getRightShooterVelocity();
+                    synchronized (HISTORY_LOCK) {
+                        if (sampling && attempt == recordingAttempt) {
+                            record(left, right, leftSpeed, rightSpeed, leftP, rightP);
+                        }
+                    }
+                    Thread.sleep(50);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                completeAttempt(recordingAttempt, sampling);
+            }
+        }, "ShooterVelocitySampler");
+        sampler.setDaemon(true);
+        sampler.start();
+    }
+
+    public void record(double left, double right, double leftSpeed, double rightSpeed,
+                       double leftP, double rightP) {
+        synchronized (HISTORY_LOCK) {
+            if (liveFrozen) {
+                liveRunId++;
+                liveFrozen = false;
+            }
+            leftValue = left;
+            value = right;
+            leftTarget = leftSpeed;
+            target = rightSpeed;
+            leftPValue = leftP;
+            pValue = rightP;
+            long now = System.nanoTime();
+            if (attempt == null || now - lastSampleNanos < 50000000L) {
+                return;
+            }
+            try {
+                JSONObject sample = new JSONObject();
+                sample.put("t", (now - attempt.startNanos) / 1000000.0);
+                sample.put("l", left);
+                sample.put("r", right);
+                sample.put("lt", leftSpeed);
+                sample.put("rt", rightSpeed);
+                sample.put("lp", leftP);
+                sample.put("rp", rightP);
+                if (attempt.samples.size() == SAMPLE_LIMIT) {
+                    attempt.samples.remove(0);
+                    if (!attempt.truncated) {
+                        Log.w(TAG, "Attempt exceeded 20000 samples; oldest samples removed");
+                        attempt.truncated = true;
+                    }
+                }
+                attempt.samples.add(sample);
+                lastSampleNanos = now;
+            } catch (JSONException e) {
+                throw new IllegalArgumentException("Invalid shooter recording sample", e);
+            }
+        }
+    }
+
+    public void finishAttempt() {
+        Attempt finishedAttempt;
+        LinearOpMode opMode;
+        synchronized (HISTORY_LOCK) {
+            finishedAttempt = attempt;
+            opMode = recordingOpMode;
+            if (finishedAttempt != null && opMode != null && !opMode.opModeIsActive()) {
+                finishedAttempt.stoppedEarly = true;
+            }
+        }
+        sampling = false;
+        Thread activeSampler = sampler;
+        sampler = null;
+        if (activeSampler != null) {
+            activeSampler.interrupt();
+            try {
+                activeSampler.join(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                Log.w(TAG, "Interrupted while stopping velocity sampler", e);
+            }
+            if (activeSampler.isAlive()) {
+                Log.w(TAG, "Velocity sampler has not finished stopping");
+            }
+        }
+        completeAttempt(finishedAttempt, opMode != null && !opMode.opModeIsActive());
+    }
+
+    private void completeAttempt(Attempt finishedAttempt, boolean stoppedEarly) {
+        synchronized (HISTORY_LOCK) {
+            if (finishedAttempt != null && attempt == finishedAttempt) {
+                finishedAttempt.stoppedEarly |= stoppedEarly;
+                finishedAttempt.complete = true;
+                attempt = null;
+                recordingOpMode = null;
+                sampling = false;
+                liveFrozen = true;
+            }
+        }
+    }
+
+    private String liveValue(boolean left) {
+        synchronized (HISTORY_LOCK) {
+            return (left ? leftValue + "," + leftTarget + "," + leftPValue + ",NaN"
+                    : value + "," + target + "," + pValue + "," + fValue)
+                    + "," + liveRunId + "," + liveFrozen;
+        }
+    }
+
+    private String attemptsJson() {
+        JSONObject result = new JSONObject();
+        synchronized (HISTORY_LOCK) {
+            try {
+                JSONArray attempts = new JSONArray();
+                for (Attempt entry : HISTORY) {
+                    JSONObject json = new JSONObject();
+                    json.put("id", entry.id);
+                    json.put("label", entry.label);
+                    json.put("startedAt", entry.startedAt);
+                    json.put("complete", entry.complete);
+                    json.put("truncated", entry.truncated);
+                    json.put("stoppedEarly", entry.stoppedEarly);
+                    json.put("samples", new JSONArray(entry.samples));
+                    attempts.put(json);
+                }
+                result.put("version", VERSION);
+                result.put("retentionLimit", RETENTION_LIMIT);
+                result.put("attempts", attempts);
+            } catch (JSONException e) {
+                throw new IllegalStateException("Could not serialize shooting attempts", e);
+            }
+            return result.toString();
+        }
+    }
+
     public void stop() {
         running = false;
+        synchronized (HISTORY_LOCK) {
+            if (attempt != null) {
+                attempt.stoppedEarly = true;
+            }
+        }
+        finishAttempt();
         try {
             if (serverSocket != null) {
                 serverSocket.close();
@@ -327,12 +575,25 @@ public class VelocityGraph {
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII));
                 String requestLine = in.readLine();
-                boolean wantsValue = requestLine != null && requestLine.startsWith("GET /v");
+                String path = requestLine != null && requestLine.startsWith("GET ")
+                        ? requestLine.split(" ")[1] : "";
+                String route = path.split("\\?", 2)[0];
+                boolean wantsValue = route.equals("/v");
+                boolean wantsAttempts = route.equals("/attempts");
+                boolean left = path.equals("/v?motor=left") || path.equals("/single?motor=left");
+                boolean found = wantsValue || wantsAttempts || route.equals("/")
+                        || route.equals("/single");
                 String body = wantsValue
-                        ? value + "," + target + "," + pValue + "," + fValue : PAGE;
-                String type = wantsValue ? "text/plain" : "text/html";
+                        ? liveValue(left)
+                        : wantsAttempts ? attemptsJson()
+                        : route.equals("/single") ? PAGE.replace("Shooter velocity (ticks/sec)",
+                                (left ? "Left" : "Right") + " shooter velocity (ticks/sec)")
+                        : found ? dashboardPage : "Not found";
+                String type = wantsValue ? "text/plain"
+                        : wantsAttempts ? "application/json" : "text/html";
                 byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-                String header = "HTTP/1.1 200 OK\r\nContent-Type: " + type
+                String header = "HTTP/1.1 " + (found ? "200 OK" : "404 Not Found")
+                        + "\r\nContent-Type: " + type
                         + "; charset=utf-8\r\nContent-Length: " + bytes.length
                         + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n";
                 OutputStream out = socket.getOutputStream();
