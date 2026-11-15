@@ -21,7 +21,7 @@ public class FirstAndSecondTip extends LinearOpMode {
         RockinBot robot = new RockinBot(this);
 
         telemetry.addData("Autonomous Ready", "Shoot, then park");
-        telemetry.addData("Version", "v20261113-07");
+        telemetry.addData("Version", "v20261114-03");
         telemetry.update();
         waitForStart();
 
@@ -74,8 +74,9 @@ public class FirstAndSecondTip extends LinearOpMode {
 
         // Park
         //RobotLog.vv("Rockin' Robots", "Drive to the parking box");
-        robot.driveToPos(-400, -2700, 180, 50, 1, 3);
-        robot.driveToPos(670, -2500, 180, 20, 2, 4, 0.5);
+        robot.driveToPos(-400, -2600, 180, 50, 1, 3);
+        robot.driveToPos(200, -2400, 180, 50, 5, 3);
+        robot.driveToPos(800, -2000, 180, 20, 2, 4, 0.5);
         robot.intakePower(0);
 
         robot.odo.update();
