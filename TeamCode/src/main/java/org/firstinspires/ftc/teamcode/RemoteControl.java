@@ -75,8 +75,7 @@ public class RemoteControl extends LinearOpMode {
                 wheelSpeedMultiplier = halfWheelSpeed ? 0.5 : 1;
             }
 
-            // Control the lumberjack
-            //smaller numbers make right one go down and bigger numbers make left one go down
+            // Control the lumberjack, smaller numbers make right one go down and bigger numbers make left one go down
             if (gamepad1.dpad_left) { //down
                 r.setLumberjackPositions(0.102, 0.66);
             }
