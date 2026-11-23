@@ -77,10 +77,10 @@ public class RemoteControl extends LinearOpMode {
 
             // Control the lumberjack, smaller numbers make right one go down and bigger numbers make left one go down
             if (gamepad1.dpad_left) { //down
-                r.setLumberjackPositions(0.102, 0.66);
+                r.setLumberjackDown();
             }
             if (gamepad1.dpad_right) { //up
-                r.setLumberjackPositions(0.73, 0.03); //Needs to be changed once we have wheels
+                r.setLumberjackUp(); //Needs to be changed once we have wheels
             }
 
             // Gamepad2 stuff - find good values for trigger, pValue, and intake

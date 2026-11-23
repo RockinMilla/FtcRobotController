@@ -65,6 +65,12 @@ public class RockinBot {
     final ElapsedTime runtime = new ElapsedTime();
     final ElapsedTime pinpointTime = new ElapsedTime();
 
+    public static final double LEFT_SHOOTER_VELOCITY = 1775;
+    public static final double RIGHT_SHOOTER_VELOCITY = 1775;
+    public static final double LEFT_PVALUE = 70;
+    public static final double RIGHT_PVALUE = 70;
+    public static final double TRIGGER_POWER = 1;
+    public static final double INTAKE_POWER = 0.8;
     // During runtime
 
     public RockinBot(LinearOpMode opMode) {
@@ -211,7 +217,7 @@ public class RockinBot {
     public void setLeftPValue(double pValue) {
         leftPidf.p = Math.max(0.0, pValue);
         leftShooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, leftPidf);
-        RobotLog.vv("Rockin' Robots", "Left PIDF changed. New p value: " + leftPidf.p); // todo: add left into the comment, here and elsewhere
+        RobotLog.vv("Rockin' Robots", "Left PIDF changed. New p value: " + leftPidf.p);
     }
     public void setRightPValue(double pValue) {
         rightPidf.p = Math.max(0.0, pValue);
@@ -219,12 +225,25 @@ public class RockinBot {
         RobotLog.vv("Rockin' Robots", "Right PIDF changed. New p value: " + rightPidf.p);
     }
 
-    public void setLumberjackPositions(double leftPosition, double rightPosition) { // todo: you could combine the two Set Lumberjack functions because you will always set them at the same time.
+    public void setPValues(double leftPValue, double rightPValue){
+        setLeftPValue(leftPValue);
+        setRightPValue(rightPValue);
+    }
+
+    public void setLumberjackPositions(double leftPosition, double rightPosition) {
         lumberjackLeft.setPosition(leftPosition);
         lumberjackRight.setPosition(rightPosition);
 
         RobotLog.vv("Rockin' Robots", "Lumberjack Left position: %.2f", leftPosition);
         RobotLog.vv("Rockin' Robots", "Lumberjack Right position: %.2f", rightPosition);
+    }
+
+    public void setLumberjackDown(){
+        setLumberjackPositions(0.102, 0.66);
+    }
+
+    public void setLumberjackUp(){
+        setLumberjackPositions(0.73, 0.03);
     }
 
     /*
@@ -421,6 +440,14 @@ public class RockinBot {
     public void triggerPower(double power) {
         triggerPower = power;
         trigger.setPower(power);
+    }
+
+    public void shootSequence(){
+        sleep(100);
+        triggerPower(1);
+        sleep(1500);
+        triggerPower(0);
+        sleep(200);
     }
 
     private boolean inBand(double actual, double lower, double upper) {
